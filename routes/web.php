@@ -41,3 +41,13 @@ Route::get('/group-detail/{id}', function ($id) {
 Route::get('/group-detail/{id}/settings', function ($id) {
     return view('todo.group.group_settings');
 });
+
+Route::get('/account-info', function () {
+    return view('account.account_info');
+});
+Route::get('/account-info/edit', function () {
+    return view('account.change_info');
+});
+Route::get('/account-info/change-password', function () {
+    return view('account.change_password');
+});
