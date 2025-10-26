@@ -19,3 +19,7 @@ Route::get('/register', function () {
 Route::get('/otp', function () {
     return view('authentication.otp');
 });
+
+Route::get('/statistics', function () {
+    return view('todo.statistics');
+});
