@@ -41,6 +41,16 @@ class PersonalTaskController extends Controller
             $query->where('completed', $request->boolean('completed'));
         }
 
+        // Check cookie for show_completed_tasks setting
+        $showCompletedTasks = $request->cookie('user_settings');
+        if ($showCompletedTasks) {
+            $settings = json_decode($showCompletedTasks, true);
+            if (isset($settings['show_completed_tasks']) && !$settings['show_completed_tasks']) {
+                // If show_completed_tasks is false, exclude completed tasks
+                $query->where('completed', false);
+            }
+        }
+
         $tasks = $query->with('category')->orderBy('due_date', 'asc')->get();
         $taskDTOs = $tasks->map(fn($task) => PersonalTaskDTO::fromModel($task));
 

@@ -5,10 +5,12 @@
 @push('styles')
 <style>
     .stat-card {
-        background-color: #1e1e1e;
+        background-color: var(--card-bg);
         border-radius: 12px;
         padding: 16px;
         margin-bottom: 20px;
+        color: var(--text-primary);
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
     
     /* Ghi đè h1, h3 cho riêng trang này */
@@ -16,44 +18,58 @@
         text-align: left;
         font-size: 2.2rem;
         margin-bottom: 20px;
+        color: var(--text-primary);
     }
     .main-content h3 {
-        color: #fff;
+        color: var(--text-primary);
         font-size: 1.1rem;
         margin-top: 0;
         margin-bottom: 15px;
     }
 
     .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .summary-card { background-color: #1e1e1e; border-radius: 12px; padding: 15px; }
+    .summary-card { 
+        background-color: var(--card-bg); 
+        border-radius: 12px; 
+        padding: 15px; 
+        color: var(--text-primary);
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
     .summary-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-    .summary-card-header span { font-size: 0.9rem; color: #888; }
-    .summary-card-header .icon { font-size: 1.2rem; color: #fff; padding: 5px; border-radius: 50%; }
+    .summary-card-header span { font-size: 0.9rem; color: var(--text-muted); }
+    .summary-card-header .icon { font-size: 1.2rem; color: var(--text-primary); padding: 5px; border-radius: 50%; }
     .summary-card-header .icon-completed { background-color: green; }
     .summary-card-header .icon-pending { background-color: orange; }
     .summary-card-header .icon-streak { background-color: purple; }
     .summary-card-header .icon-total { background-color: blue; }
-    .summary-card h2 { font-size: 2rem; margin: 0; color: #fff; }
+    .summary-card h2 { font-size: 2rem; margin: 0; color: var(--text-primary); }
 
-    .streak-card h2 { font-size: 2.5rem; margin: 0 0 5px 0; color: #fff; }
-    .streak-card p { font-size: 0.9rem; color: #888; margin: 0; }
+    .streak-card h2 { font-size: 2.5rem; margin: 0 0 5px 0; color: var(--text-primary); }
+    .streak-card p { font-size: 0.9rem; color: var(--text-muted); margin: 0; }
 
     .progress-group { margin-bottom: 15px; }
     .progress-labels { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 8px; }
-    .progress-labels .value { color: #7f00ff; font-weight: bold; }
-    .progress-bar-container { width: 100%; background-color: #333; border-radius: 10px; height: 10px; overflow: hidden; }
-    .progress-bar { height: 100%; background-color: #7f00ff; border-radius: 10px; }
+    .progress-labels .value { color: var(--accent-color); font-weight: bold; }
+    .progress-bar-container { width: 100%; background-color: var(--border-color); border-radius: 10px; height: 10px; overflow: hidden; }
+    .progress-bar { height: 100%; background-color: var(--accent-color); border-radius: 10px; }
 
-    .week-selector { display: flex; justify-content: space-between; align-items: center; text-align: center; background-color: #333; border-radius: 10px; padding: 10px 15px; margin: 15px 0; }
-    .week-selector a { color: #7f00ff; font-size: 1.5rem; text-decoration: none; font-weight: bold; cursor: pointer; }
-    .week-selector span { font-size: 1rem; font-weight: bold; color: #fff; }
+    .week-selector { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        text-align: center; 
+        background-color: var(--border-color); 
+        border-radius: 10px; 
+        padding: 10px 15px; 
+        margin: 15px 0; 
+        transition: background-color 0.3s ease;
+    }
+    .week-selector a { color: var(--accent-color); font-size: 1.5rem; text-decoration: none; font-weight: bold; cursor: pointer; }
+    .week-selector span { font-size: 1rem; font-weight: bold; color: var(--text-primary); }
     
     .chart-legend { display: flex; justify-content: center; gap: 20px; margin-top: 15px; font-size: 0.9rem; }
     .legend-item { display: flex; align-items: center; gap: 8px; }
     .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
-
-    /* * ĐÃ XÓA CSS cho .bottom-nav
-     */
 </style>
 @endpush
 
@@ -89,12 +105,12 @@
     <div class="progress-group">
         <div class="progress-labels"> <span>Completion Rate</span> <span class="value">64%</span> </div>
         <div class="progress-bar-container"> <div class="progress-bar" style="width: 64%;"></div> </div>
-        <p style="font-size: 0.8rem; color: #888; margin-top: 5px;">You've completed 9 tasks in total</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">You've completed 9 tasks in total</p>
     </div>
     <div class="progress-group">
         <div class="progress-labels"> <span>Progress this week</span> <span class="value">4/5</span> </div>
         <div class="progress-bar-container"> <div class="progress-bar" style="width: 80%;"></div> </div>
-        <p style="font-size: 0.8rem; color: #888; margin-top: 5px;">Weekly task completion summary</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Weekly task completion summary</p>
     </div>
 </div>
 
@@ -128,8 +144,8 @@
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-            x: { stacked: true, grid: { display: false }, ticks: { color: '#888' } },
-            y: { stacked: true, grid: { color: '#333' }, ticks: { color: '#888' } }
+            x: { stacked: true, grid: { display: false }, ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() } },
+            y: { stacked: true, grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim() }, ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() } }
         }
     };
     const allWeekData = [

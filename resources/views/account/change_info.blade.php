@@ -6,28 +6,37 @@
 <div class="account-container">
 
     <div class="account-header">
-        <a href="{{ url('/account-info') }}"><i class="fas fa-arrow-left"></i></a>
         <h2>Edit Profile</h2>
     </div>
 
+    @if($errors->any())
+        <x-alert type="danger" auto-hide="true" hide-delay="7000">
+            <ul style="margin: 0; padding-left: 20px;">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </x-alert>
+    @endif
+
     <div class="avatar-section">
-        <img src="https://i.imgur.com/g59A6Fp.png" alt="Avatar">
+        <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'https://i.imgur.com/g59A6Fp.png' }}" alt="Avatar">
         <a href="#" class="edit-icon">
             <i class="fas fa-camera"></i>
         </a>
     </div>
 
-    <form action="#" method="POST">
+    <form action="{{ url('/account-info/edit') }}" method="POST">
         @csrf
         
         <div class="account-form-group">
             <label for="name">Name</label>
-            <input type="text" id="name" name="name" value="Huỳnh Công Tiến">
+            <input type="text" id="name" name="full_name" value="{{ old('full_name', $user->full_name) }}" required>
         </div>
         
         <div class="account-form-group">
             <label for="phone">Phone</label>
-            <input type="text" id="phone" name="phone" value="0966026561">
+            <input type="text" id="phone" name="phone" value="{{ old('phone', $user->phone) }}">
         </div>
 
         <div style="margin-top: 40px;">

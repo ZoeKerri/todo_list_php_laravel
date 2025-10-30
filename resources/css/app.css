@@ -9,3 +9,67 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Global Theme Variables */
+:root {
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --bg-tertiary: #2c2c2c;
+    --text-primary: #fff;
+    --text-secondary: #ccc;
+    --text-muted: #888;
+    --accent-color: #6a1b9a;
+    --border-color: #333;
+    --hover-bg: #333;
+    --card-bg: #1e1e1e;
+    --input-bg: #1e1e1e;
+}
+
+.light-theme {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #495057;
+    --text-muted: #6c757d;
+    --accent-color: #6a1b9a;
+    --border-color: #dee2e6;
+    --hover-bg: #e9ecef;
+    --card-bg: #ffffff;
+    --input-bg: #ffffff;
+}
+
+/* Global transitions for theme switching */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Main content area */
+.main-content {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Common components */
+.card, .stat-card, .summary-card, .group-item {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+.btn-purple {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* Form inputs */
+input, textarea, select {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+input:focus, textarea:focus, select:focus {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--accent-color);
+}

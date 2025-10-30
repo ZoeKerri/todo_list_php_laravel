@@ -16,11 +16,14 @@
         font-size: 1.2rem;
         font-weight: 600;
         margin: 0;
+        color: var(--text-primary);
+        transition: color 0.3s ease;
     }
     .content-header a {
-        color: #fff;
+        color: var(--text-primary);
         font-size: 1.2rem;
         text-decoration: none;
+        transition: color 0.3s ease;
     }
 
     /* *** THAY ĐỔI CSS TẠI ĐÂY ***
@@ -33,13 +36,14 @@
         margin-bottom: 25px;
     }
     .summary-box {
-        background-color: #1e1e1e;
+        background-color: var(--card-bg);
         border-radius: 12px;
         padding: 15px;
         /* Sửa từ 'text-align: center' thành flexbox */
         display: flex;
         justify-content: space-between;
         align-items: center;
+        transition: background-color 0.3s ease;
     }
     .summary-box .meta {
         /* (Div bọc chữ) */
@@ -47,10 +51,12 @@
     .summary-box h2 {
         font-size: 2.2rem; /* Cho bự lên */
         margin: 0 0 5px 0;
+        transition: color 0.3s ease;
     }
     .summary-box span {
         font-size: 0.9rem;
-        color: #888;
+        color: var(--text-muted);
+        transition: color 0.3s ease;
     }
     /* Icon bên phải (bự lên) */
     .summary-box .icon-display {
@@ -76,16 +82,18 @@
         left: 15px;
         top: 50%;
         transform: translateY(-50%);
-        color: #888;
+        color: var(--text-muted);
+        transition: color 0.3s ease;
     }
     .search-bar input {
         width: 100%;
         padding: 12px 15px 12px 45px;
-        background-color: #1e1e1e;
-        border: 1px solid #333;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
         border-radius: 10px;
-        color: #fff;
+        color: var(--text-primary);
         font-size: 1rem;
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
     }
 
     /* Bảng thành viên (Giữ nguyên) */
@@ -99,11 +107,13 @@
         font-size: 0.9rem;
     }
     .member-table th {
-        color: #888;
+        color: var(--text-muted);
         font-weight: 500;
+        transition: color 0.3s ease;
     }
     .member-table td {
-        color: #fff;
+        color: var(--text-primary);
+        transition: color 0.3s ease;
     }
 </style>
 @endpush
@@ -116,7 +126,7 @@
     <h2 class="title">Team Summary</h2>
 </div>
 
-<h3 style="font-size: 1rem; color: #fff;">Overall Team Summary</h3>
+<h3 style="font-size: 1rem; color: var(--text-primary);">Overall Team Summary</h3>
 <div class="summary-card-grid">
     <div class="summary-box">
         <div class="meta">
@@ -141,7 +151,7 @@
 </div>
 
 
-<h3 style="font-size: 1rem; color: #fff; margin-top: 25px;">Summary by Member</h3>
+<h3 style="font-size: 1rem; color: var(--text-primary); margin-top: 25px;">Summary by Member</h3>
 
 <div class="search-bar">
     <i class="fas fa-search"></i>

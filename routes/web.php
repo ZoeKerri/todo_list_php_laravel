@@ -1,53 +1,56 @@
 <?php
 
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 
+// Public routes
 Route::get('/', function () {
     return view('welcome');
 });
-// Trang Đăng nhập
-Route::get('/login', function () {
-    return view('authentication.login');
-});
 
-// Trang Đăng ký
-Route::get('/register', function () {
-    return view('authentication.register');
-});
+// Authentication routes
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::get('/otp', [AuthController::class, 'showOtp'])->name('otp');
+Route::post('/otp', [AuthController::class, 'verifyOtp']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Trang Xác minh OTP
-Route::get('/otp', function () {
-    return view('authentication.otp');
-});
+// Settings routes (public - for theme settings)
+Route::get('/settings', [SettingsController::class, 'get']);
+Route::post('/settings', [SettingsController::class, 'update']);
 
-Route::get('/statistics', function () {
-    return view('todo.statistics');
-});
+// Protected routes (require authentication)
+Route::middleware(['auth'])->group(function () {
+    // Dashboard and main pages
+    Route::get('/statistics', function () {
+        return view('todo.statistics');
+    });
 
-// Trang Group chính (Giao diện 1)
-Route::get('/group', function () {
-    return view('todo.group.group');
-});
+    // Group pages
+    Route::get('/group', function () {
+        return view('todo.group.group');
+    });
 
-// Trang chi tiết nhóm (Giao diện 2)
-// {id} là một biến, ví dụ: /group-detail/1
-Route::get('/group-detail/{id}', function ($id) {
-    // Tạm thời, chúng ta sẽ bỏ qua $id và chỉ hiển thị view
-    return view('todo.group.group_details');
-});
+    Route::get('/group-detail/{id}', function ($id) {
+        return view('todo.group.group_details');
+    });
 
-// Trang cài đặt nhóm (Giao diện 3)
-// ví dụ: /group-detail/1/settings
-Route::get('/group-detail/{id}/settings', function ($id) {
-    return view('todo.group.group_settings');
-});
+    Route::get('/group-detail/{id}/settings', function ($id) {
+        return view('todo.group.group_settings');
+    });
 
-Route::get('/account-info', function () {
-    return view('account.account_info');
-});
-Route::get('/account-info/edit', function () {
-    return view('account.change_info');
-});
-Route::get('/account-info/change-password', function () {
-    return view('account.change_password');
+    // Account routes
+    Route::get('/account-info', [AccountController::class, 'index']);
+    Route::get('/account-info/edit', [AccountController::class, 'edit']);
+    Route::post('/account-info/edit', [AccountController::class, 'update']);
+    Route::get('/account-info/change-password', [AccountController::class, 'changePassword']);
+    Route::post('/account-info/change-password', [AccountController::class, 'updatePassword']);
+    Route::post('/account-info/upload-avatar', [AccountController::class, 'uploadAvatar']);
+
+    // API token route for frontend
+    Route::get('/api-token', [AuthController::class, 'getApiToken']);
 });
