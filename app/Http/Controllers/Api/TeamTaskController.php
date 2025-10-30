@@ -42,8 +42,19 @@ class TeamTaskController extends Controller
             return ApiResponse::forbidden('You are not a member of this team');
         }
 
-        $tasks = TeamTask::where('team_id', $teamId)
-            ->with(['category', 'assignedTo'])
+        $query = TeamTask::where('team_id', $teamId);
+
+        // Check cookie for show_completed_tasks setting
+        $showCompletedTasks = $request->cookie('user_settings');
+        if ($showCompletedTasks) {
+            $settings = json_decode($showCompletedTasks, true);
+            if (isset($settings['show_completed_tasks']) && !$settings['show_completed_tasks']) {
+                // If show_completed_tasks is false, exclude completed tasks
+                $query->where('status', '!=', 'completed');
+            }
+        }
+
+        $tasks = $query->with(['category', 'assignedTo'])
             ->orderBy('due_date', 'asc')
             ->get();
 

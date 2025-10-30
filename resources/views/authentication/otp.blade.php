@@ -8,7 +8,7 @@
         Chúng tôi đã gửi mã xác minh đến<br>Ngoc123@gmail.com
     </p>
 
-    <form action="{{-- url('/verify-otp') --}}" method="POST">
+    <form action="{{ url('/otp') }}" method="POST">
         @csrf
         <div class="otp-inputs">
             <input type="text" class="otp-input" name="otp[]" maxlength="1" pattern="[0-9]" required>
@@ -18,6 +18,16 @@
             <input type="text" class="otp-input" name="otp[]" maxlength="1" pattern="[0-9]" required>
             <input type="text" class="otp-input" name="otp[]" maxlength="1" pattern="[0-9]" required>
         </div>
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul style="margin: 0; padding: 0; list-style: none; color: #ff6b6b;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <p id="countdown-timer" class="text-center text-muted">
             Gửi lại mã sau <span id="timer">30</span> giây

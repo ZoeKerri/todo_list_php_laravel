@@ -15,11 +15,14 @@
         font-size: 1.5rem;
         font-weight: 600;
         margin: 0;
+        color: var(--text-primary);
+        transition: color 0.3s ease;
     }
     .content-header a {
-        color: #fff;
+        color: var(--text-primary);
         font-size: 1.2rem;
         text-decoration: none;
+        transition: color 0.3s ease;
     }
     .content-header .icons a { margin-left: 20px; }
 
@@ -34,13 +37,14 @@
         margin-bottom: 25px;
     }
     .summary-box {
-        background-color: #1e1e1e;
+        background-color: var(--card-bg);
         border-radius: 12px;
         padding: 15px;
         /* Dùng flex để đẩy icon sang phải */
         display: flex;
         justify-content: space-between;
         align-items: center;
+        transition: background-color 0.3s ease;
     }
     .summary-box .meta {
         /* (Div bọc chữ) */
@@ -48,10 +52,12 @@
     .summary-box h2 {
         font-size: 2.2rem; /* Cho bự lên 1 chút */
         margin: 0 0 5px 0;
+        transition: color 0.3s ease;
     }
     .summary-box span {
         font-size: 0.9rem;
-        color: #888;
+        color: var(--text-muted);
+        transition: color 0.3s ease;
     }
     /* Icon bên phải (bự lên) */
     .summary-box .icon-display {
@@ -88,17 +94,18 @@
         height: 25px;
         width: 25px;
         background-color: transparent;
-        border: 2px solid #888;
+        border: 2px solid var(--text-muted);
         border-radius: 50%;
-        transition: background-color 0.2s ease;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
     }
     .task-checkbox:hover input ~ .checkmark {
-        background-color: #333;
+        background-color: var(--hover-bg);
+        border-color: var(--text-secondary);
     }
     /* Màu khi được tick */
     .task-checkbox input:checked ~ .checkmark {
-        background-color: #6a1b9a;
-        border-color: #6a1b9a;
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
     }
     /* Dấu tick bên trong */
     .task-checkbox .checkmark:after {
@@ -120,33 +127,37 @@
 
     /* Danh sách Task (Đã sửa lại) */
     .task-list {
-        background-color: #1e1e1e;
+        background-color: var(--card-bg);
         border-radius: 12px;
         padding: 15px;
         margin-bottom: 15px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        color: #fff;
+        color: var(--text-primary);
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
     .task-list-meta { display: flex; align-items: center; gap: 15px; }
     .task-list-meta .arrow {
         font-size: 1.2rem;
-        color: #888;
+        color: var(--text-muted);
         text-decoration: none;
+        transition: color 0.3s ease;
     }
     
     /* * THAY ĐỔI 2: CẤU TRÚC LẠI TÊN VÀ NGÀY
      */
-    .task-list-meta h4 { font-size: 1rem; font-weight: 600; margin: 0 0 4px 0; }
+    .task-list-meta h4 { font-size: 1rem; font-weight: 600; margin: 0 0 4px 0; color: var(--text-primary); transition: color 0.3s ease; }
     .task-list-meta p { margin: 0; } /* Xóa margin mặc định */
     .task-list-meta .task-assignee {
         font-size: 0.9rem;
-        color: #fff;
+        color: var(--text-primary);
+        transition: color 0.3s ease;
     }
     .task-list-meta .task-date {
         font-size: 0.85rem;
-        color: #888;
+        color: var(--text-muted);
+        transition: color 0.3s ease;
     }
     
     /* Nút Thêm (FAB) */
@@ -156,7 +167,7 @@
         right: 30px;
         width: 60px;
         height: 60px;
-        background-color: #6a1b9a;
+        background-color: var(--accent-color);
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -165,6 +176,7 @@
         color: #fff;
         text-decoration: none;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        transition: background-color 0.3s ease;
     }
 </style>
 @endpush
@@ -183,7 +195,7 @@
     </div>
 </div>
 
-<h3 style="font-size: 1rem; color: #888;">Team Summary</h3>
+<h3 style="font-size: 1rem; color: var(--text-muted);">Team Summary</h3>
 <div class="summary-card-grid">
     <div class="summary-box">
         <div class="meta">
@@ -206,10 +218,10 @@
         <i class="fas fa-check-circle text-success icon-display"></i>
     </div>
 </div>
-<a href="#" style="color: #6a1b9a; text-decoration: none; font-size: 0.9rem;">See more</a>
+<a href="#" style="color: var(--accent-color); text-decoration: none; font-size: 0.9rem;">See more</a>
 
 
-<h3 style="font-size: 1rem; color: #888; margin-top: 25px;">Your Summary</h3>
+<h3 style="font-size: 1rem; color: var(--text-muted); margin-top: 25px;">Your Summary</h3>
 <div class="summary-card-grid">
     <div class="summary-box">
         <div class="meta">
@@ -233,7 +245,7 @@
     </div>
 </div>
 
-<h3 style="font-size: 1rem; color: #888; margin-top: 25px;">Your tasks</h3>
+<h3 style="font-size: 1rem; color: var(--text-muted); margin-top: 25px;">Your tasks</h3>
 <div class="task-list">
     <div class="task-list-meta">
         <label class="task-checkbox">
@@ -250,7 +262,7 @@
     <a href="#" class="arrow"><i class="fas fa-chevron-right"></i></a>
 </div>
 
-<h3 style="font-size: 1rem; color: #888; margin-top: 25px;">Other members' tasks</h3>
+<h3 style="font-size: 1rem; color: var(--text-muted); margin-top: 25px;">Other members' tasks</h3>
 <div class="task-list">
     <div class="task-list-meta">
         <label class="task-checkbox">

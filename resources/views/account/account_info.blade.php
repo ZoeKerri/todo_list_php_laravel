@@ -6,13 +6,19 @@
 <div class="account-container">
 
     <div class="account-header">
-        <a href="{{ url('/') }}"><i class="fas fa-arrow-left"></i></a>
         <h2>Account Settings</h2>
     </div>
 
+    @if(session('success'))
+        <x-alert type="success" auto-hide="true" hide-delay="5000">
+            {{ session('success') }}
+        </x-alert>
+    @endif
+
     <div class="avatar-section">
-        <img src="https://i.imgur.com/g59A6Fp.png" alt="Avatar">
-        <a href="#" class="edit-icon">
+        <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'https://i.imgur.com/g59A6Fp.png' }}" alt="Avatar" id="avatar-image">
+        <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+        <a href="#" class="edit-icon" onclick="document.getElementById('avatar-input').click()">
             <i class="fas fa-camera"></i>
         </a>
     </div>
@@ -21,7 +27,7 @@
         <label>Name</label>
         <div class="info-text">
             <i class="fas fa-user"></i>
-            Huỳnh Công Tiến
+            {{ $user->full_name ?? 'N/A' }}
         </div>
     </div>
     
@@ -29,7 +35,7 @@
         <label>Email</label>
         <div class="info-text">
             <i class="fas fa-envelope"></i>
-            tienhuynh.10904@gmail.com
+            {{ $user->email }}
         </div>
     </div>
     
@@ -37,7 +43,7 @@
         <label>Phone</label>
         <div class="info-text">
             <i class="fas fa-phone"></i>
-            0966026561
+            {{ $user->phone ?? 'N/A' }}
         </div>
     </div>
 
@@ -53,5 +59,52 @@
         </a>
     </div>
 
+    <!-- Hidden logout form -->
+    <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
+
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const avatarInput = document.getElementById('avatar-input');
+    const avatarImage = document.getElementById('avatar-image');
+    
+    avatarInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('avatar', file);
+            formData.append('_token', '{{ csrf_token() }}');
+            
+            // Show loading
+            avatarImage.style.opacity = '0.5';
+            
+            fetch('/account-info/upload-avatar', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    avatarImage.src = data.avatar_url;
+                    alert('Avatar updated successfully!');
+                } else {
+                    alert('Failed to update avatar');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating avatar');
+            })
+            .finally(() => {
+                avatarImage.style.opacity = '1';
+            });
+        }
+    });
+});
+</script>
+@endpush
 @endsection

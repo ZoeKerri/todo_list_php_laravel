@@ -5,6 +5,9 @@
     max-width: 500px; /* Giới hạn chiều rộng */
     margin: 0 auto;   /* Căn giữa */
     padding: 20px;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Header (Nút back & Tiêu đề) */
@@ -15,14 +18,17 @@
     margin-bottom: 30px;
 }
 .account-header a {
-    color: #fff;
+    color: var(--text-primary);
     font-size: 1.5rem;
     text-decoration: none;
+    transition: color 0.3s ease;
 }
 .account-header h2 {
     font-size: 1.3rem;
     font-weight: 600;
     margin: 0;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
 }
 
 /* --- THAY THẾ TOÀN BỘ 2 CLASS NÀY --- */
@@ -45,9 +51,10 @@
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background-color: #eee;
+    background-color: var(--border-color);
     /* Không cần display: block; margin: auto; nữa */
     flex-shrink: 0; /* Đảm bảo ảnh không bị co lại */
+    transition: background-color 0.3s ease;
 }
 
 /* Edit Icon (Giữ nguyên cách căn lề theo % vì giờ ảnh đã chắc chắn ở giữa) */
@@ -58,15 +65,16 @@
     /* Căn lề icon dựa trên tâm của ảnh */
     left: calc(50% + 30px); 
     
-    background-color: #6a1b9a;
-    color: #fff;
+    background-color: var(--accent-color);
+    color: var(--text-primary);
     width: 30px;
     height: 30px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #121212;
+    border: 2px solid var(--bg-primary);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 /* --- KẾT THÚC THAY THẾ --- */
 /* Form & Input */
@@ -76,27 +84,30 @@
 .account-form-group label {
     display: block;
     font-size: 0.9rem;
-    color: #888;
+    color: var(--text-muted);
     margin-bottom: 8px;
+    transition: color 0.3s ease;
 }
 .account-form-group .info-text,
 .account-form-group input {
     display: block;
     width: 100%;
     padding: 15px;
-    background-color: #1e1e1e;
-    border: 1px solid #333;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     border-radius: 10px;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 1rem;
-    box-sizing: border-box; 
+    box-sizing: border-box;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 .account-form-group .info-text {
-    background-color: #2c2c2c;
+    background-color: var(--bg-tertiary);
 }
 .account-form-group i {
     margin-right: 10px;
-    color: #888;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
 }
 
 /* Nút bấm */
@@ -116,26 +127,28 @@
     margin-bottom: 15px;
 }
 .btn-primary {
-    background-color: #6a1b9a;
-    color: #fff;
+    background-color: var(--accent-color);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 .btn-secondary {
-    background-color: #1e1e1e;
-    color: #fff;
-    border: 1px solid #333;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 .btn-logout {
     background-color: transparent;
-    border: 1px solid #333;
-    color: #e74c3c; 
+    border: 1px solid var(--border-color);
+    color: #e74c3c;
+    transition: border-color 0.3s ease;
 }
 
 /* Icon lớn (Trang đổi pass) */
 .large-icon {
     text-align: center;
     font-size: 4rem;
-    color: #6a1b9a;
-    background-color: rgba(106, 27, 154, 0.1);
+    color: var(--accent-color);
     width: 100px;
     height: 100px;
     border-radius: 50%;
@@ -143,4 +156,33 @@
     align-items: center;
     justify-content: center;
     margin: 0 auto 30px auto;
+    transition: color 0.3s ease;
+}
+
+/* Alert Styles */
+.alert {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    transition: opacity 0.5s ease;
+}
+
+.alert-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.alert-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.alert-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.alert-info {
+    background-color: #17a2b8;
+    color: white;
 }
