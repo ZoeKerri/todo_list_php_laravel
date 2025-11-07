@@ -406,6 +406,7 @@
         </a>
 
         <div class="navbar-user" id="user-menu-container">
+            @if(Auth::check())
             <button type="button" class="navbar-user-trigger" id="user-menu-trigger">
                 @if(Auth::user()->avatar)
                     <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
@@ -415,7 +416,14 @@
                 <span>{{ Auth::user()->full_name ?? Auth::user()->email }}</span>
                 <i class="fas fa-caret-down" style="font-size: 0.8em; margin-left: 5px;"></i>
             </button>
+            @else
+            <a href="{{ url('/login') }}" class="navbar-user-trigger" style="text-decoration: none; color: inherit;">
+                <i class="fas fa-user-circle"></i>
+                <span>Login</span>
+            </a>
+            @endif
 
+            @if(Auth::check())
             <div class="dropdown-menu" id="user-dropdown">
                 <a href="{{ url('/account-info') }}">
                     <i class="fas fa-user-cog"></i>
@@ -431,6 +439,7 @@
                     </a>
                 </form>
             </div>
+            @endif
         </div>
     </nav>
 

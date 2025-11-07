@@ -32,6 +32,13 @@
 
         <button type="submit" class="btn-primary">Login</button>
     </form>
+
+    <div class="divider">or</div>
+
+    <button type="button" id="googleLoginBtn" class="btn-google">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        Login with Google
+    </button>
     
     <p class="text-center" style="margin-top: 20px;">
         <a href="{{ url('/forgot-password') }}" class="link">Forgot Password?</a>

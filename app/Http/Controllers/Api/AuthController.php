@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -28,7 +29,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'forgotPassword', 'verifyOtp', 'resetPassword', 'resendCode']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'forgotPassword', 'verifyOtp', 'resetPassword', 'resendCode', 'loginGoogle']]);
     }
 
     /**
@@ -172,5 +173,53 @@ class AuthController extends Controller
         Mail::to($user->email)->send(new OtpMail($otp));
 
         return ApiResponse::success(null, 'OTP resent successfully');
+    }
+
+    /**
+     * Login with Google (Firebase authentication).
+     */
+    public function loginGoogle(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'displayName' => 'nullable|string|max:255',
+            'photoURL' => 'nullable|url|max:500',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            // Tạo user mới nếu chưa tồn tại
+            $user = User::create([
+                'email' => $request->email,
+                'full_name' => $request->displayName ?? explode('@', $request->email)[0],
+                'avatar' => $request->photoURL,
+                'password' => Hash::make(Str::random(32)), // Random password vì dùng Google login
+                'created_by' => $request->email,
+                'updated_by' => $request->email,
+            ]);
+        } else {
+            // Update thông tin nếu có thay đổi
+            $updateData = [
+                'updated_by' => $user->email,
+            ];
+
+            if ($request->has('displayName') && $request->displayName) {
+                $updateData['full_name'] = $request->displayName;
+            }
+
+            if ($request->has('photoURL') && $request->photoURL) {
+                $updateData['avatar'] = $request->photoURL;
+            }
+
+            $user->update($updateData);
+        }
+
+        // Tạo JWT token
+        $token = JWTAuth::fromUser($user);
+        $userDTO = UserDTO::fromModel($user);
+        $loginResponse = new LoginResponseDTO($token, $userDTO);
+
+        return ApiResponse::success($loginResponse->toArray(), 'Login with Google successful');
     }
 }

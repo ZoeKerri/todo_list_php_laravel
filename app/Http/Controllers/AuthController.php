@@ -101,7 +101,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'otp' => 'required|array|size:6',
-            'otp.*' => 'required|string|size:1|numeric',
+            'otp.*' => 'required|string|digits:1',
         ]);
 
         // Combine OTP array into string
@@ -266,5 +266,43 @@ class AuthController extends Controller
         }
 
         return response()->json(['token' => $token]);
+    }
+
+    /**
+     * Authenticate user into session after Google login (from API)
+     */
+    public function authenticateFromToken(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+        ]);
+
+        try {
+            // Verify JWT token
+            $user = JWTAuth::setToken($request->token)->authenticate();
+            
+            if (!$user) {
+                return response()->json(['error' => 'Invalid token'], 401);
+            }
+
+            // Login user into session
+            Auth::login($user);
+            $request->session()->regenerate();
+            
+            // Store JWT token in session
+            session(['jwt_token' => $request->token]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Authenticated successfully',
+                'user' => [
+                    'id' => $user->id,
+                    'email' => $user->email,
+                    'name' => $user->full_name,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Token verification failed'], 401);
+        }
     }
 }
