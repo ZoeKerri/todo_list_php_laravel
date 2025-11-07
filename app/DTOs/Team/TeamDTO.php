@@ -28,10 +28,10 @@ class TeamDTO
         ];
     }
 
-    public static function fromModel(Team $team): self
+    public static function fromModel(Team $team, bool $includeUser = false): self
     {
-        $teamMembers = $team->teamMembers->map(function ($member) {
-            return TeamMemberDTO::fromModel($member);
+        $teamMembers = $team->teamMembers->map(function ($member) use ($includeUser) {
+            return TeamMemberDTO::fromModel($member, $includeUser);
         })->toArray();
 
         return new self(

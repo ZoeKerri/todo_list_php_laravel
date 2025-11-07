@@ -37,13 +37,13 @@ class TeamService
     public function createTeam(array $data, int $userId, string $createdBy): Team
     {
         return DB::transaction(function () use ($data, $userId, $createdBy) {
-            // Create team
-            $team = new Team([
+            // Create team (code will be set after getting ID)
+            $team = Team::create([
                 'name' => $data['name'],
+                'code' => null, // Will be set after getting ID
                 'created_by' => $createdBy,
                 'updated_by' => $createdBy,
             ]);
-            $team->save(); // Save to get the ID
 
             // Generate and save the unique code
             $team->code = "TODOLIST-{$team->id}";
@@ -111,11 +111,23 @@ class TeamService
     }
 
     /**
-     * Get user by email (for adding members).
+     * Get user by email (for adding members) - exact match.
      */
     public function getUserByEmail(string $email): ?User
     {
         return User::where('email', $email)->first();
+    }
+
+    /**
+     * Search users by email prefix (for adding members).
+     * Returns list of users matching the prefix.
+     */
+    public function searchUsersByEmailPrefix(string $prefix, int $limit = 10): array
+    {
+        return User::where('email', 'like', $prefix . '%')
+            ->limit($limit)
+            ->get()
+            ->toArray();
     }
 }
 

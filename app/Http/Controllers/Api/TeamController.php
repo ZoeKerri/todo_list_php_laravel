@@ -39,8 +39,13 @@ class TeamController extends Controller
 
         try {
             $teams = $this->teamService->getTeamsByUserId($userId);
-            $teamDTOs = collect($teams)->map(function ($team) {
-                return TeamDTO::fromModel(Team::find($team['id']));
+            // Convert array back to Team models with relationships loaded
+            $teamModels = collect($teams)->map(function ($teamData) {
+                return Team::with(['teamMembers.user'])->find($teamData['id']);
+            })->filter();
+            
+            $teamDTOs = $teamModels->map(function ($team) {
+                return TeamDTO::fromModel($team, true); // Include user data
             })->toArray();
 
             return ApiResponse::success($teamDTOs, 'Get teams successful');
@@ -173,8 +178,8 @@ class TeamController extends Controller
      */
 
     /**
-     * Get user by email (for adding members).
-     * GET /api/v1/{email}
+     * Get user by email (for adding members) - exact match.
+     * GET /api/v1/user/by-email/{email}
      */
     public function getUserByEmail(string $email): JsonResponse
     {
@@ -195,6 +200,41 @@ class TeamController extends Controller
             ], 'Get user successful');
         } catch (\Exception $e) {
             return ApiResponse::error('Failed to get user: ' . $e->getMessage(), null, 500);
+        }
+    }
+
+    /**
+     * Search users by email prefix (for adding members).
+     * GET /api/v1/user/search?prefix={prefix}
+     */
+    public function searchUsersByEmailPrefix(Request $request): JsonResponse
+    {
+        $currentUser = Auth::user();
+
+        $request->validate([
+            'prefix' => 'required|string|min:1|max:255',
+            'limit' => 'sometimes|integer|min:1|max:20',
+        ]);
+
+        try {
+            $prefix = $request->input('prefix');
+            $limit = $request->input('limit', 10);
+            
+            $users = $this->teamService->searchUsersByEmailPrefix($prefix, $limit);
+            
+            $userList = array_map(function ($user) {
+                return [
+                    'id' => $user['id'],
+                    'name' => $user['full_name'],
+                    'email' => $user['email'],
+                    'phone' => $user['phone'] ?? null,
+                    'avatar' => $user['avatar'] ?? null,
+                ];
+            }, $users);
+
+            return ApiResponse::success($userList, 'Search users successful');
+        } catch (\Exception $e) {
+            return ApiResponse::error('Failed to search users: ' . $e->getMessage(), null, 500);
         }
     }
 }

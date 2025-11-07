@@ -45,7 +45,7 @@ class TeamMemberDTO
 
         return new self(
             id: $member->id,
-            role: $member->role,
+            role: $member->role instanceof \App\Enums\Role ? $member->role->value : (string)$member->role,
             userId: $member->user_id,
             teamId: $member->team_id,
             user: $userData,
