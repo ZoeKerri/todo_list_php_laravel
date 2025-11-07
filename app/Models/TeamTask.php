@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\Priority;
 
 class TeamTask extends Model
 {
@@ -12,41 +13,66 @@ class TeamTask extends Model
     protected $fillable = [
         'title',
         'description',
-        'due_date',
+        'deadline',
         'priority',
-        'status',
-        'team_id',
-        'assigned_to',
-        'category_id',
+        'is_completed',
+        'member_id',
         'created_by',
         'updated_by',
     ];
 
     protected $casts = [
-        'due_date' => 'datetime',
+        'deadline' => 'datetime',
+        'is_completed' => 'boolean',
+        'priority' => Priority::class,
     ];
 
     /**
-     * Get the team that owns the task.
+     * Get the team member assigned to the task.
+     */
+    public function teamMember()
+    {
+        return $this->belongsTo(TeamMember::class, 'member_id');
+    }
+
+    /**
+     * Get the team that owns the task (through team member).
      */
     public function team()
     {
-        return $this->belongsTo(Team::class);
+        return $this->teamMember->team ?? null;
     }
 
     /**
-     * Get the user assigned to the task.
+     * Get the user assigned to the task (through team member).
      */
-    public function assignedTo()
+    public function assignedUser()
     {
-        return $this->belongsTo(User::class, 'assigned_to');
+        return $this->teamMember->user ?? null;
     }
 
     /**
-     * Get the category for the task.
+     * Scope to filter completed tasks.
      */
-    public function category()
+    public function scopeCompleted($query)
     {
-        return $this->belongsTo(Category::class);
+        return $query->where('is_completed', true);
+    }
+
+    /**
+     * Scope to filter pending tasks.
+     */
+    public function scopePending($query)
+    {
+        return $query->where('is_completed', false);
+    }
+
+    /**
+     * Scope to filter overdue tasks.
+     */
+    public function scopeOverdue($query)
+    {
+        return $query->where('is_completed', false)
+            ->where('deadline', '<', now());
     }
 }

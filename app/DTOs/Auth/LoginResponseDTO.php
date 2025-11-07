@@ -12,7 +12,7 @@ class LoginResponseDTO
     public function toArray(): array
     {
         return [
-            'token' => $this->token,
+            'accessToken' => $this->token,
             'user' => $this->user->toArray(),
         ];
     }

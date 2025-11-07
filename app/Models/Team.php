@@ -11,35 +11,40 @@ class Team extends Model
 
     protected $fillable = [
         'name',
-        'description',
-        'owner_id',
+        'code',
         'created_by',
         'updated_by',
     ];
 
     /**
-     * Get the owner of the team.
+     * Get the team members.
      */
-    public function owner()
+    public function teamMembers()
     {
-        return $this->belongsTo(User::class, 'owner_id');
+        return $this->hasMany(TeamMember::class);
     }
 
     /**
-     * Get the members of the team.
-     */
-    public function members()
-    {
-        return $this->belongsToMany(User::class, 'team_members')
-            ->withPivot('role')
-            ->withTimestamps();
-    }
-
-    /**
-     * Get the tasks for the team.
+     * Get the tasks for the team (through team members).
      */
     public function tasks()
     {
-        return $this->hasMany(TeamTask::class);
+        return $this->hasManyThrough(TeamTask::class, TeamMember::class, 'team_id', 'member_id');
+    }
+
+    /**
+     * Get the leader of the team.
+     */
+    public function leader()
+    {
+        return $this->hasOne(TeamMember::class)->where('role', 'LEADER');
+    }
+
+    /**
+     * Get QR code for the team (format: TODOLIST-{teamId}).
+     */
+    public function getCodeAttribute(): string
+    {
+        return "TODOLIST-{$this->id}";
     }
 }

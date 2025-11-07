@@ -15,12 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->timestamp('due_date')->nullable();
-            $table->string('priority')->default('medium');
-            $table->string('status')->default('pending'); // pending, in_progress, completed
-            $table->foreignId('team_id')->constrained()->onDelete('cascade');
-            $table->foreignId('assigned_to')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
+            $table->dateTime('deadline');
+            $table->string('priority')->default('MEDIUM'); // LOW, MEDIUM, HIGH
+            $table->boolean('is_completed')->default(false);
+            $table->foreignId('member_id')->constrained('team_members')->onDelete('cascade');
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps();

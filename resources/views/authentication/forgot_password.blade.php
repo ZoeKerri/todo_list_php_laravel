@@ -1,23 +1,20 @@
 @extends('layouts.auth')
 
-@section('title', 'Login')
+@section('title', 'Forgot Password')
 
 @section('content')
-    <div class="logo-placeholder">
-        </div>
-    <h1>Login</h1>
+    <div class="logo-placeholder"></div>
+    <h1>Forgot Password</h1>
 
-    <form action="{{ url('/login') }}" method="POST">
+    <p class="text-center text-muted" style="margin-bottom: 30px;">
+        Enter your email address and we'll send you an OTP code to reset your password.
+    </p>
+
+    <form action="{{ url('/forgot-password') }}" method="POST">
         @csrf
         <div class="form-group">
             <i class="fas fa-envelope"></i>
             <input type="email" name="email" class="form-input" placeholder="Email" value="{{ old('email') }}" required>
-        </div>
-
-        <div class="form-group">
-            <i class="fas fa-lock"></i>
-            <input type="password" name="password" class="form-input" placeholder="Password" required>
-            <i class="fas fa-eye icon-right"></i>
         </div>
 
         @if ($errors->any())
@@ -30,12 +27,11 @@
             </div>
         @endif
 
-        <button type="submit" class="btn-primary">Login</button>
+        <button type="submit" class="btn-primary">Send OTP</button>
     </form>
     
     <p class="text-center" style="margin-top: 20px;">
-        <a href="{{ url('/forgot-password') }}" class="link">Forgot Password?</a>
-        <span class="text-muted" style="margin: 0 10px;">|</span>
-        <a href="{{ url('/register') }}" class="link">Sign Up</a>
+        <a href="{{ url('/login') }}" class="link">Back to Login</a>
     </p>
 @endsection
+
