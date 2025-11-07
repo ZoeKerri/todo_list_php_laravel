@@ -161,6 +161,34 @@
             color: var(--auth-text);
             transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
+
+        /* Alert Styles */
+        .alert {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            transition: opacity 0.5s ease;
+        }
+
+        .alert-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .alert-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .alert-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .alert-info {
+            background-color: #17a2b8;
+            color: white;
+        }
     </style>
 </head>
 

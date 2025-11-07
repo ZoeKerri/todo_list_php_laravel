@@ -6,12 +6,19 @@ use App\DTOs\ApiResponse;
 use App\DTOs\Auth\LoginResponseDTO;
 use App\DTOs\Auth\UserDTO;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Requests\Auth\VerifyOtpRequest;
+use Illuminate\Http\Request;
+use App\Mail\OtpMail;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -21,7 +28,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'forgotPassword', 'verifyOtp', 'resetPassword', 'resendCode']]);
     }
 
     /**
@@ -63,7 +70,7 @@ class AuthController extends Controller
     /**
      * Get the authenticated User.
      */
-    public function me(): JsonResponse
+    public function profile(): JsonResponse
     {
         $user = Auth::user();
         $userDTO = UserDTO::fromModel($user);
@@ -92,5 +99,78 @@ class AuthController extends Controller
         $loginResponse = new LoginResponseDTO($newToken, $userDTO);
 
         return ApiResponse::success($loginResponse->toArray(), 'Token refreshed successfully');
+    }
+
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $request->validate(['email' => 'required|email']);
+        $user = User::where('email', $request->query('email'))->first();
+
+        if (!$user) {
+            return ApiResponse::error('User not found', null, 404);
+        }
+
+        $otp = rand(100000, 999999);
+        $user->otp = Hash::make($otp);
+        $user->otp_expires_at = Carbon::now()->addMinutes(10);
+        $user->save();
+
+        Mail::to($user->email)->send(new OtpMail($otp));
+
+        return ApiResponse::success(UserDTO::fromModel($user)->toArray(), 'OTP sent successfully');
+    }
+
+    public function verifyOtp(VerifyOtpRequest $request): JsonResponse
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !$user->otp || $user->otp_expires_at < Carbon::now() || !Hash::check($request->code, $user->otp)) {
+            return ApiResponse::error('Invalid or expired OTP', null, 400);
+        }
+
+        $user->otp = null;
+        $user->otp_expires_at = null;
+        $user->save();
+
+        $token = JWTAuth::fromUser($user);
+        $userDTO = UserDTO::fromModel($user);
+        $loginResponse = new LoginResponseDTO($token, $userDTO);
+
+        return ApiResponse::success($loginResponse->toArray(), 'OTP verified successfully');
+    }
+
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !$user->otp || $user->otp_expires_at < Carbon::now() || !Hash::check($request->code, $user->otp)) {
+            return ApiResponse::error('Invalid or expired OTP', null, 400);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->otp = null;
+        $user->otp_expires_at = null;
+        $user->save();
+
+        return ApiResponse::success(UserDTO::fromModel($user)->toArray(), 'Password reset successfully');
+    }
+
+    public function resendCode(Request $request): JsonResponse
+    {
+        $request->validate(['email' => 'required|email']);
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return ApiResponse::error('User not found', null, 404);
+        }
+
+        $otp = rand(100000, 999999);
+        $user->otp = Hash::make($otp);
+        $user->otp_expires_at = Carbon::now()->addMinutes(10);
+        $user->save();
+
+        Mail::to($user->email)->send(new OtpMail($otp));
+
+        return ApiResponse::success(null, 'OTP resent successfully');
     }
 }

@@ -9,8 +9,9 @@ class UserDTO
     public function __construct(
         public int $id,
         public string $email,
-        public string $fullName,
-        public ?string $avatar = null
+        public string $name,
+        public ?string $avatar = null,
+        public ?string $phone = null
     ) {}
 
     public function toArray(): array
@@ -18,8 +19,9 @@ class UserDTO
         return [
             'id' => $this->id,
             'email' => $this->email,
-            'fullName' => $this->fullName,
+            'name' => $this->name,
             'avatar' => $this->avatar,
+            'phone' => $this->phone,
         ];
     }
 
@@ -28,8 +30,9 @@ class UserDTO
         return new self(
             id: $user->id,
             email: $user->email,
-            fullName: $user->full_name,
-            avatar: $user->avatar
+            name: $user->full_name,
+            avatar: $user->avatar,
+            phone: $user->phone
         );
     }
 }

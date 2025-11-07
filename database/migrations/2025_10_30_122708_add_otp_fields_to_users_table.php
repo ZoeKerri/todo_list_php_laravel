@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('teams', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('code')->unique();
-            $table->string('created_by')->nullable();
-            $table->string('updated_by')->nullable();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('otp_code', 6)->nullable()->after('updated_by');
+            $table->timestamp('otp_expires_at')->nullable()->after('otp_code');
         });
     }
 
@@ -26,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('teams');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['otp_code', 'otp_expires_at']);
+        });
     }
 };

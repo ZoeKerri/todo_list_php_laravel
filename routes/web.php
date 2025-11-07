@@ -17,6 +17,10 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/otp', [AuthController::class, 'showOtp'])->name('otp');
 Route::post('/otp', [AuthController::class, 'verifyOtp']);
+Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('forgot-password');
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('reset-password');
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Settings routes (public - for theme settings)
