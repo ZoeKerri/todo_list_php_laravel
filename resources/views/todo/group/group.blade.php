@@ -118,7 +118,7 @@
 
 <div class="group-header">
     <div class="icon">H</div> <div>
-        <p>Hi there, {{ Auth::user()->full_name ?? Auth::user()->email }}</p>
+        <p>Hi there, {{ Auth::check() ? (Auth::user()->full_name ?? Auth::user()->email) : 'Guest' }}</p>
         <h2>Your groups</h2>
     </div>
 </div>

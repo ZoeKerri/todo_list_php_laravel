@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    <!-- Firebase JS SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 @php
     $isLightTheme = App\Helpers\ThemeHelper::isLightTheme();
     $authThemeVars = App\Helpers\ThemeHelper::getAuthThemeColors($isLightTheme);
@@ -189,6 +194,37 @@
             background-color: #17a2b8;
             color: white;
         }
+
+        /* Google Login Button Styles */
+        .btn-google {
+            width: 100%;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid var(--auth-border);
+            border-radius: 10px;
+            color: #333;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .btn-google:hover {
+            background-color: #f8f9fa;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-google img {
+            width: 20px;
+            height: 20px;
+        }
+        .btn-google:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -200,6 +236,20 @@
     @include('helpers.theme')
 
     <script>
+        // Firebase Configuration (từ Flutter app)
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5gYSjJiMIwfNgY2RuLhWFGnygmuDPCPs",
+            authDomain: "to-dolistapp-639d5.firebaseapp.com",
+            projectId: "to-dolistapp-639d5",
+            storageBucket: "to-dolistapp-639d5.firebasestorage.app",
+            messagingSenderId: "187468054476",
+            appId: "1:187468054476:web:c6f0dd2ec8f17167ebe769",
+            measurementId: "G-B0HMHZ8J79"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
         // Load settings on page load for auth pages
         document.addEventListener('DOMContentLoaded', function() {
             window.ThemeHelper.loadAuthTheme();
@@ -220,7 +270,106 @@
                     }
                 });
             });
+
+            // Google Login Handler
+            const googleLoginBtn = document.getElementById('googleLoginBtn');
+            if (googleLoginBtn) {
+                googleLoginBtn.addEventListener('click', handleGoogleLogin);
+            }
         });
+
+        // Google Login Function (giống logic Flutter)
+        async function handleGoogleLogin() {
+            const btn = document.getElementById('googleLoginBtn');
+            if (!btn) return;
+
+            try {
+                btn.disabled = true;
+                btn.textContent = 'Đang đăng nhập...';
+
+                // Sign out trước (giống Flutter)
+                await firebase.auth().signOut();
+
+                // Tạo Google Auth Provider
+                const provider = new firebase.auth.GoogleAuthProvider();
+                
+                // Đăng nhập với Google
+                const result = await firebase.auth().signInWithPopup(provider);
+                const user = result.user;
+
+                if (!user || !user.email) {
+                    throw new Error('Không thể lấy thông tin người dùng từ Google');
+                }
+
+                // Lấy thông tin người dùng (giống Flutter)
+                const email = user.email;
+                const displayName = user.displayName || '';
+                const photoURL = user.photoURL || '';
+
+                console.log('Đăng nhập thành công với Google:', email, displayName, photoURL);
+
+                // Gửi dữ liệu về Laravel API (giống Flutter)
+                const response = await fetch('/api/v1/auth/login-google', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        displayName: displayName,
+                        photoURL: photoURL
+                    })
+                });
+
+                const data = await response.json();
+                console.log('Response từ server:', data);
+
+                if (response.ok && data.status === 200) {
+                    // Lưu token vào localStorage
+                    if (data.data && data.data.accessToken) {
+                        localStorage.setItem('access_token', data.data.accessToken);
+                        localStorage.setItem('user', JSON.stringify(data.data.user));
+                    }
+
+                    // Authenticate vào Laravel session
+                    const authResponse = await fetch('/auth/authenticate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            token: data.data.accessToken
+                        })
+                    });
+
+                    const authData = await authResponse.json();
+                    
+                    if (authResponse.ok && authData.success) {
+                        // Redirect đến trang chính
+                        window.location.href = '/statistics';
+                    } else {
+                        throw new Error('Không thể xác thực session');
+                    }
+                } else {
+                    throw new Error(data.message || 'Đăng nhập thất bại');
+                }
+            } catch (error) {
+                console.error('Lỗi khi đăng nhập bằng Google:', error);
+                
+                // Hiển thị thông báo lỗi
+                alert('Lỗi: ' + (error.message || 'Đăng nhập Google thất bại'));
+                
+                // Reset button
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 20px; height: 20px;"> Login with Google';
+                }
+            }
+        }
     </script>
 </body>
 </html>

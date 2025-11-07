@@ -22,6 +22,7 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('reset-password');
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/auth/authenticate', [AuthController::class, 'authenticateFromToken'])->name('auth.authenticate');
 
 // Settings routes (public - for theme settings)
 Route::get('/settings', [SettingsController::class, 'get']);
