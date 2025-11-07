@@ -408,10 +408,24 @@
         <div class="navbar-user" id="user-menu-container">
             @if(Auth::check())
             <button type="button" class="navbar-user-trigger" id="user-menu-trigger">
-                @if(Auth::user()->avatar)
-                    <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                @php
+                    $user = Auth::user();
+                    $avatarUrl = null;
+                    if ($user->avatar) {
+                        // Check if avatar is a URL (from Google login) or a storage path
+                        if (filter_var($user->avatar, FILTER_VALIDATE_URL)) {
+                            $avatarUrl = $user->avatar;
+                        } else {
+                            $avatarUrl = asset('storage/' . $user->avatar);
+                        }
+                    }
+                    $initials = strtoupper(substr($user->full_name ?? $user->email, 0, 1));
+                @endphp
+                @if($avatarUrl)
+                    <img src="{{ $avatarUrl }}" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--accent-color); display: none; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">{{ $initials }}</div>
                 @else
-                    <i class="fas fa-user-circle"></i>
+                    <div style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--accent-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">{{ $initials }}</div>
                 @endif
                 <span>{{ Auth::user()->full_name ?? Auth::user()->email }}</span>
                 <i class="fas fa-caret-down" style="font-size: 0.8em; margin-left: 5px;"></i>

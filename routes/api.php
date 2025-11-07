@@ -95,8 +95,9 @@ Route::prefix('v1')->group(function () {
             Route::delete('/{task}', [TeamTaskController::class, 'destroy']);
         });
 
-        // User routes
-        Route::get('/api/v1/{email}', [UserController::class, 'getUserByEmail']);
+        // User routes - Đặt route cụ thể TRƯỚC prefix để tránh conflict
+        Route::get('user/search', [TeamController::class, 'searchUsersByEmailPrefix']); // Search by prefix
+        Route::get('user/by-email/{email}', [TeamController::class, 'getUserByEmail']); // Exact match
         Route::prefix('user')->group(function () {
             Route::get('profile', [UserController::class, 'profile']);
             Route::put('profile', [UserController::class, 'updateProfile']);
