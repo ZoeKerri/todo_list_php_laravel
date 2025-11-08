@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\DTOs\ApiResponse;
 use App\DTOs\Team\TeamMemberDTO;
 use App\Services\TeamMemberService;
@@ -24,7 +22,7 @@ class TeamMemberController extends Controller
     public function index(int $teamId)
     {
         $members = $this->teamMemberService->getMembersByTeamId($teamId);
-        return ApiResponse::success(TeamMemberDTO::fromCollection($members), 'Members retrieved successfully');
+        return ApiResponse::success(TeamMemberDTO::fromCollection($members, true), 'Members retrieved successfully');
     }
 
     public function store(Request $request)
