@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/tasks', function () {
+    return view('welcome');
+});
 
 // Authentication routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -50,9 +53,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Account routes
     Route::get('/account-info', [AccountController::class, 'index']);
-    Route::get('/account-info/edit', [AccountController::class, 'edit']);
+    // Route::get('/account-info/edit', [AccountController::class, 'edit']);
     Route::post('/account-info/edit', [AccountController::class, 'update']);
-    Route::get('/account-info/change-password', [AccountController::class, 'changePassword']);
+    // Route::get('/account-info/change-password', [AccountController::class, 'changePassword']);
     Route::post('/account-info/change-password', [AccountController::class, 'updatePassword']);
     Route::post('/account-info/upload-avatar', [AccountController::class, 'uploadAvatar']);
 

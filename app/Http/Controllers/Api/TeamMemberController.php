@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\DTOs\ApiResponse;
 use App\DTOs\Team\TeamMemberDTO;
 use App\Services\TeamMemberService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TeamMemberController extends Controller

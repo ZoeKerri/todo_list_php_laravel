@@ -2,12 +2,27 @@
 
 /* Định hình layout chung cho 3 trang */
 .account-container {
-    max-width: 500px; /* Giới hạn chiều rộng */
-    margin: 0 auto;   /* Căn giữa */
+    max-width: 500px; 
+    margin: 0 auto; 
     padding: 20px;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
+    
+    /* Vẫn giữ flex để đẩy nút xuống */
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box; 
+
+    /* === BẮT ĐẦU SỬA === */
+    
+    /* Thay 'height: 100%;' bằng 'calc':
+      - 100vh là 100% chiều cao màn hình
+      - 70px là chiều cao của Top Nav (BẠN PHẢI THAY SỐ NÀY)
+    */
+    height: calc(100vh - 200px); 
+
+    /* === KẾT THÚC SỬA === */
 }
 
 /* Header (Nút back & Tiêu đề) */
@@ -31,40 +46,33 @@
     transition: color 0.3s ease;
 }
 
-/* --- THAY THẾ TOÀN BỘ 2 CLASS NÀY --- */
+/* --- PHẦN AVATAR GIỮ NGUYÊN NHƯ CỦA BẠN --- */
 
 /* Avatar Section - Dùng Flexbox để căn giữa */
 .avatar-section {
-    /* Bỏ text-align: center; */
     margin-bottom: 40px;
     position: relative;
     width: 100%; 
-
-    /* Thêm Flexbox */
     display: flex;
     justify-content: center; /* Căn ngang ra giữa */
     align-items: center; /* Căn dọc ra giữa (nếu cần) */
 }
 
-/* Avatar Image - Bỏ display: block và margin: auto */
+/* Avatar Image */
 .avatar-section img {
     width: 120px;
     height: 120px;
     border-radius: 50%;
     background-color: var(--border-color);
-    /* Không cần display: block; margin: auto; nữa */
     flex-shrink: 0; /* Đảm bảo ảnh không bị co lại */
     transition: background-color 0.3s ease;
 }
 
-/* Edit Icon (Giữ nguyên cách căn lề theo % vì giờ ảnh đã chắc chắn ở giữa) */
+/* Edit Icon */
 .avatar-section .edit-icon {
     position: absolute;
     bottom: 0;
-    
-    /* Căn lề icon dựa trên tâm của ảnh */
     left: calc(50% + 30px); 
-    
     background-color: var(--accent-color);
     color: var(--text-primary);
     width: 30px;
@@ -76,7 +84,9 @@
     border: 2px solid var(--bg-primary);
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
-/* --- KẾT THÚC THAY THẾ --- */
+/* --- KẾT THÚC PHẦN AVATAR --- */
+
+
 /* Form & Input */
 .account-form-group {
     margin-bottom: 20px;

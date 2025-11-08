@@ -4,6 +4,7 @@
 
 @section('content')
     <div class="logo-placeholder">
+        <img src="{{ asset('images/my-logo.png') }}" alt="MyLogo">
         </div>
     <h1>Login</h1>
 

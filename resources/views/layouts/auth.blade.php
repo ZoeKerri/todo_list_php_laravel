@@ -40,14 +40,16 @@
             padding: 20px;
             box-sizing: border-box;
         }
-        .logo-placeholder {
-            width: 100px;
-            height: 100px;
-            background-color: var(--auth-border);
-            border-radius: 50%;
-            margin: 0 auto 20px auto;
-            transition: background-color 0.3s ease;
-        }
+.logo-placeholder {
+    width: 100px;
+    height: 100px;
+    background-image: url('/storage/logo.jpg'); 
+    background-size: cover;  
+    background-position: center; 
+    border-radius: 50%;
+    margin: 0 auto 20px auto;
+    transition: background-color 0.3s ease;
+}
         h1 {
             text-align: center;
             font-size: 2.5rem;
