@@ -630,7 +630,7 @@
         const avatarClass = isLeader ? 'leader' : '';
         
         return `
-            <a href="/group-detail/${team.id}" class="group-item">
+            <a href="/group/${team.id}" class="group-item">
         <div class="group-item-meta">
                     <div class="avatar ${avatarClass}" style="position: relative;">
                         ${renderAvatar(leaderAvatar, leaderName, leaderEmail, 40)}

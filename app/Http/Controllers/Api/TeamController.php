@@ -74,7 +74,7 @@ class TeamController extends Controller
                 return ApiResponse::notFound('Team not found');
             }
 
-            $teamDTO = TeamDTO::fromModel($team);
+            $teamDTO = TeamDTO::fromModel($team, true); // Include user data
             return ApiResponse::success($teamDTO->toArray(), 'Get team detail successful');
         } catch (\Exception $e) {
             return ApiResponse::error('Failed to get team detail: ' . $e->getMessage(), null, 500);
