@@ -238,13 +238,12 @@
     <script>
         // Firebase Configuration (từ Flutter app)
         const firebaseConfig = {
-            apiKey: "AIzaSyD5gYSjJiMIwfNgY2RuLhWFGnygmuDPCPs",
-            authDomain: "to-dolistapp-639d5.firebaseapp.com",
-            projectId: "to-dolistapp-639d5",
-            storageBucket: "to-dolistapp-639d5.firebasestorage.app",
-            messagingSenderId: "187468054476",
-            appId: "1:187468054476:web:c6f0dd2ec8f17167ebe769",
-            measurementId: "G-B0HMHZ8J79"
+            apiKey: "AIzaSyCMyd2sOZhasX0j2HYpTTYc2asxq5aoaKk",
+            authDomain: "todolistphp.firebaseapp.com",
+            projectId: "todolistphp",
+            storageBucket: "todolistphp.firebasestorage.app",
+            messagingSenderId: "975281618795",
+            appId: "1:975281618795:web:bc6f7db2dc103038b3962e"
         };
 
         // Initialize Firebase
