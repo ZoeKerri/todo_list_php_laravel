@@ -1,0 +1,39 @@
+{
+    "project_info": {
+      "project_number": "975281618795",
+      "project_id": "todolistphp",
+      "storage_bucket": "todolistphp.firebasestorage.app"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:975281618795:android:6c4c16475ba504e2b3962e",
+          "android_client_info": {
+            "package_name": "com.quang.todolist"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "975281618795-8g63scb0vn26obo3ak3421hvgp00ull1.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "AIzaSyAdiWRx-avJZ5Jayt1lfG6OpcSis6u82x4"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": [
+              {
+                "client_id": "975281618795-8g63scb0vn26obo3ak3421hvgp00ull1.apps.googleusercontent.com",
+                "client_type": 3
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }
