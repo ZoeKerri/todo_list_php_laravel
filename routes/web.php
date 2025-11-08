@@ -43,12 +43,20 @@ Route::middleware(['auth'])->group(function () {
         return view('todo.group.group');
     });
 
-    Route::get('/group-detail/{id}', function ($id) {
-        return view('todo.group.group_details');
+    Route::get('/group/{id}', function ($id) {
+        return view('todo.group.group_details', ['id' => $id]);
     });
-
-    Route::get('/group-detail/{id}/settings', function ($id) {
-        return view('todo.group.group_settings');
+    
+    Route::get('/group/{id}/members', function ($id) {
+        return view('todo.group.group_listMember', ['id' => $id]);
+    });
+    
+    Route::get('/group/{id}/share', function ($id) {
+        return view('todo.group.group_share', ['id' => $id]);
+    });
+    
+    Route::get('/group/{id}/summary', function ($id) {
+        return view('todo.group.group_summary', ['id' => $id]);
     });
 
     // Account routes

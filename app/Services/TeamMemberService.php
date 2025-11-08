@@ -19,7 +19,15 @@ class TeamMemberService
             ->with('user')
             ->get();
 
-        return $members->toArray();
+        return $members->all(); // Return collection of models, not array
+    }
+
+    /**
+     * Get a member by member ID.
+     */
+    public function getMemberById(int $memberId): ?TeamMember
+    {
+        return TeamMember::with(['user', 'team'])->find($memberId);
     }
 
     /**
@@ -43,6 +51,27 @@ class TeamMemberService
             ->where('user_id', $userId)
             ->with('user')
             ->first();
+    }
+
+    /**
+     * Check if a user is a member of a team.
+     */
+    public function isUserMemberOfTeam(int $userId, int $teamId): bool
+    {
+        return TeamMember::where('user_id', $userId)
+            ->where('team_id', $teamId)
+            ->exists();
+    }
+
+    /**
+     * Check if a user is the leader of a team.
+     */
+    public function isUserLeaderOfTeam(int $userId, int $teamId): bool
+    {
+        return TeamMember::where('user_id', $userId)
+            ->where('team_id', $teamId)
+            ->where('role', 'LEADER')
+            ->exists();
     }
 
     /**

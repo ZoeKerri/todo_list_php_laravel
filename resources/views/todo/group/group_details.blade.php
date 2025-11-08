@@ -1,37 +1,62 @@
 @extends('layouts.app')
 
-@section('title', 'Team Summary')
+@section('title', 'Team Detail')
 
 @push('styles')
 <style>
-    /* Header tùy chỉnh (nằm trong content) */
     .content-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 25px;
+        padding: 15px 0;
     }
     .content-header .title {
         font-size: 1.5rem;
         font-weight: 600;
         margin: 0;
         color: var(--text-primary);
-        transition: color 0.3s ease;
     }
-    .content-header a {
+    .content-header .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .content-header .header-actions a {
         color: var(--text-primary);
         font-size: 1.2rem;
         text-decoration: none;
-        transition: color 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
     }
-    .content-header .icons a { margin-left: 20px; }
-
+    .content-header .header-actions a:hover {
+        background-color: var(--bg-tertiary);
+    }
+    .content-header .primary-action {
+        background-color: var(--accent-color);
+        color: #fff !important;
+        font-size: 0.9rem !important;
+        padding: 8px 14px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: opacity 0.2s ease;
+    }
+    .content-header .primary-action i {
+        font-size: 1rem;
+    }
+    .content-header .primary-action:hover {
+        opacity: 0.9;
+        background-color: var(--accent-color);
+    }
     
-    /* * THAY ĐỔI 3 & 4: SỬA LẠI THẺ TÓM TẮT
-     */
     .summary-card-grid {
         display: grid;
-        /* Luôn là 3 cột */
         grid-template-columns: repeat(3, 1fr);
         gap: 15px;
         margin-bottom: 25px;
@@ -40,47 +65,68 @@
         background-color: var(--card-bg);
         border-radius: 12px;
         padding: 15px;
-        /* Dùng flex để đẩy icon sang phải */
         display: flex;
         justify-content: space-between;
         align-items: center;
         transition: background-color 0.3s ease;
     }
-    .summary-box .meta {
-        /* (Div bọc chữ) */
-    }
-    .summary-box h2 {
-        font-size: 2.2rem; /* Cho bự lên 1 chút */
+    .summary-box .meta h2 {
+        font-size: 2.2rem;
         margin: 0 0 5px 0;
-        transition: color 0.3s ease;
     }
-    .summary-box span {
+    .summary-box .meta span {
         font-size: 0.9rem;
         color: var(--text-muted);
-        transition: color 0.3s ease;
     }
-    /* Icon bên phải (bự lên) */
     .summary-box .icon-display {
         font-size: 2.5rem; 
     }
-    .summary-box .text-warning { color: #f39c12; }
-    .summary-box .text-danger { color: #e74c3c; }
-    .summary-box .text-success { color: #2ecc71; } /* Màu xanh lá cho complete */
-
-
-    /* * THAY ĐỔI 1: CSS CHO CHECKBOX TRÒN
-     */
+    .text-danger { color: #e74c3c; }
+    .text-warning { color: #f39c12; }
+    .text-success { color: #2ecc71; }
+    
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 25px 0 15px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .section-title a {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: normal;
+    }
+    
+    .task-list {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: background-color 0.3s ease;
+    }
+    .task-list:hover {
+        background-color: var(--bg-tertiary);
+    }
+    .task-list-meta {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex: 1;
+    }
     .task-checkbox {
         position: relative;
         display: block;
         width: 25px;
         height: 25px;
         cursor: pointer;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        flex-shrink: 0; /* Không bị co lại */
+        flex-shrink: 0;
     }
     .task-checkbox input {
         position: absolute;
@@ -96,18 +142,16 @@
         background-color: transparent;
         border: 2px solid var(--text-muted);
         border-radius: 50%;
-        transition: background-color 0.2s ease, border-color 0.2s ease;
+        transition: all 0.2s ease;
     }
     .task-checkbox:hover input ~ .checkmark {
         background-color: var(--hover-bg);
         border-color: var(--text-secondary);
     }
-    /* Màu khi được tick */
     .task-checkbox input:checked ~ .checkmark {
         background-color: var(--accent-color);
         border-color: var(--accent-color);
     }
-    /* Dấu tick bên trong */
     .task-checkbox .checkmark:after {
         content: "";
         position: absolute;
@@ -123,44 +167,38 @@
     .task-checkbox input:checked ~ .checkmark:after {
         display: block;
     }
-
-
-    /* Danh sách Task (Đã sửa lại) */
-    .task-list {
-        background-color: var(--card-bg);
-        border-radius: 12px;
-        padding: 15px;
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+    .task-list-meta h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 4px 0;
         color: var(--text-primary);
-        transition: background-color 0.3s ease, color 0.3s ease;
     }
-    .task-list-meta { display: flex; align-items: center; gap: 15px; }
-    .task-list-meta .arrow {
-        font-size: 1.2rem;
+    .task-list-meta p {
+        margin: 0;
+        font-size: 0.85rem;
         color: var(--text-muted);
-        text-decoration: none;
-        transition: color 0.3s ease;
     }
-    
-    /* * THAY ĐỔI 2: CẤU TRÚC LẠI TÊN VÀ NGÀY
-     */
-    .task-list-meta h4 { font-size: 1rem; font-weight: 600; margin: 0 0 4px 0; color: var(--text-primary); transition: color 0.3s ease; }
-    .task-list-meta p { margin: 0; } /* Xóa margin mặc định */
     .task-list-meta .task-assignee {
         font-size: 0.9rem;
         color: var(--text-primary);
-        transition: color 0.3s ease;
+        margin-bottom: 4px;
     }
     .task-list-meta .task-date {
         font-size: 0.85rem;
         color: var(--text-muted);
-        transition: color 0.3s ease;
     }
+    .task-priority {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    .priority-high { background-color: #fee; color: #c33; }
+    .priority-medium { background-color: #ffeaa7; color: #d63031; }
+    .priority-low { background-color: #dfe6e9; color: #636e72; }
     
-    /* Nút Thêm (FAB) */
     .fab {
         position: fixed;
         bottom: 30px;
@@ -176,109 +214,785 @@
         color: #fff;
         text-decoration: none;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        transition: background-color 0.3s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        z-index: 100;
+    }
+    .fab:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+    }
+    
+    .empty-state {
+        min-height: 160px;
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        opacity: 0.5;
+    }
+    .task-component-placeholder {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px dashed var(--border-color);
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-muted);
+    }
+    
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 8px 0;
+        min-width: 180px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        display: none;
+    }
+    .dropdown-menu.show {
+        display: block;
+    }
+    .dropdown-menu a {
+        display: block;
+        padding: 10px 20px;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+    }
+    .dropdown-menu a:hover {
+        background-color: var(--bg-tertiary);
+    }
+    .settings-btn {
+        position: relative;
+    }
+    
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 10000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+    }
+    .modal.show {
+        display: flex;
+    }
+    .modal-content {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .modal-header h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        color: var(--text-primary);
+    }
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.2s ease;
+    }
+    .modal-close:hover {
+        background-color: var(--bg-tertiary);
+    }
+    .modal-body {
+        padding: 20px;
+    }
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 20px;
+        border-top: 1px solid var(--border-color);
+    }
+    .btn-primary, .btn-secondary {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: opacity 0.2s ease;
+    }
+    .btn-primary {
+        background-color: var(--accent-color);
+        color: white;
+    }
+    .btn-primary:hover {
+        opacity: 0.9;
+    }
+    .btn-secondary {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+    }
+    .btn-secondary:hover {
+        opacity: 0.9;
+    }
+    .form-select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        font-size: 1rem;
     }
 </style>
 @endpush
-
 
 @section('content')
 
 <div class="content-header">
     <a href="{{ url('/group') }}"><i class="fas fa-arrow-left"></i></a>
-    <h2 class="title">Nhom hoc tap</h2>
-    <div class="icons">
-        <a href="#"><i class="fas fa-users"></i> 2</a>
-        <a href="{{ url('/group-detail/1/settings') }}">
-            <i class="fas fa-cog"></i>
+    <h2 class="title" id="teamName">Loading...</h2>
+    <div class="header-actions">
+        <a href="#" id="addMemberBtn" class="primary-action" style="display: none;">
+            <i class="fas fa-user-plus"></i>
+            <span>Thêm thành viên</span>
         </a>
+        <a href="#" id="membersLink">
+            <i class="fas fa-users"></i>
+            <span id="membersCount">0</span>
+        </a>
+        <div class="settings-btn" style="position: relative;">
+            <a href="#" id="settingsBtn"><i class="fas fa-cog"></i></a>
+            <div class="dropdown-menu" id="settingsMenu">
+                <a href="#" id="shareBtn"><i class="fas fa-share-alt"></i> Share</a>
+                @if(true) {{-- Will be checked dynamically --}}
+                <a href="#" id="renameBtn"><i class="fas fa-edit"></i> Rename Team</a>
+                <a href="#" id="disbandBtn"><i class="fas fa-trash"></i> Disband</a>
+                @endif
+                <a href="#" id="leaveBtn"><i class="fas fa-sign-out-alt"></i> Leave Team</a>
+            </div>
+        </div>
     </div>
 </div>
 
-<h3 style="font-size: 1rem; color: var(--text-muted);">Team Summary</h3>
-<div class="summary-card-grid">
-    <div class="summary-box">
-        <div class="meta">
-            <h2 class="text-danger">0</h2>
-            <span>Pending & Late</span>
-        </div>
-        <i class="fas fa-exclamation-triangle text-danger icon-display"></i>
-    </div>
-    <div class="summary-box">
-        <div class="meta">
-            <h2 class="text-warning">2</h2>
-            <span>Pending</span>
-        </div>
-        <i class="fas fa-clock text-warning icon-display"></i>
-    </div>
-    <div class="summary-box">
-        <div class="meta">
-            <h2 class="text-success">5</h2> <span>Complete</span>
-        </div>
-        <i class="fas fa-check-circle text-success icon-display"></i>
-    </div>
-</div>
-<a href="#" style="color: var(--accent-color); text-decoration: none; font-size: 0.9rem;">See more</a>
-
-
-<h3 style="font-size: 1rem; color: var(--text-muted); margin-top: 25px;">Your Summary</h3>
-<div class="summary-card-grid">
-    <div class="summary-box">
-        <div class="meta">
-            <h2 class="text-danger">0</h2>
-            <span>Pending & Late</span>
-        </div>
-        <i class="fas fa-exclamation-triangle text-danger icon-display"></i>
-    </div>
-    <div class="summary-box">
-        <div class="meta">
-            <h2 class="text-warning">1</h2>
-            <span>Pending</span>
-        </div>
-        <i class="fas fa-clock text-warning icon-display"></i>
-    </div>
-    <div class="summary-box">
-        <div class="meta">
-            <h2 class="text-success">2</h2> <span>Complete</span>
-        </div>
-        <i class="fas fa-check-circle text-success icon-display"></i>
-    </div>
+<div id="loadingState" class="loading">
+    <i class="fas fa-spinner fa-spin"></i>
+    <p>Loading team data...</p>
 </div>
 
-<h3 style="font-size: 1rem; color: var(--text-muted); margin-top: 25px;">Your tasks</h3>
-<div class="task-list">
-    <div class="task-list-meta">
-        <label class="task-checkbox">
-            <input type="checkbox">
-            <span class="checkmark"></span>
-        </label>
-        
-        <div>
-            <h4>Lap trinh</h4>
-            <p class="task-assignee">Quang</p>
-            <p class="task-date"><i class="fas fa-clock"></i> 11/6/2025</p>
-        </div>
+<div id="contentArea" style="display: none;">
+    <!-- Team Summary -->
+    <div class="section-title">
+        <span>Team Summary</span>
+        <a href="#" id="seeMoreLink">See more</a>
     </div>
-    <a href="#" class="arrow"><i class="fas fa-chevron-right"></i></a>
+    <div class="summary-card-grid" id="teamSummary">
+        <!-- Will be populated by JS -->
+    </div>
+    
+    <!-- Your Summary -->
+    <div class="section-title" id="yourSummaryTitle" style="display: none;">
+        <span>Your Summary</span>
+    </div>
+    <div class="summary-card-grid" id="yourSummary" style="display: none;">
+        <!-- Will be populated by JS -->
+    </div>
+    
+    <!-- Your Tasks -->
+    <h3 class="section-title" id="yourTasksTitle" style="display: none;">Your tasks</h3>
+<div id="yourTasksList" data-component="team-task-self">
+    {{-- Task component mount point --}}
+</div>
+    
+    <!-- Other Members' Tasks -->
+    <h3 class="section-title" id="otherTasksTitle" style="display: none;">Other members' tasks</h3>
+<div id="otherTasksList" data-component="team-task-others">
+    {{-- Task component mount point --}}
+</div>
 </div>
 
-<h3 style="font-size: 1rem; color: var(--text-muted); margin-top: 25px;">Other members' tasks</h3>
-<div class="task-list">
-    <div class="task-list-meta">
-        <label class="task-checkbox">
-            <input type="checkbox" checked>
-            <span class="checkmark"></span>
-        </label>
-        
-        <div>
-            <h4>Kiem thu</h4>
-            <p class="task-assignee">QUANG2</p>
-            <p class="task-date"><i class="fas fa-clock"></i> 12/6/2025</p>
-        </div>
-    </div>
-    <a href="#" class="arrow"><i class="fas fa-chevron-right"></i></a>
-</div>
+<a href="#" class="fab" id="fabBtn" style="display: none;">+</a>
 
-<a href="#" class="fab">+</a>
+<!-- Modals -->
+@include('todo.group.modals.rename_team')
+@include('todo.group.modals.add_member')
+@include('todo.group.modals.choose_new_leader')
+@include('todo.group.modals.confirm_dialog')
 
 @endsection
+
+@push('scripts')
+<script>
+    const teamId = {{ $id ?? 'null' }};
+    const userId = {{ Auth::id() ?? 'null' }};
+    
+    function getApiToken() {
+        const sessionToken = '{{ session("jwt_token") }}';
+        if (sessionToken && sessionToken !== '' && sessionToken !== 'null') {
+            return sessionToken;
+        }
+        const localToken = localStorage.getItem('access_token');
+        if (localToken) {
+            return localToken;
+        }
+        return null;
+    }
+    
+    const apiToken = getApiToken();
+    let teamData = null;
+    let tasksData = [];
+    let isLeader = false;
+    let currentUserMember = null;
+    let allMembers = [];
+    let teamTasksPayload = {
+        mine: [],
+        others: [],
+        meta: {}
+    };
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!teamId || !apiToken) {
+            alert('Invalid team ID or not authenticated');
+            window.location.href = '/group';
+            return;
+        }
+        
+        loadTeamData();
+        setupEventListeners();
+    });
+    
+    async function loadTeamData() {
+        try {
+            // Load team detail
+            const teamResponse = await fetch(`/api/v1/team/detail/${teamId}`, {
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const teamResult = await teamResponse.json();
+            if (teamResponse.ok && teamResult.status === 200) {
+                teamData = teamResult.data;
+                allMembers = Array.isArray(teamData.teamMembers) ? [...teamData.teamMembers] : [];
+                isLeader = teamData.teamMembers.some(m => m.userId === userId && m.role === 'LEADER');
+                currentUserMember = teamData.teamMembers.find(m => m.userId === userId);
+                
+                document.getElementById('teamName').textContent = teamData.name;
+                document.getElementById('membersCount').textContent = teamData.teamMembers.length;
+                document.getElementById('membersLink').href = `/group/${teamId}/members`;
+                
+                // Show/hide leader-only options
+                const renameLink = document.getElementById('renameBtn');
+                const disbandLink = document.getElementById('disbandBtn');
+                const addMemberButton = document.getElementById('addMemberBtn');
+                const fabButton = document.getElementById('fabBtn');
+
+                if (isLeader) {
+                    if (renameLink) renameLink.style.display = 'block';
+                    if (disbandLink) disbandLink.style.display = 'block';
+                    if (addMemberButton) addMemberButton.style.display = 'flex';
+                    if (fabButton) fabButton.style.display = 'flex';
+                } else {
+                    if (renameLink) renameLink.style.display = 'none';
+                    if (disbandLink) disbandLink.style.display = 'none';
+                    if (addMemberButton) addMemberButton.style.display = 'none';
+                    if (fabButton) fabButton.style.display = 'none';
+                }
+                
+                // Load tasks
+                await loadTasks();
+                
+                // Calculate and display summaries
+                calculateSummaries();
+                
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('contentArea').style.display = 'block';
+            } else {
+                throw new Error(teamResult.message || 'Failed to load team');
+            }
+        } catch (error) {
+            console.error('Error loading team:', error);
+            document.getElementById('loadingState').innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Error loading team: ${error.message}</p>
+            `;
+        }
+    }
+    
+    async function loadTasks() {
+        try {
+            const response = await fetch(`/api/v1/team-task/by-team/${teamId}`, {
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const result = await response.json();
+            if (response.ok && result.status === 200) {
+                tasksData = result.data || [];
+                displayTasks();
+            }
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+        }
+    }
+    
+    function calculateSummaries() {
+        const now = new Date();
+        
+        // Team summary
+        const teamCompleted = tasksData.filter(t => t.isCompleted).length;
+        const teamPending = tasksData.filter(t => !t.isCompleted && new Date(t.deadline) > now).length;
+        const teamLate = tasksData.filter(t => !t.isCompleted && new Date(t.deadline) <= now).length;
+        
+        document.getElementById('teamSummary').innerHTML = `
+    <div class="summary-box">
+        <div class="meta">
+                    <h2 class="text-danger">${teamLate}</h2>
+            <span>Pending & Late</span>
+        </div>
+        <i class="fas fa-exclamation-triangle text-danger icon-display"></i>
+    </div>
+    <div class="summary-box">
+        <div class="meta">
+                    <h2 class="text-warning">${teamPending}</h2>
+            <span>Pending</span>
+        </div>
+        <i class="fas fa-clock text-warning icon-display"></i>
+    </div>
+    <div class="summary-box">
+        <div class="meta">
+                    <h2 class="text-success">${teamCompleted}</h2>
+                    <span>Complete</span>
+        </div>
+        <i class="fas fa-check-circle text-success icon-display"></i>
+    </div>
+        `;
+        
+        // Your summary (if user is a member)
+        if (currentUserMember) {
+            const myTasks = tasksData.filter(t => t.memberId === currentUserMember.id);
+            const myCompleted = myTasks.filter(t => t.isCompleted).length;
+            const myPending = myTasks.filter(t => !t.isCompleted && new Date(t.deadline) > now).length;
+            const myLate = myTasks.filter(t => !t.isCompleted && new Date(t.deadline) <= now).length;
+            
+            document.getElementById('yourSummaryTitle').style.display = 'flex';
+            document.getElementById('yourSummary').style.display = 'grid';
+            document.getElementById('yourSummary').innerHTML = `
+    <div class="summary-box">
+        <div class="meta">
+                        <h2 class="text-danger">${myLate}</h2>
+            <span>Pending & Late</span>
+        </div>
+        <i class="fas fa-exclamation-triangle text-danger icon-display"></i>
+    </div>
+    <div class="summary-box">
+        <div class="meta">
+                        <h2 class="text-warning">${myPending}</h2>
+            <span>Pending</span>
+        </div>
+        <i class="fas fa-clock text-warning icon-display"></i>
+    </div>
+    <div class="summary-box">
+        <div class="meta">
+                        <h2 class="text-success">${myCompleted}</h2>
+                        <span>Complete</span>
+        </div>
+        <i class="fas fa-check-circle text-success icon-display"></i>
+    </div>
+            `;
+        }
+    }
+    
+    function displayTasks() {
+        const yourTasksTitle = document.getElementById('yourTasksTitle');
+        const yourTasksList = document.getElementById('yourTasksList');
+        const otherTasksTitle = document.getElementById('otherTasksTitle');
+        const otherTasksList = document.getElementById('otherTasksList');
+
+        const priorityOrder = { 'HIGH': 0, 'MEDIUM': 1, 'LOW': 2 };
+        const sortTasks = (a, b) => {
+            if (a.isCompleted !== b.isCompleted) return a.isCompleted ? 1 : -1;
+            if (a.priority !== b.priority) return priorityOrder[a.priority] - priorityOrder[b.priority];
+            return new Date(a.deadline) - new Date(b.deadline);
+        };
+
+        let myTasks = [];
+        let otherTasks = [];
+
+        if (currentUserMember) {
+            myTasks = tasksData.filter(t => t.memberId === currentUserMember.id).sort(sortTasks);
+            otherTasks = tasksData.filter(t => t.memberId !== currentUserMember.id).sort(sortTasks);
+        } else {
+            otherTasks = tasksData.slice().sort(sortTasks);
+        }
+
+        if (yourTasksTitle) {
+            const shouldShowYourTasks = currentUserMember && myTasks.length > 0;
+            yourTasksTitle.style.display = shouldShowYourTasks ? 'block' : 'none';
+        }
+        if (yourTasksList) {
+            yourTasksList.innerHTML = '';
+            if (currentUserMember) {
+                yourTasksList.dataset.count = myTasks.length;
+            } else {
+                delete yourTasksList.dataset.count;
+            }
+        }
+
+        if (otherTasksTitle) otherTasksTitle.style.display = otherTasks.length > 0 ? 'block' : 'none';
+        if (otherTasksList) {
+            otherTasksList.innerHTML = '';
+            otherTasksList.dataset.count = otherTasks.length;
+        }
+
+        updateTeamTasksPayload(myTasks, otherTasks);
+    }
+
+    function updateTeamTasksPayload(mine, others) {
+        teamTasksPayload = {
+            mine,
+            others,
+            meta: {
+                teamId,
+                currentMemberId: currentUserMember ? currentUserMember.id : null,
+                isLeader,
+                members: allMembers
+            }
+        };
+
+        window.teamTaskContext = {
+            data: teamTasksPayload,
+            actions: {
+                refresh: loadTasks,
+                toggle: toggleTask,
+                edit: editTask
+            }
+        };
+
+        document.dispatchEvent(new CustomEvent('team-tasks:ready', {
+            detail: window.teamTaskContext
+        }));
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function setupEventListeners() {
+        // Settings dropdown
+        const settingsTrigger = document.getElementById('settingsBtn');
+        const settingsMenu = document.getElementById('settingsMenu');
+        if (settingsTrigger && settingsMenu) {
+            settingsTrigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                settingsMenu.classList.toggle('show');
+            });
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.settings-btn') && settingsMenu) {
+                settingsMenu.classList.remove('show');
+            }
+        });
+        
+        // Menu actions
+        const shareLink = document.getElementById('shareBtn');
+        if (shareLink) {
+            shareLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = `/group/${teamId}/share`;
+            });
+        }
+
+        const renameLink = document.getElementById('renameBtn');
+        if (renameLink) {
+            renameLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showRenameModal();
+            });
+        }
+
+        const disbandLink = document.getElementById('disbandBtn');
+        if (disbandLink) {
+            disbandLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                const confirmAction = () => disbandTeam();
+                if (typeof window.showConfirmDialog === 'function') {
+                    window.showConfirmDialog(
+                        'Giải tán nhóm',
+                        'Bạn có chắc chắn muốn giải tán nhóm này? Hành động không thể phục hồi.',
+                        confirmAction
+                    );
+                } else if (confirm('Bạn có chắc chắn muốn giải tán nhóm này? Hành động không thể phục hồi.')) {
+                    confirmAction();
+                }
+            });
+        }
+
+        const leaveLink = document.getElementById('leaveBtn');
+        if (leaveLink) {
+            leaveLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                leaveTeam();
+            });
+        }
+
+        const addMemberButton = document.getElementById('addMemberBtn');
+        if (addMemberButton) {
+            addMemberButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                showAddMemberModal();
+            });
+        }
+
+        const fabButton = document.getElementById('fabBtn');
+        if (fabButton) {
+            fabButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                // TODO: Navigate to create task page
+                alert('Create task feature coming soon');
+            });
+        }
+
+        const seeMoreLink = document.getElementById('seeMoreLink');
+        if (seeMoreLink) {
+            seeMoreLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = `/group/${teamId}/summary`;
+            });
+        }
+    }
+    
+    function showAddMemberModal() {
+        const modal = document.getElementById('addMemberModal');
+        if (!modal) return;
+
+        if (typeof membersToAdd !== 'undefined') {
+            membersToAdd = [];
+        }
+
+        if (typeof updateMembersToAddList === 'function') {
+            updateMembersToAddList();
+        }
+
+        const searchInput = document.getElementById('searchMemberEmail');
+        const resultsDiv = document.getElementById('searchResults');
+        if (searchInput) {
+            searchInput.value = '';
+            setTimeout(() => searchInput.focus(), 0);
+        }
+        if (resultsDiv) {
+            resultsDiv.style.display = 'none';
+            resultsDiv.innerHTML = '';
+        }
+
+        modal.classList.add('show');
+    }
+
+    async function toggleTask(taskId, isCompleted) {
+        try {
+            const response = await fetch(`/api/v1/team-task/`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: taskId,
+                    isCompleted: isCompleted
+                })
+            });
+            
+            const result = await response.json();
+            if (response.ok && result.status === 200) {
+                // Update local data
+                const task = tasksData.find(t => t.id === taskId);
+                if (task) {
+                    task.isCompleted = isCompleted;
+                }
+                calculateSummaries();
+                displayTasks();
+            } else {
+                alert('Failed to update task');
+            }
+        } catch (error) {
+            console.error('Error updating task:', error);
+            alert('Error updating task');
+        }
+    }
+    
+    function editTask(taskId) {
+        // TODO: Navigate to edit task page
+        alert('Edit task feature coming soon');
+    }
+    
+    function showRenameModal() {
+        const modal = document.getElementById('renameTeamModal');
+        if (modal) {
+            document.getElementById('newTeamName').value = teamData.name;
+            modal.classList.add('show');
+        } else {
+            // Fallback to prompt
+            const newName = prompt('Enter new team name:', teamData.name);
+            if (newName && newName.trim()) {
+                renameTeam(newName.trim());
+            }
+        }
+    }
+    
+    function closeRenameModal() {
+        const modal = document.getElementById('renameTeamModal');
+        if (modal) {
+            modal.classList.remove('show');
+        }
+    }
+    
+    async function confirmRename() {
+        const newName = document.getElementById('newTeamName').value.trim();
+        if (!newName) {
+            alert('Please enter a team name');
+            return;
+        }
+        
+        await renameTeam(newName);
+        closeRenameModal();
+    }
+    
+    async function renameTeam(newName) {
+        try {
+            const response = await fetch(`/api/v1/team/`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: teamId,
+                    name: newName
+                })
+            });
+            
+            const result = await response.json();
+            if (response.ok && result.status === 200) {
+                teamData.name = newName;
+                document.getElementById('teamName').textContent = newName;
+                alert('Team renamed successfully');
+            } else {
+                alert(result.message || 'Failed to rename team');
+            }
+        } catch (error) {
+            console.error('Error renaming team:', error);
+            alert('Error renaming team');
+        }
+    }
+    
+    async function disbandTeam() {
+        try {
+            const response = await fetch(`/api/v1/team/${teamId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const result = await response.json();
+            if (response.ok && result.status === 200) {
+                alert('Team disbanded successfully');
+                window.location.href = '/group';
+            } else {
+                alert(result.message || 'Failed to disband team');
+            }
+        } catch (error) {
+            console.error('Error disbanding team:', error);
+            alert('Error disbanding team');
+        }
+    }
+    
+    async function leaveTeam() {
+        if (isLeader) {
+            // If leader, need to choose new leader first
+            showChooseNewLeaderModal();
+        } else {
+            const confirmAction = () => deleteMember(currentUserMember.id);
+            if (typeof window.showConfirmDialog === 'function') {
+                window.showConfirmDialog(
+                    'Rời khỏi nhóm',
+                    'Bạn có chắc chắn muốn rời khỏi nhóm này?',
+                    confirmAction
+                );
+            } else if (confirm('Bạn có chắc chắn muốn rời khỏi nhóm này?')) {
+                confirmAction();
+            }
+        }
+    }
+    
+    // showChooseNewLeaderModal is defined in global scope above
+    
+    async function deleteMember(memberId) {
+        try {
+            const response = await fetch(`/api/v1/member/${memberId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const result = await response.json();
+            if (response.ok && result.status === 200) {
+                alert('Left team successfully');
+                window.location.href = '/group';
+            } else {
+                alert(result.message || 'Failed to leave team');
+            }
+        } catch (error) {
+            console.error('Error leaving team:', error);
+            alert('Error leaving team');
+        }
+    }
+    
+</script>
+@endpush
