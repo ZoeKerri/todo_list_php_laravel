@@ -43,40 +43,43 @@ class AccountController extends Controller
         return view('account.change_info', compact('user'));
     }
 
-    public function changePassword()
-    {
-        return view('account.change_password');
-    }
 
     public function update(Request $request)
     {
         $user = Auth::user();
-        
-        $request->validate([
-            'full_name' => 'sometimes|string|max:255',
-            'phone' => 'sometimes|string|max:20',
+
+        $validated = $request->validate([
+            'full_name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
         ]);
 
-        $user->update([
-            'full_name' => $request->full_name ?? $user->full_name,
-            'phone' => $request->phone ?? $user->phone,
-            'updated_by' => $user->email,
-        ]);
+        $user->update($validated);
 
-        return redirect('/account-info')->with('success', 'Profile updated successfully!');
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully',
+            'full_name' => $user->full_name,
+            'phone' => $user->phone
+        ]);
     }
 
     public function updatePassword(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'old_password' => 'required|string',
             'new_password' => 'required|string|min:6|confirmed',
         ]);
 
         if (!Hash::check($request->old_password, $user->password)) {
-            return back()->withErrors(['old_password' => 'Current password is incorrect']);
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['old_password' => ['Mật khẩu cũ không chính xác']]
+                ], 422);
+            }
+            return back()->withErrors(['old_password' => 'Mật khẩu cũ không chính xác']);
         }
 
         $user->update([
@@ -84,13 +87,20 @@ class AccountController extends Controller
             'updated_by' => $user->email,
         ]);
 
-        return redirect('/account-info')->with('success', 'Password changed successfully!');
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật mật khẩu thành công!'
+            ]);
+        }
+
+        return redirect('/account-info')->with('success', 'Cập nhật mật khẩu thành công!');
     }
 
     public function uploadAvatar(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -103,7 +113,7 @@ class AccountController extends Controller
 
             // Store new avatar
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            
+
             $user->update([
                 'avatar' => $avatarPath,
                 'updated_by' => $user->email,
