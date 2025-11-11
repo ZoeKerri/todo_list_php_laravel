@@ -3,6 +3,7 @@
 namespace App\DTOs\Task;
 
 use App\Models\PersonalTask;
+use App\DTOs\AuditDTO;
 use Carbon\Carbon;
 
 class PersonalTaskDTO

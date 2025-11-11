@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // API v1 routes
 Route::prefix('v1')->group(function () {
-    
+
     // Authentication routes (public)
     Route::prefix('auth')->group(function () {
         Route::post('login', [AuthController::class, 'login']);
@@ -38,7 +38,7 @@ Route::prefix('v1')->group(function () {
         Route::post('change-password-retry', [AuthController::class, 'resetPassword']);
         Route::post('check-code', [AuthController::class, 'verifyOtp']);
         Route::post('resend-code', [AuthController::class, 'resendCode']);
-        
+
         // Protected authentication routes
         Route::middleware('auth:api')->group(function () {
             Route::post('logout', [AuthController::class, 'logout']);
@@ -48,7 +48,11 @@ Route::prefix('v1')->group(function () {
     });
 
     // Categories routes (public)
-    Route::get('category', [CategoryController::class, 'index']);
+    Route::middleware('auth:api')->group(function () {
+        Route::get('category', [CategoryController::class, 'index']);
+        Route::post('category', [CategoryController::class, 'store']);
+        Route::delete('category/{category}', [CategoryController::class, 'destroy']);
+    });
 
     // Task count routes (public endpoints as per documentation)
     Route::get('task/count/day/total', [PersonalTaskController::class, 'getTasksCountForDay']);
@@ -56,7 +60,7 @@ Route::prefix('v1')->group(function () {
 
     // Protected routes
     Route::middleware('auth:api')->group(function () {
-        
+
         // Personal Tasks routes
         Route::prefix('task')->group(function () {
             Route::get('/', [PersonalTaskController::class, 'index']);
