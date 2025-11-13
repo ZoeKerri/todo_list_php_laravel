@@ -245,6 +245,106 @@
         border: 1px dashed var(--border-color);
     }
     
+    
+    /* Team Task Card Styles */
+    .team-task-card {
+        background-color: var(--card-bg);
+        border-radius: 14px;
+        padding: 14px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        border-left: 6px solid;
+    }
+    .team-task-card:hover {
+        background-color: var(--hover-bg);
+    }
+    .team-task-card.completed {
+        border-left-color: #22c55e;
+    }
+    .team-task-card.priority-high {
+        border-left-color: #ef4444;
+    }
+    .team-task-card.priority-medium {
+        border-left-color: #f97316;
+    }
+    .team-task-card.priority-low {
+        border-left-color: #3b82f6;
+    }
+    .task-card-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+        min-width: 0;
+    }
+    .task-checkbox {
+        font-size: 24px;
+        color: var(--text-primary);
+        flex-shrink: 0;
+        cursor: pointer;
+    }
+    .task-checkbox.completed {
+        color: #22c55e;
+    }
+    .task-content {
+        flex: 1;
+        min-width: 0;
+    }
+    .task-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--text-primary);
+        margin: 0 0 6px 0;
+        word-wrap: break-word;
+    }
+    .task-title.completed {
+        text-decoration: line-through;
+        opacity: 0.7;
+    }
+    .task-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .task-assignee {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-muted);
+    }
+    .task-assignee i {
+        font-size: 20px;
+    }
+    .task-date {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+        font-weight: bold;
+        color: var(--text-muted);
+    }
+    .task-date i {
+        font-size: 20px;
+    }
+    .task-arrow {
+        font-size: 16px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+        margin-left: 10px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    .task-arrow:hover {
+        color: var(--text-primary);
+    }
+    
     .loading {
         text-align: center;
         padding: 40px;
@@ -452,6 +552,7 @@
 @include('todo.group.modals.add_member')
 @include('todo.group.modals.choose_new_leader')
 @include('todo.group.modals.confirm_dialog')
+@include('modals.create_team_task')
 
 @endsection
 
@@ -472,6 +573,9 @@
         return null;
     }
     
+    // Make getApiToken available globally for modals
+    window.getApiToken = getApiToken;
+    
     const apiToken = getApiToken();
     let teamData = null;
     let tasksData = [];
@@ -483,6 +587,7 @@
         others: [],
         meta: {}
     };
+    
     
     document.addEventListener('DOMContentLoaded', function() {
         if (!teamId || !apiToken) {
@@ -564,22 +669,31 @@
             });
             
             const result = await response.json();
+            console.log('Tasks API Response:', result);
+            
             if (response.ok && result.status === 200) {
                 tasksData = result.data || [];
+                console.log('Tasks loaded:', tasksData);
                 displayTasks();
+                calculateSummaries();
+            } else {
+                console.error('Failed to load tasks:', result.message || 'Unknown error');
+                alert(result.message || 'Failed to load tasks');
             }
         } catch (error) {
             console.error('Error loading tasks:', error);
+            alert('Error loading tasks: ' + error.message);
         }
     }
     
     function calculateSummaries() {
         const now = new Date();
+        const dataToUse = tasksData;
         
         // Team summary
-        const teamCompleted = tasksData.filter(t => t.isCompleted).length;
-        const teamPending = tasksData.filter(t => !t.isCompleted && new Date(t.deadline) > now).length;
-        const teamLate = tasksData.filter(t => !t.isCompleted && new Date(t.deadline) <= now).length;
+        const teamCompleted = dataToUse.filter(t => t.isCompleted).length;
+        const teamPending = dataToUse.filter(t => !t.isCompleted && new Date(t.deadline) > now).length;
+        const teamLate = dataToUse.filter(t => !t.isCompleted && new Date(t.deadline) <= now).length;
         
         document.getElementById('teamSummary').innerHTML = `
     <div class="summary-box">
@@ -607,7 +721,7 @@
         
         // Your summary (if user is a member)
         if (currentUserMember) {
-            const myTasks = tasksData.filter(t => t.memberId === currentUserMember.id);
+            const myTasks = dataToUse.filter(t => t.memberId === currentUserMember.id);
             const myCompleted = myTasks.filter(t => t.isCompleted).length;
             const myPending = myTasks.filter(t => !t.isCompleted && new Date(t.deadline) > now).length;
             const myLate = myTasks.filter(t => !t.isCompleted && new Date(t.deadline) <= now).length;
@@ -640,6 +754,49 @@
         }
     }
     
+    function getAssignedMemberById(memberId) {
+        if (!allMembers || allMembers.length === 0) return null;
+        const member = allMembers.find(m => m.id === memberId);
+        return member ? (member.user || null) : null;
+    }
+    
+    function renderTaskCard(task, canEdit, isLeader, assignedMember) {
+        const priorityClass = `priority-${(task.priority || 'LOW').toLowerCase()}`;
+        const completedClass = task.isCompleted ? 'completed' : '';
+        const checkboxIcon = task.isCompleted ? 'fas fa-check-circle' : 'far fa-circle';
+        const titleClass = task.isCompleted ? 'completed' : '';
+        
+        const assignedMemberHtml = assignedMember ? `
+            <span class="task-assignee">
+                <i class="fas fa-user"></i>
+                ${escapeHtml(assignedMember.name || assignedMember.fullName || assignedMember.email || 'Unknown')}
+            </span>
+        ` : '';
+        
+        const deadlineDate = new Date(task.deadline);
+        const deadlineStr = `${deadlineDate.getDate()}/${deadlineDate.getMonth() + 1}/${deadlineDate.getFullYear()}`;
+        
+        return `
+            <div class="team-task-card ${completedClass} ${priorityClass}" 
+                 onclick="${canEdit ? `showToggleTaskDialog(${task.id}, ${!task.isCompleted})` : `viewTaskDetail(${task.id})`}">
+                <div class="task-card-left">
+                    <i class="${checkboxIcon} task-checkbox ${completedClass}"></i>
+                    <div class="task-content">
+                        <h4 class="task-title ${titleClass}">${escapeHtml(task.title || 'Untitled')}</h4>
+                        <div class="task-meta">
+                            ${assignedMemberHtml}
+                            <span class="task-date">
+                                <i class="fas fa-clock"></i>
+                                ${deadlineStr}
+                            </span>
+        </div>
+    </div>
+</div>
+                <i class="fas fa-chevron-right task-arrow" onclick="event.stopPropagation(); viewTaskDetail(${task.id})"></i>
+            </div>
+        `;
+    }
+    
     function displayTasks() {
         const yourTasksTitle = document.getElementById('yourTasksTitle');
         const yourTasksList = document.getElementById('yourTasksList');
@@ -649,7 +806,11 @@
         const priorityOrder = { 'HIGH': 0, 'MEDIUM': 1, 'LOW': 2 };
         const sortTasks = (a, b) => {
             if (a.isCompleted !== b.isCompleted) return a.isCompleted ? 1 : -1;
-            if (a.priority !== b.priority) return priorityOrder[a.priority] - priorityOrder[b.priority];
+            if (a.priority !== b.priority) {
+                const aPriority = priorityOrder[a.priority] ?? 2;
+                const bPriority = priorityOrder[b.priority] ?? 2;
+                return aPriority - bPriority;
+            }
             return new Date(a.deadline) - new Date(b.deadline);
         };
 
@@ -663,23 +824,47 @@
             otherTasks = tasksData.slice().sort(sortTasks);
         }
 
+        // Render Your Tasks
         if (yourTasksTitle) {
             const shouldShowYourTasks = currentUserMember && myTasks.length > 0;
             yourTasksTitle.style.display = shouldShowYourTasks ? 'block' : 'none';
         }
         if (yourTasksList) {
-            yourTasksList.innerHTML = '';
-            if (currentUserMember) {
-                yourTasksList.dataset.count = myTasks.length;
+            if (currentUserMember && myTasks.length > 0) {
+                yourTasksList.innerHTML = myTasks.map(task => {
+                    const assignedMember = getAssignedMemberById(task.memberId);
+                    const canEdit = isLeader || task.memberId === currentUserMember.id;
+                    return renderTaskCard(task, canEdit, isLeader, assignedMember);
+                }).join('');
             } else {
-                delete yourTasksList.dataset.count;
+                yourTasksList.innerHTML = '';
             }
         }
 
-        if (otherTasksTitle) otherTasksTitle.style.display = otherTasks.length > 0 ? 'block' : 'none';
+        // Render Other Tasks
+        if (otherTasksTitle) {
+            otherTasksTitle.style.display = otherTasks.length > 0 ? 'block' : 'none';
+        }
         if (otherTasksList) {
-            otherTasksList.innerHTML = '';
-            otherTasksList.dataset.count = otherTasks.length;
+            if (otherTasks.length > 0) {
+                otherTasksList.innerHTML = otherTasks.map(task => {
+                    const assignedMember = getAssignedMemberById(task.memberId);
+                    const canEdit = isLeader || (currentUserMember && task.memberId === currentUserMember.id);
+                    return renderTaskCard(task, canEdit, isLeader, assignedMember);
+                }).join('');
+            } else {
+                // Show empty state if no tasks at all
+                if (tasksData.length === 0) {
+                    otherTasksList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-tasks"></i>
+                            <p>Không có task nào</p>
+                        </div>
+                    `;
+                } else {
+                    otherTasksList.innerHTML = '';
+                }
+            }
         }
 
         updateTeamTasksPayload(myTasks, otherTasks);
@@ -789,8 +974,12 @@
         if (fabButton) {
             fabButton.addEventListener('click', function(e) {
                 e.preventDefault();
-                // TODO: Navigate to create task page
-                alert('Create task feature coming soon');
+                // Open create team task modal
+                if (typeof openCreateTeamTaskModal === 'function') {
+                    openCreateTeamTaskModal(teamId);
+                } else {
+                    alert('Modal function not loaded. Please refresh the page.');
+                }
             });
         }
 
@@ -840,7 +1029,7 @@
                 },
                 body: JSON.stringify({
                     id: taskId,
-                    isCompleted: isCompleted
+                    is_completed: isCompleted
                 })
             });
             
@@ -854,7 +1043,7 @@
                 calculateSummaries();
                 displayTasks();
             } else {
-                alert('Failed to update task');
+                alert(result.message || 'Failed to update task');
             }
         } catch (error) {
             console.error('Error updating task:', error);
@@ -864,7 +1053,30 @@
     
     function editTask(taskId) {
         // TODO: Navigate to edit task page
-        alert('Edit task feature coming soon');
+        window.location.href = `/group/${teamId}/task/${taskId}/edit`;
+    }
+    
+    function viewTaskDetail(taskId) {
+        // Navigate to task detail page
+        window.location.href = `/group/${teamId}/task/${taskId}`;
+    }
+    
+    function showToggleTaskDialog(taskId, newStatus) {
+        const task = tasksData.find(t => t.id === taskId);
+        if (!task) return;
+        
+        const action = newStatus ? 'hoàn thành' : 'chưa hoàn thành';
+        const message = `Bạn có chắc chắn muốn đánh dấu task "${task.title}" là ${action}?`;
+        
+        if (window.showConfirmDialog) {
+            window.showConfirmDialog(
+                'Xác nhận',
+                message,
+                () => toggleTask(taskId, newStatus)
+            );
+        } else if (confirm(message)) {
+            toggleTask(taskId, newStatus);
+        }
     }
     
     function showRenameModal() {

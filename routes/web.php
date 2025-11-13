@@ -58,6 +58,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/group/{id}/summary', function ($id) {
         return view('todo.group.group_summary', ['id' => $id]);
     });
+    
+    Route::get('/group/{teamId}/task/{taskId}', function ($teamId, $taskId) {
+        return view('todo.group.group_task_detail', ['teamId' => $teamId, 'taskId' => $taskId]);
+    });
 
     // Account routes
     Route::get('/account-info', [AccountController::class, 'index']);

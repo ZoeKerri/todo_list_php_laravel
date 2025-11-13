@@ -187,7 +187,7 @@ class AuthService {
     try {
       Response response = await dio.post(
         "/api/v1/auth/login",
-        data: {"username": email, "password": password},
+        data: {"email": email, "password": password},
       );
 
       final status = response.data["status"];

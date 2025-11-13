@@ -20,7 +20,7 @@ class TeamTaskService
             ->with(['teamMember.user', 'teamMember.team'])
             ->get();
 
-        return $tasks->toArray();
+        return $tasks->all(); // Return collection as array of models
     }
 
     /**
@@ -34,7 +34,7 @@ class TeamTaskService
             ->with(['teamMember.user', 'teamMember.team'])
             ->get();
 
-        return $tasks->toArray();
+        return $tasks->all(); // Return collection as array of models
     }
 
     /**
@@ -46,7 +46,15 @@ class TeamTaskService
             ->with(['teamMember.user', 'teamMember.team'])
             ->get();
 
-        return $tasks->toArray();
+        return $tasks->all(); // Return collection as array of models
+    }
+
+    /**
+     * Get task by ID.
+     */
+    public function getTaskById(int $taskId): ?TeamTask
+    {
+        return TeamTask::with(['teamMember.user', 'teamMember.team'])->find($taskId);
     }
 
     /**
@@ -54,9 +62,12 @@ class TeamTaskService
      */
     public function createTask(array $data, int $teamId, int $userId, string $createdBy): TeamTask
     {
-        // Find or create team member
-        $teamMember = TeamMember::where('team_id', $teamId)
-            ->where('user_id', $data['assignedUserId'] ?? $userId)
+        // Use member_id directly from data (already validated to exist)
+        $memberId = (int) $data['member_id'];
+        
+        // Verify the member belongs to the team
+        $teamMember = TeamMember::where('id', $memberId)
+            ->where('team_id', $teamId)
             ->firstOrFail();
 
         return TeamTask::create([
@@ -65,7 +76,7 @@ class TeamTaskService
             'deadline' => $data['deadline'],
             'priority' => $data['priority'] ? Priority::from($data['priority']) : Priority::MEDIUM,
             'is_completed' => false,
-            'member_id' => $teamMember->id,
+            'member_id' => $memberId,
             'created_by' => $createdBy,
             'updated_by' => $createdBy,
         ]);

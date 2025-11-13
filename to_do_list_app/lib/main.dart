@@ -33,7 +33,7 @@ import 'package:to_do_list_app/services/task_service.dart';
 import 'package:to_do_list_app/services/team_service.dart';
 import 'package:to_do_list_app/utils/theme_config.dart';
 import 'package:to_do_list_app/screens/auth/otp_verification_screen.dart';
-import 'package:to_do_list_app/screens/auth/forgot_passowrd_screen.dart';
+import 'package:to_do_list_app/screens/auth/forgot_password_screen.dart';
 import 'package:to_do_list_app/widgets/to_do_card_Team.dart';
 
 void main() async {
