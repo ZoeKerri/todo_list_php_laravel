@@ -5,6 +5,7 @@
 @push('modals')
     @include('modals.create_category')
     @include('modals.create_personal_task')
+    @include('modals.personal_task_detail')
 @endpush
 
 @push('styles')
@@ -50,8 +51,9 @@
     }
     .category-chip.active {
         background-color: var(--accent-color);
-        color: white;
+        color: var(--text-primary);
         border-color: var(--accent-color);
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
     .category-chip.inactive {
         background-color: var(--bg-secondary);
@@ -105,7 +107,8 @@
     .date-item.selected .date-day-name,
     .date-item.selected .date-day-number,
     .date-item.selected .date-month {
-        color: white;
+        color: var(--text-primary);
+        transition: color 0.3s ease;
     }
     .date-day-name {
         font-size: 18px;
@@ -198,7 +201,8 @@
         font-size: 14px;
         font-weight: bold;
         background-color: var(--accent-color);
-        color: white;
+        color: var(--text-primary);
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
     .task-date {
         display: flex;
@@ -269,9 +273,10 @@
         align-items: center;
         justify-content: center;
         font-size: 2rem;
-        color: #fff;
+        color: var(--text-primary);
         text-decoration: none;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        transition: background-color 0.3s ease, color 0.3s ease;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         z-index: 100;
         cursor: pointer;
@@ -348,13 +353,7 @@
             </h2>
             <h4 style="font-size: 2.5rem; font-weight: bold; margin: 10px 0 0 0; color: var(--text-primary);">Your Tasks</h4>
         </div>
-        <button onclick="openCreateCategoryModal()" style="padding: 8px 16px; background-color: var(--accent-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 8px;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            New Category
-        </button>
+        
     </div>
 
     <!-- Filters -->
@@ -752,6 +751,23 @@
             chip.className = 'category-chip inactive';
             chip.dataset.categoryId = category.id;
             chip.textContent = category.name || category.title || 'Unnamed';
+            
+            // Thêm style màu sắc cho chip
+            if (category.color) {
+                // Lưu màu gốc vào dataset
+                chip.dataset.originalColor = category.color;
+                chip.dataset.originalBorderColor = category.color;
+                
+                // Tính toán màu chữ tương phản
+                const contrastColor = getContrastColor(category.color);
+                chip.dataset.originalTextColor = contrastColor;
+                
+                // Áp dụng màu cho chip inactive
+                chip.style.backgroundColor = category.color;
+                chip.style.color = contrastColor;
+                chip.style.borderColor = category.color;
+            }
+            
             chip.onclick = () => toggleCategory(category.id);
             categoryList.appendChild(chip);
         });
@@ -766,6 +782,15 @@
             categoryList.querySelectorAll('.category-chip').forEach(chip => {
                 chip.classList.remove('active');
                 chip.classList.add('inactive');
+                
+                // Restore màu gốc khi inactive
+                const originalColor = chip.dataset.originalColor;
+                if (originalColor) {
+                    const originalTextColor = chip.dataset.originalTextColor || getContrastColor(originalColor);
+                    chip.style.backgroundColor = originalColor;
+                    chip.style.color = originalTextColor;
+                    chip.style.borderColor = originalColor;
+                }
             });
             categoryList.querySelector('[data-category-id="all"]').classList.add('active');
             categoryList.querySelector('[data-category-id="all"]').classList.remove('inactive');
@@ -778,10 +803,24 @@
                 selectedCategories.splice(index, 1);
                 chip.classList.remove('active');
                 chip.classList.add('inactive');
+                
+                // Restore màu gốc khi inactive
+                const originalColor = chip.dataset.originalColor;
+                if (originalColor) {
+                    const originalTextColor = chip.dataset.originalTextColor || getContrastColor(originalColor);
+                    chip.style.backgroundColor = originalColor;
+                    chip.style.color = originalTextColor;
+                    chip.style.borderColor = originalColor;
+                }
             } else {
                 selectedCategories.push(categoryId);
                 chip.classList.add('active');
                 chip.classList.remove('inactive');
+                
+                // Áp dụng accent color khi active
+                chip.style.backgroundColor = 'var(--accent-color)';
+                chip.style.color = 'var(--text-primary)';
+                chip.style.borderColor = 'var(--accent-color)';
             }
             
             // Update "All" chip
@@ -868,6 +907,36 @@
         return category ? (category.name || category.title || 'Unknown') : 'Unknown';
     }
     
+    function getCategoryColor(categoryId) {
+        const category = categories.find(c => c.id === categoryId);
+        return category ? (category.color || null) : null;
+    }
+    
+    function getContrastColor(hexColor) {
+        if (!hexColor) return '#000000';
+        
+        // Xử lý cả CSS variable
+        if (hexColor.startsWith('var(')) {
+            return '#ffffff'; // Fallback cho CSS variable
+        }
+        
+        // Xử lý hex color
+        let hex = hexColor.replace('#', '');
+        if (hex.length === 3) {
+            hex = hex.split('').map(char => char + char).join('');
+        }
+        
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        // Tính luminance
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        
+        // Trả về màu tương phản
+        return luminance > 0.5 ? '#000000' : '#ffffff';
+    }
+    
     function renderTaskCard(task) {
         const priorityClass = `priority-${(task.priority || 'MEDIUM').toLowerCase()}`;
         const completedClass = task.completed || task.isCompleted ? 'completed' : '';
@@ -877,8 +946,19 @@
         const dueDate = new Date(task.due_date || task.dueDate);
         const dueDateStr = `${dueDate.getDate()}/${dueDate.getMonth() + 1}/${dueDate.getFullYear()}`;
         
-        const categoryName = task.category_id || task.categoryId ? getCategoryName(task.category_id || task.categoryId) : '';
-        const categoryHtml = categoryName ? `<span class="task-category">${escapeHtml(categoryName)}</span>` : '';
+        const categoryId = task.category_id || task.categoryId;
+        const categoryName = categoryId ? getCategoryName(categoryId) : '';
+        const categoryColor = categoryId ? getCategoryColor(categoryId) : null;
+        
+        let categoryHtml = '';
+        if (categoryName) {
+            if (categoryColor) {
+                const contrastColor = getContrastColor(categoryColor);
+                categoryHtml = `<span class="task-category" style="background-color: ${categoryColor}; color: ${contrastColor}; border-color: ${categoryColor}; padding: 4px 8px; border-radius: 4px; font-size: 0.85em;">${escapeHtml(categoryName)}</span>`;
+            } else {
+                categoryHtml = `<span class="task-category">${escapeHtml(categoryName)}</span>`;
+            }
+        }
         
         const notificationHtml = task.notification_time ? `
             <span class="task-notification">
@@ -909,6 +989,11 @@
         `;
     }
     
+    // Get show completed tasks setting from localStorage
+    function getShowCompletedTasks() {
+        return localStorage.getItem('show_completed_tasks') === 'true';
+    }
+
     function displayTasks() {
         const container = document.getElementById('taskListContainer');
         if (!container) return;
@@ -919,9 +1004,20 @@
             loadingState.style.display = 'none';
         }
         
+        // Filter tasks based on show_completed_tasks setting
+        const showCompleted = getShowCompletedTasks();
+        let tasksToDisplay = filteredTasksData;
+        if (!showCompleted) {
+            // Filter out completed tasks
+            tasksToDisplay = filteredTasksData.filter(task => {
+                const isCompleted = task.completed || task.isCompleted;
+                return !isCompleted;
+            });
+        }
+        
         // Sort tasks: incomplete first, then by priority, then by date
         const priorityOrder = { 'HIGH': 0, 'MEDIUM': 1, 'LOW': 2 };
-        const sortedTasks = filteredTasksData.slice().sort((a, b) => {
+        const sortedTasks = tasksToDisplay.slice().sort((a, b) => {
             const aCompleted = a.completed || a.isCompleted;
             const bCompleted = b.completed || b.isCompleted;
             if (aCompleted !== bCompleted) return aCompleted ? 1 : -1;
@@ -938,11 +1034,15 @@
         if (sortedTasks.length > 0) {
             container.innerHTML = sortedTasks.map(task => renderTaskCard(task)).join('');
         } else {
+            const showCompleted = getShowCompletedTasks();
+            const emptyMessage = showCompleted 
+                ? 'Không có task nào cho ngày đã chọn' 
+                : 'Không có task chưa hoàn thành cho ngày đã chọn';
             container.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-tasks"></i>
-                    <p>Không có task nào cho ngày đã chọn</p>
-        </div>
+                    <p>${emptyMessage}</p>
+                </div>
             `;
         }
     }
@@ -1067,9 +1167,21 @@
     }
     
     function viewTaskDetail(taskId) {
-        // Navigate to task detail page (if exists)
-        // window.location.href = `/task/${taskId}`;
-        console.log('View task detail:', taskId);
+        // Open task detail modal
+        if (typeof openPersonalTaskDetailModal === 'function') {
+            openPersonalTaskDetailModal(taskId);
+        } else {
+            console.log('View task detail:', taskId);
+            // Fallback: try to open modal directly
+            const modal = document.getElementById('personalTaskDetailModal');
+            if (modal) {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                if (typeof loadPersonalTaskDetail === 'function') {
+                    loadPersonalTaskDetail(taskId);
+                }
+            }
+        }
     }
     
     document.addEventListener('DOMContentLoaded', function() {
@@ -1077,6 +1189,18 @@
             document.getElementById('loadingState').innerHTML = '<p>Please login to view tasks</p>';
             return;
         }
+        
+        // Listen for settings changes
+        window.addEventListener('settingsChanged', function(e) {
+            if (e.detail && 'show_completed_tasks' in e.detail) {
+                // Re-apply filters to refresh task list with new completed filter
+                if (typeof applyFilters === 'function') {
+                    applyFilters();
+                } else {
+                    displayTasks(); // Fallback if applyFilters not available
+                }
+            }
+        });
         
         // Initialize date picker
         initializeDatePicker();

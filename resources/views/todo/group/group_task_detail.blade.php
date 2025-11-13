@@ -161,8 +161,9 @@
     
     .btn-primary {
         background-color: var(--accent-color);
-        color: white;
+        color: var(--text-primary);
         border-color: var(--accent-color);
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
     
     .btn-primary:hover:not(:disabled) {
@@ -175,11 +176,12 @@
         background-color: transparent;
         color: #ef4444;
         border-color: #ef4444;
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
     
     .btn-danger:hover:not(:disabled) {
         background-color: #ef4444;
-        color: white;
+        color: var(--text-primary);
     }
     
     .loading {
@@ -189,21 +191,23 @@
     }
     
     .error-message {
-        background-color: #fee;
-        color: #c33;
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
         padding: 12px;
         border-radius: 8px;
         margin-bottom: 20px;
-        border: 1px solid #fcc;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        transition: background-color 0.3s ease, border-color 0.3s ease;
     }
     
     .success-message {
-        background-color: #efe;
-        color: #2c5;
+        background-color: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
         padding: 12px;
         border-radius: 8px;
         margin-bottom: 20px;
-        border: 1px solid #cfc;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        transition: background-color 0.3s ease, border-color 0.3s ease;
     }
     
     .priority-high {
@@ -407,7 +411,7 @@
             document.getElementById('loadingState').innerHTML = `
                 <i class="fas fa-exclamation-triangle"></i>
                 <p>Error loading task: ${error.message}</p>
-                <button onclick="window.location.href='/group/${teamId}'" style="margin-top: 16px; padding: 8px 16px; border-radius: 4px; background-color: var(--accent-color); color: white; border: none; cursor: pointer;">
+                <button onclick="window.location.href='/group/${teamId}'" style="margin-top: 16px; padding: 8px 16px; border-radius: 4px; background-color: var(--accent-color); color: var(--text-primary); border: none; cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease;">
                     Quay lại
                 </button>
             `;

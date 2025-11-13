@@ -36,11 +36,12 @@
         margin: 20px 0;
     }
     .qr-code {
-        background-color: white;
+        background-color: var(--bg-primary);
         padding: 20px;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         margin-bottom: 30px;
+        transition: background-color 0.3s ease;
     }
     .qr-code img {
         display: block;
@@ -67,11 +68,12 @@
     .share-btn {
         padding: 12px 24px;
         background-color: var(--accent-color);
-        color: white;
+        color: var(--text-primary);
         border: none;
         border-radius: 8px;
         cursor: pointer;
         font-size: 1rem;
+        transition: background-color 0.3s ease, color 0.3s ease;
         font-weight: 600;
         transition: background-color 0.2s ease;
     }

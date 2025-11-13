@@ -6,7 +6,7 @@
 <style>
     /* Header màu tím */
     .group-header {
-        background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+        background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-color) 100%);
         padding: 20px;
         border-radius: 12px;
         margin-bottom: 30px;
@@ -20,11 +20,13 @@
         background-color: rgba(255, 255, 255, 0.2);
         padding: 10px 15px;
         border-radius: 8px;
-        color: white;
+        color: var(--text-primary);
+        transition: color 0.3s ease;
     }
     .group-header h2, .group-header p {
         margin: 0;
-        color: white;
+        color: var(--text-primary);
+        transition: color 0.3s ease;
     }
     .group-header h2 {
         font-size: 1.5rem;
@@ -115,8 +117,8 @@
         transition: background-color 0.3s ease;
     }
     .group-item-meta .avatar.leader {
-        background-color: #7c3aed;
-        color: white;
+        background-color: var(--accent-color);
+        color: var(--text-primary);
     }
     .group-item-meta h4, .group-item-meta p {
         margin: 0;
@@ -163,7 +165,7 @@
         align-items: center;
         justify-content: center;
         font-size: 2rem;
-        color: #fff;
+        color: var(--text-primary);
         text-decoration: none;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         transition: background-color 0.3s ease, transform 0.2s ease;
@@ -185,8 +187,10 @@
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(4px);
         overflow: auto;
+        transition: background-color 0.3s ease;
     }
     .modal.show {
         display: flex;
@@ -279,8 +283,8 @@
         font-weight: bold;
     }
     .member-item .member-info .avatar.leader {
-        background-color: #7c3aed;
-        color: white;
+        background-color: var(--accent-color);
+        color: var(--text-primary);
     }
     .member-item .remove-btn {
         background: none;
@@ -289,6 +293,7 @@
         cursor: pointer;
         font-size: 1.2rem;
         padding: 5px 10px;
+        transition: color 0.3s ease;
     }
     .member-item .remove-btn:hover {
         color: #c82333;
@@ -325,13 +330,14 @@
         width: 100%;
         padding: 12px;
         background-color: var(--accent-color);
-        color: white;
+        color: var(--text-primary);
         border: none;
         border-radius: 8px;
         font-size: 1rem;
         font-weight: bold;
         cursor: pointer;
         margin-top: 20px;
+        transition: opacity 0.3s ease, background-color 0.3s ease;
     }
     .btn-primary:hover {
         opacity: 0.9;
@@ -612,11 +618,11 @@
                 <img src="${avatarUrl}" alt="Avatar" 
                      style="width: ${size}px; height: ${size}px; border-radius: 50%; object-fit: cover;" 
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div style="width: ${size}px; height: ${size}px; border-radius: 50%; background-color: var(--accent-color); display: none; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: ${size * 0.4}px;">${initials}</div>
+                <div style="width: ${size}px; height: ${size}px; border-radius: 50%; background-color: var(--accent-color); display: none; align-items: center; justify-content: center; color: var(--text-primary); font-weight: bold; font-size: ${size * 0.4}px;">${initials}</div>
             `;
         } else {
             return `
-                <div style="width: ${size}px; height: ${size}px; border-radius: 50%; background-color: var(--accent-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: ${size * 0.4}px;">${initials}</div>
+                <div style="width: ${size}px; height: ${size}px; border-radius: 50%; background-color: var(--accent-color); display: flex; align-items: center; justify-content: center; color: var(--text-primary); font-weight: bold; font-size: ${size * 0.4}px;">${initials}</div>
             `;
         }
     }
@@ -893,7 +899,7 @@
             <div class="empty-state">
                 <i class="fas fa-exclamation-triangle"></i>
                 <p>${escapeHtml(message)}</p>
-                <button onclick="loadTeams()" style="margin-top: 15px; padding: 10px 20px; background-color: var(--accent-color); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                <button onclick="loadTeams()" style="margin-top: 15px; padding: 10px 20px; background-color: var(--accent-color); color: var(--text-primary); border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease;">
                     Retry
                 </button>
             </div>

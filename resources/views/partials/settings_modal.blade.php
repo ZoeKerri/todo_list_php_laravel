@@ -32,7 +32,7 @@
                     <div class="setting-title"><i class="fas fa-user-shield"></i><span>Account</span></div>
                     <p class="setting-desc">Information about your account</p>
                 </div>
-                <a href="/account-info" style="width:60px; text-align:right; color:#6a1b9a; font-size:0.9em; text-decoration: none;">View</a>
+                <a href="/account-info" style="width:60px; text-align:right; color:var(--accent-color); font-size:0.9em; text-decoration: none; transition: color 0.3s ease;">View</a>
             </div>
 
             <div class="setting-item">
@@ -51,7 +51,7 @@
                     <div class="setting-title"><i class="fas fa-th-large"></i><span>Default View</span></div>
                     <p class="setting-desc">Choose your default task view</p>
                 </div>
-                <div style="width:60px; text-align:right; color:#bdbdbd; font-size:0.9em;">Open</div>
+                <div style="width:60px; text-align:right; color:var(--text-muted); font-size:0.9em;">Open</div>
             </div>
 
             <div class="setting-item">
@@ -59,7 +59,7 @@
                     <div class="setting-title"><i class="fas fa-globe"></i><span>Language</span></div>
                     <p class="setting-desc">Change the app language</p>
                 </div>
-                <div style="width:60px; text-align:right; color:#bdbdbd; font-size:0.9em;">Edit</div>
+                <div style="width:60px; text-align:right; color:var(--text-muted); font-size:0.9em;">Edit</div>
             </div>
 
         </div>
@@ -68,49 +68,47 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Load settings when modal opens
+    // Load settings from localStorage
     function loadSettings() {
-        fetch('/settings', {
-            credentials: 'include' // Important: include cookies in the request
-        })
-            .then(response => response.json())
-            .then(settings => {
-                document.getElementById('show-completed-tasks').checked = settings.show_completed_tasks;
-                document.getElementById('notifications').checked = settings.notifications;
-                document.getElementById('dark-mode').checked = settings.dark_mode;
-            })
-            .catch(error => console.error('Error loading settings:', error));
+        // Load show_completed_tasks from localStorage
+        const showCompleted = localStorage.getItem('show_completed_tasks') === 'true';
+        document.getElementById('show-completed-tasks').checked = showCompleted;
+        
+        // Load notifications from localStorage
+        const notifications = localStorage.getItem('notifications') !== 'false'; // default true
+        document.getElementById('notifications').checked = notifications;
+        
+        // Load dark_mode from localStorage
+        const darkMode = localStorage.getItem('dark_mode') !== 'false'; // default true
+        document.getElementById('dark-mode').checked = darkMode;
     }
 
-    // Save settings when toggles change
+    // Save settings to localStorage
     function saveSettings() {
-        const settings = {
-            show_completed_tasks: document.getElementById('show-completed-tasks').checked,
-            notifications: document.getElementById('notifications').checked,
-            dark_mode: document.getElementById('dark-mode').checked,
-            _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        };
-
-        fetch('/settings', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': settings._token
-            },
-            credentials: 'include', // Important: include cookies in the request
-            body: JSON.stringify(settings)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Apply theme change immediately using ThemeHelper
-                if (window.ThemeHelper) {
-                    window.ThemeHelper.applyTheme(settings.dark_mode);
-                }
-                console.log('Settings saved successfully');
+        const showCompleted = document.getElementById('show-completed-tasks').checked;
+        const notifications = document.getElementById('notifications').checked;
+        const darkMode = document.getElementById('dark-mode').checked;
+        
+        // Save to localStorage
+        localStorage.setItem('show_completed_tasks', showCompleted);
+        localStorage.setItem('notifications', notifications);
+        localStorage.setItem('dark_mode', darkMode);
+        
+        // Apply theme change immediately using ThemeHelper
+        if (window.ThemeHelper) {
+            window.ThemeHelper.applyTheme(darkMode);
+        }
+        
+        // Trigger custom event to notify other pages
+        window.dispatchEvent(new CustomEvent('settingsChanged', {
+            detail: {
+                show_completed_tasks: showCompleted,
+                notifications: notifications,
+                dark_mode: darkMode
             }
-        })
-        .catch(error => console.error('Error saving settings:', error));
+        }));
+        
+        console.log('Settings saved to localStorage');
     }
 
     // Add event listeners
