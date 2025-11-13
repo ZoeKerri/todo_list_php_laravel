@@ -138,7 +138,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 30px;
+            padding: 0 30px; 
             z-index: 999;
             transition: left 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
         }
@@ -677,7 +677,7 @@
 
         <div class="navbar-user" id="user-menu-container">
             @if(Auth::check())
-                <button type="button" class="navbar-user-trigger" id="user-menu-trigger">
+            <button type="button" class="navbar-user-trigger" id="user-menu-trigger">
                     @php
                         $user = Auth::user();
                         $avatarUrl = null;
@@ -706,8 +706,8 @@
                         </div>
                     @endif
                     <span>{{ Auth::user()->full_name ?? Auth::user()->email }}</span>
-                    <i class="fas fa-caret-down" style="font-size: 0.8em; margin-left: 5px;"></i>
-                </button>
+                <i class="fas fa-caret-down" style="font-size: 0.8em; margin-left: 5px;"></i>
+            </button>
             @else
                 <a href="{{ url('/login') }}" class="navbar-user-trigger" style="text-decoration: none; color: inherit;">
                     <i class="fas fa-user-circle"></i>
@@ -716,21 +716,21 @@
             @endif
 
             @if(Auth::check())
-                <div class="dropdown-menu" id="user-dropdown">
-                    <a href="{{ url('/account-info') }}">
-                        <i class="fas fa-user-cog"></i>
-                        Thông tin chi tiết
-                    </a>
+            <div class="dropdown-menu" id="user-dropdown">
+                <a href="{{ url('/account-info') }}">
+                    <i class="fas fa-user-cog"></i>
+                    Thông tin chi tiết
+                </a>
 
-                    <form method="POST" action="{{ url('/logout') }}" id="logout-form">
-                        @csrf
-                        <a href="{{ url('/logout') }}"
-                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            <i class="fas fa-sign-out-alt"></i>
-                            Đăng xuất
-                        </a>
-                    </form>
-                </div>
+                <form method="POST" action="{{ url('/logout') }}" id="logout-form">
+                    @csrf
+                    <a href="{{ url('/logout') }}"
+                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Đăng xuất
+                    </a>
+                </form>
+            </div>
             @endif
         </div>
     </nav>
@@ -912,7 +912,7 @@
         }
     </style>
 
-    <script>
+<script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const main = document.getElementById('main');
@@ -926,7 +926,7 @@
         let isDragging = false, startX, scrollLeft, initialTarget;
         function startDragging(e) {
             const container = document.getElementById('buttonContainer');
-            if (!container) return;
+            if (!container) return; 
             initialTarget = e.target;
             if (initialTarget.classList && initialTarget.classList.contains('btn-purple')) {
                 isDragging = true;
@@ -940,7 +940,7 @@
             if (!isDragging) return;
             e.preventDefault();
             const container = document.getElementById('buttonContainer');
-            if (!container) return;
+            if (!container) return; 
             const x = e.pageX - container.offsetLeft;
             const walk = (x - startX) * 1.5;
             container.scrollLeft = scrollLeft - walk;
@@ -973,7 +973,7 @@
             modal.setAttribute('aria-hidden', 'true');
         }
 
-
+        
         // *** THAY ĐỔI JS: THÊM JS CHO DROPDOWN ***
         const userMenuTrigger = document.getElementById('user-menu-trigger');
         const userDropdown = document.getElementById('user-dropdown');

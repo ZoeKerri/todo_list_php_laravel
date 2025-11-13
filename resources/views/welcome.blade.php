@@ -2,179 +2,989 @@
 
 @section('title', 'Your Tasks Dashboard')
 
-@section('content')
-    {{-- Container chính với padding, kế thừa từ #main-content trong app.blade.php --}}
-    <div class="p-6 md:p-8">
+@push('styles')
+<style>
+    /* Category Filter - Horizontal Scroll */
+    .category-filter-container {
+        margin-bottom: 12px;
+        position: relative;
+    }
+    .category-list {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 8px;
+        margin-bottom: -8px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border-color) transparent;
+        -webkit-overflow-scrolling: touch;
+    }
+    .category-list::-webkit-scrollbar {
+        height: 6px;
+    }
+    .category-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .category-list::-webkit-scrollbar-thumb {
+        background-color: var(--border-color);
+        border-radius: 3px;
+    }
+    .category-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+        white-space: nowrap;
+        border: 2px solid transparent;
+    }
+    .category-chip.active {
+        background-color: var(--accent-color);
+        color: white;
+        border-color: var(--accent-color);
+    }
+    .category-chip.inactive {
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+    }
+    .category-chip.inactive:hover {
+        background-color: var(--hover-bg);
+    }
+    
+    /* Date Picker - Horizontal Scroll với Infinite Scroll */
+    .date-picker-container {
+        margin-bottom: 12px;
+    }
+    .date-list {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 8px;
+        margin-bottom: -8px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    .date-list::-webkit-scrollbar {
+        display: none;
+    }
+    .date-item {
+        min-width: 80px;
+        height: 100px;
+        padding: 10px 15px;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+        border: 2px solid transparent;
+        background-color: var(--bg-secondary);
+    }
+    .date-item:hover {
+        background-color: var(--hover-bg);
+    }
+    .date-item.selected {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    }
+    .date-item.selected .date-day-name,
+    .date-item.selected .date-day-number,
+    .date-item.selected .date-month {
+        color: white;
+    }
+    .date-day-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+    .date-day-number {
+        font-size: 16px;
+        font-weight: bold;
+        color: var(--text-primary);
+        margin-bottom: 2px;
+    }
+    .date-month {
+        font-size: 12px;
+        color: var(--text-muted);
+        opacity: 0.85;
+    }
+    
+    /* Personal Task Card Styles */
+    .personal-task-card {
+        background-color: var(--card-bg);
+        border-radius: 14px;
+        padding: 14px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        border-left: 6px solid;
+    }
+    .personal-task-card:hover {
+        background-color: var(--hover-bg);
+    }
+    .personal-task-card.completed {
+        border-left-color: #22c55e;
+    }
+    .personal-task-card.priority-high {
+        border-left-color: #ef4444;
+    }
+    .personal-task-card.priority-medium {
+        border-left-color: #f97316;
+    }
+    .personal-task-card.priority-low {
+        border-left-color: #3b82f6;
+    }
+    .task-card-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+        min-width: 0;
+    }
+    .task-checkbox {
+        font-size: 24px;
+        color: var(--text-primary);
+        flex-shrink: 0;
+        cursor: pointer;
+    }
+    .task-checkbox.completed {
+        color: #22c55e;
+    }
+    .task-content {
+        flex: 1;
+        min-width: 0;
+    }
+    .task-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--text-primary);
+        margin: 0 0 6px 0;
+        word-wrap: break-word;
+    }
+    .task-title.completed {
+        text-decoration: line-through;
+        opacity: 0.7;
+    }
+    .task-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .task-category {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        background-color: var(--accent-color);
+        color: white;
+    }
+    .task-date {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+        font-weight: bold;
+        color: var(--text-muted);
+    }
+    .task-date i {
+        font-size: 20px;
+    }
+    .task-notification {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+        font-weight: bold;
+        color: var(--text-muted);
+    }
+    .task-notification i {
+        font-size: 20px;
+    }
+    .task-arrow {
+        font-size: 16px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+        margin-left: 10px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    .task-arrow:hover {
+        color: var(--text-primary);
+    }
+    
+    .empty-state {
+        min-height: 160px;
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        opacity: 0.5;
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-muted);
+    }
+    
+    .fab {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        background-color: var(--accent-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #fff;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        z-index: 100;
+        cursor: pointer;
+    }
+    .fab:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+    }
+</style>
+@endpush
 
-        {{-- Tiêu đề trang (Giữ nguyên từ code của bạn) --}}
-        <div class="mb-6">
-            <h2 class="text-2xl font-semibold text-gray-200">
-                Hi there, {{ Auth::check() ? Auth::user()->name : 'Guest' }}
+@section('content')
+<div style="padding: 30px;">
+    <div style="margin-bottom: 25px;">
+        <h2 style="font-size: 1.5rem; font-weight: 600; margin: 0; color: var(--text-primary);">
+            Hi there, {{ Auth::check() ? (Auth::user()->full_name ?? Auth::user()->email) : 'Guest' }}
             </h2>
-            <h4 class="text-4xl font-bold text-white">Your Task</h4>
+        <h4 style="font-size: 2.5rem; font-weight: bold; margin: 10px 0 0 0; color: var(--text-primary);">Your Tasks</h4>
         </div>
 
-        {{--
-        BỐ CỤC GRID 2 CỘT CHO DESKTOP
-        Sử dụng 'grid-cols-1' cho mobile (mặc định)
-        Sử dụng 'lg:grid-cols-3' cho desktop (breakpoint 'lg' 1024px)
-        --}}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-
-            {{-- =================================== --}}
-            {{-- CỘT CHÍNH (Nội dung Task) --}}
-            {{-- Chiếm 2/3 không gian trên desktop --}}
-            {{-- =================================== --}}
-            <div class="lg:col-span-2 space-y-6">
-
-                {{-- 1. Thanh Lọc Thể loại (Sẽ thiết kế ở Phần 3) --}}
-                <div id="category-filter-bar-container">
-                    {{-- Đặt trong <div id="category-filter-bar-container"> của Phần 2 --}}
-                        <div class="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700">
-
-                            {{-- Vùng chứa các thể loại có thể cuộn --}}
-                            {{-- 'overflow-x-auto' là chìa khóa --}}
-                            {{-- 'scrollbar-thin' (tùy chọn) là một plugin Tailwind để làm đẹp thanh cuộn --}}
-                            <div class="flex-grow overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"
-                                style="padding-bottom: 8px; margin-bottom: -8px;"> {{-- Kỹ thuật ẩn thanh cuộn --}}
-
-                                <div class="flex items-center gap-3">
-                                    {{-- Nút "Tất cả" (Mặc định) --}}
-                                    <a href="#"
-                                        class="category-filter-btn active-category px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 bg-purple-600 text-white transition-colors"
-                                        data-category-id="all">
-                                        All Tasks
-                                    </a>
-
-                                    {{--
-                                    Vòng lặp các thể loại từ Database (Giả định)
-                                    @foreach ($categories as $category)
-                                    --}}
-                                    {{-- Ví dụ các nút không được chọn --}}
-                                    <a href="#"
-                                        class="category-filter-btn inactive-category px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 text-gray-300 bg-gray-700 hover:bg-gray-600 transition-colors"
-                                        data-category-id="1" {{-- data-category-id="{{ $category->id }}" --}}>
-                                        Personal {{-- {{ $category->name }} --}}
-                                    </a>
-                                    <a href="#" class="category-filter-btn inactive-category... (như trên)"
-                                        data-category-id="2">
-                                        Work
-                                    </a>
-                                    <a href="#" class="category-filter-btn inactive-category... (như trên)"
-                                        data-category-id="3">
-                                        Health
-                                    </a>
-                                    <a href="#" class="category-filter-btn inactive-category... (như trên)"
-                                        data-category-id="4">
-                                        Study
-                                    </a>
-
-                                    {{-- Thêm các nút giả để demo thanh cuộn (xóa khi có dữ liệu thật) --}}
-                                    <a href="#" class="category-filter-btn inactive-category... (như trên)"
-                                        data-category-id="5">
-                                        Shopping
-                                    </a>
-                                    <a href="#" class="category-filter-btn inactive-category... (như trên)"
-                                        data-category-id="6">
-                                        Finance
-                                    </a>
-                                    <a href="#" class="category-filter-btn inactive-category... (như trên)"
-                                        data-category-id="7">
-                                        Urgent
-                                    </a>
-                                    {{-- @endforeach --}}
+    <!-- Filters -->
+    <div class="category-filter-container">
+        <div class="category-list" id="categoryList">
+            <!-- Will be populated by JS -->
                                 </div>
                             </div>
 
-                            {{-- Nút "Thêm Thể loại Mới" (+) --}}
-                            <button id="add-category-btn"
-                                class="ml-4 flex-shrink-0 w-10 h-10 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center transition-colors"
-                                title="Create new category">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v12m6-6H6"></path>
-                                </svg>
-                            </button>
+    <div class="date-picker-container">
+        <div class="date-list" id="dateList">
+            <!-- Will be populated by JS -->
                         </div>
                     </div>
 
-                    {{-- 2. Bộ lọc Ngày (Lấy cảm hứng từ Image 1) --}}
-                    {{-- Đây là component 'calendar' từ code welcome.blade.php của bạn,
-                    nhưng được làm responsive hơn --}}
-                    <div class="bg-gray-800 rounded-lg shadow-lg p-4">
-                        <div class="flex justify-around items-center">
-                            {{-- Logic @foreach cho các ngày trong tuần --}}
-                            <div class="text-center p-2 rounded-lg bg-purple-600 cursor-pointer">
-                                <span class="text-sm font-medium text-purple-200">Sun</span>
-                                <span class="block text-2xl font-bold text-white">8</span>
-                                <span class="text-sm font-medium text-purple-200">Jun</span>
+    <!-- Task List -->
+    <div id="taskListContainer">
+        <div class="loading" id="loadingState">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading tasks...</p>
                             </div>
-                            <div class="text-center p-2 rounded-lg hover:bg-gray-700 cursor-pointer">
-                                <span class="text-sm font-medium text-gray-400">Mon</span>
-                                <span class="block text-2xl font-bold text-white">9</span>
-                                <span class="text-sm font-medium text-gray-400">Jun</span>
-                            </div>
-                            {{--... Thêm các ngày khác... --}}
                         </div>
                     </div>
 
-                    {{-- 3. Danh sách Công việc (Sẽ thiết kế ở Phần 5) --}}
-                    <div id="task-list-container" class="space-y-4">
-                        {{-- Trạng thái tải (Loading state) --}}
-                        <div class_l="text-center p-8 bg-gray-800 rounded-lg">
-                            <p class="text-gray-400">Loading tasks...</p>
-                        </div>
-                        {{-- Mã nguồn cho các 'task-item' sẽ được JS chèn vào đây --}}
-                    </div>
-                </div>
+<!-- Floating Action Button -->
+<a href="#" class="fab" id="addTaskBtn">+</a>
 
-                {{-- =================================== --}}
-                {{-- CỘT PHỤ (Thông tin Ngữ cảnh) --}}
-                {{-- Chiếm 1/3 không gian, chỉ hiển thị trên desktop --}}
-                {{-- =================================== --}}
-                <div class="lg:col-span-1 space-y-6 hidden lg:block">
+<!-- Modals -->
+@include('modals.create_personal_task')
 
-                    {{-- Component Lịch (Ví dụ) --}}
-                    <div class="bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700">
-                        <h5 class="text-white font-semibold mb-4 text-lg">Full Calendar</h5>
-                        {{--
-                        Đây là nơi lý tưởng để nhúng một thư viện lịch JS
-                        (ví dụ: FullCalendar.js, VCalendar)
-                        để hiển thị tổng quan công việc
-                        --}}
-                        <div id="calendar-widget" class="h-64 bg-gray-700 rounded">
-                            {{-- Calendar widget goes here --}}
-                        </div>
-                    </div>
-
-                    {{-- Component Thống kê Nhanh (Ví dụ) --}}
-                    <div class="bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700">
-                        <h5 class="text-white font-semibold mb-4 text-lg">Stats Overview</h5>
-                        {{-- Liên kết đến trang 'Stats' (từ app.blade.php) --}}
-                        <div class="space-y-3">
-                            <div class="flex justify-between text-gray-300">
-                                <span>Tasks Today:</span>
-                                <span class="font-bold text-white">5 / 8</span>
-                            </div>
-                            <div class="flex justify-between text-gray-300">
-                                <span>This Week:</span>
-                                <span class="font-bold text-white">24 / 40</span>
-                            </div>
-                            <a href="/stats" class="block text-center text-purple-400 hover:text-purple-300 pt-2">
-                                View Detailed Stats &rarr;
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Nút "Add Task" (FAB) - Giờ đây được quản lý bởi JS --}}
-        <button id="add-task-btn"
-            class="fixed bottom-8 right-8 bg-purple-600 hover:bg-purple-700 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg z-40 transform transition-transform hover:scale-105">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"></path>
-            </svg>
-        </button>
 @endsection
+
+@push('scripts')
+<script>
+    const userId = {{ Auth::id() ?? 'null' }};
+    
+    // Make getApiToken available globally for modal
+    function getApiToken() {
+        const sessionToken = '{{ session("jwt_token") }}';
+        if (sessionToken && sessionToken !== '' && sessionToken !== 'null') {
+            return sessionToken;
+        }
+        const localToken = localStorage.getItem('access_token');
+        if (localToken) {
+            return localToken;
+        }
+        return null;
+    }
+    
+    // Make getApiToken available globally
+    window.getApiToken = getApiToken;
+    
+    const apiToken = getApiToken();
+    let tasksData = [];
+    let filteredTasksData = [];
+    let categories = [];
+    let selectedCategories = [];
+    let selectedDate = new Date();
+    let dateItems = [];
+    let isLoadingDates = false;
+    let minDateIndex = 0; // Track the minimum date index for infinite scroll
+    
+    const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    const months = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'];
+    
+    // Initialize dates around today (e.g., 7 days before to 14 days after)
+    function initializeDates() {
+        const dates = [];
+        const today = new Date();
+        // Start from 7 days before today
+        for (let i = -7; i < 14; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            dates.push(date);
+        }
+        minDateIndex = -7;
+        return dates;
+    }
+    
+    function formatDateForDisplay(date) {
+        const dayName = daysOfWeek[date.getDay()];
+        const dayNumber = date.getDate();
+        const month = months[date.getMonth()];
+        return { dayName, dayNumber, month, dateStr: date.toISOString().split('T')[0] };
+    }
+    
+    function renderDateItem(date, isSelected = false) {
+        const { dayName, dayNumber, month, dateStr } = formatDateForDisplay(date);
+        return `
+            <div class="date-item ${isSelected ? 'selected' : ''}" 
+                 data-date="${dateStr}"
+                 data-date-index="${dateItems.length}"
+                 onclick="selectDate('${dateStr}')">
+                <div class="date-day-name">${dayName}</div>
+                <div class="date-day-number">${dayNumber}</div>
+                <div class="date-month">${month}</div>
+                        </div>
+        `;
+    }
+    
+    function initializeDatePicker() {
+        dateItems = initializeDates();
+        const dateList = document.getElementById('dateList');
+        if (!dateList) return;
+        
+        // Find today's index
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        let todayIndex = -1;
+        dateItems.forEach((date, index) => {
+            const dateOnly = new Date(date);
+            dateOnly.setHours(0, 0, 0, 0);
+            if (dateOnly.getTime() === today.getTime()) {
+                todayIndex = index;
+            }
+        });
+        
+        // Render dates
+        dateList.innerHTML = dateItems.map((date, index) => {
+            const isSelected = index === (todayIndex >= 0 ? todayIndex : 0);
+            return renderDateItem(date, isSelected);
+        }).join('');
+        
+        // Select today by default
+        if (todayIndex >= 0) {
+            selectedDate = dateItems[todayIndex];
+        } else {
+            selectedDate = dateItems[0];
+        }
+        
+        // Add infinite scroll listener for scroll events
+        dateList.addEventListener('scroll', handleDateScroll);
+        
+        // Handle mouse wheel for infinite scroll
+        let wheelTimeout = null;
+        dateList.addEventListener('wheel', function(e) {
+            // Clear existing timeout
+            if (wheelTimeout) {
+                clearTimeout(wheelTimeout);
+            }
+            
+            // Check after a short delay to allow scroll to happen
+            wheelTimeout = setTimeout(() => {
+                const dateListEl = e.currentTarget;
+                const scrollLeft = dateListEl.scrollLeft;
+                const scrollWidth = dateListEl.scrollWidth;
+                const clientWidth = dateListEl.clientWidth;
+                
+                // Load more dates when scrolling right (future)
+                if (scrollLeft + clientWidth >= scrollWidth - 100 && !isLoadingDates) {
+                    loadMoreFutureDates();
+                }
+                
+                // Load more dates when scrolling left (past)
+                if (scrollLeft <= 100 && !isLoadingDates) {
+                    loadMorePastDates();
+                }
+            }, 150);
+        }, { passive: true });
+    }
+    
+    function handleDateScroll(e) {
+        const dateList = e.target;
+        const scrollLeft = dateList.scrollLeft;
+        const scrollWidth = dateList.scrollWidth;
+        const clientWidth = dateList.clientWidth;
+        
+        // Load more dates when scrolling right (future)
+        if (scrollLeft + clientWidth >= scrollWidth - 100 && !isLoadingDates) {
+            loadMoreFutureDates();
+        }
+        
+        // Load more dates when scrolling left (past)
+        if (scrollLeft <= 100 && !isLoadingDates) {
+            loadMorePastDates();
+        }
+    }
+    
+    function loadMoreFutureDates() {
+        if (isLoadingDates) return;
+        isLoadingDates = true;
+        
+        const dateList = document.getElementById('dateList');
+        const lastDate = dateItems[dateItems.length - 1];
+        
+        // Add 10 more days
+        const newDates = [];
+        for (let i = 1; i <= 10; i++) {
+            const newDate = new Date(lastDate);
+            newDate.setDate(lastDate.getDate() + i);
+            newDates.push(newDate);
+        }
+        
+        dateItems.push(...newDates);
+        
+        // Append new date items
+        const fragment = document.createDocumentFragment();
+        newDates.forEach(date => {
+            const { dayName, dayNumber, month, dateStr } = formatDateForDisplay(date);
+            const div = document.createElement('div');
+            div.className = 'date-item';
+            div.dataset.date = dateStr;
+            div.dataset.dateIndex = dateItems.length - newDates.length + newDates.indexOf(date);
+            div.onclick = () => selectDate(dateStr);
+            div.innerHTML = `
+                <div class="date-day-name">${dayName}</div>
+                <div class="date-day-number">${dayNumber}</div>
+                <div class="date-month">${month}</div>
+            `;
+            fragment.appendChild(div);
+        });
+        
+        dateList.appendChild(fragment);
+        isLoadingDates = false;
+    }
+    
+    function loadMorePastDates() {
+        if (isLoadingDates) return;
+        isLoadingDates = true;
+        
+        const dateList = document.getElementById('dateList');
+        const firstDate = dateItems[0];
+        const scrollLeft = dateList.scrollLeft;
+        
+        // Add 10 more days in the past
+        const newDates = [];
+        for (let i = 10; i >= 1; i--) {
+            const newDate = new Date(firstDate);
+            newDate.setDate(firstDate.getDate() - i);
+            newDates.unshift(newDate);
+        }
+        
+        dateItems.unshift(...newDates);
+        minDateIndex -= 10;
+        
+        // Prepend new date items
+        const fragment = document.createDocumentFragment();
+        newDates.forEach(date => {
+            const { dayName, dayNumber, month, dateStr } = formatDateForDisplay(date);
+            const div = document.createElement('div');
+            div.className = 'date-item';
+            div.dataset.date = dateStr;
+            div.dataset.dateIndex = dateItems.indexOf(date);
+            div.onclick = () => selectDate(dateStr);
+            div.innerHTML = `
+                <div class="date-day-name">${dayName}</div>
+                <div class="date-day-number">${dayNumber}</div>
+                <div class="date-month">${month}</div>
+            `;
+            fragment.appendChild(div);
+        });
+        
+        // Update indices for existing items
+        const existingItems = dateList.querySelectorAll('.date-item');
+        existingItems.forEach((item, index) => {
+            if (index >= newDates.length) {
+                item.dataset.dateIndex = parseInt(item.dataset.dateIndex) + newDates.length;
+            }
+        });
+        
+        dateList.insertBefore(fragment, dateList.firstChild);
+        
+        // Restore scroll position
+        setTimeout(() => {
+            dateList.scrollLeft = scrollLeft + (newDates.length * 92); // 80px width + 12px gap
+        }, 0);
+        
+        isLoadingDates = false;
+    }
+    
+    function selectDate(dateString) {
+        selectedDate = new Date(dateString);
+        
+        // Update UI
+        document.querySelectorAll('.date-item').forEach(item => {
+            item.classList.remove('selected');
+            if (item.dataset.date === dateString) {
+                item.classList.add('selected');
+                // Scroll selected date into view
+                item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        });
+        
+        applyFilters();
+    }
+    
+    function initializeCategoryFilter() {
+        const categoryList = document.getElementById('categoryList');
+        if (!categoryList) return;
+        
+        // Add "All" option
+        categoryList.innerHTML = `
+            <div class="category-chip active" data-category-id="all" onclick="toggleCategory('all')">
+                Tất cả
+                    </div>
+        `;
+        
+        // Add "Create Category" button
+        const createChip = document.createElement('div');
+        createChip.className = 'category-chip';
+        createChip.style.cssText = 'background-color: transparent; border: 2px dashed var(--accent-color); color: var(--accent-color); cursor: pointer;';
+        createChip.innerHTML = '<i class="fas fa-plus"></i> <span>Tạo mới</span>';
+        createChip.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Try to open modal, fallback to prompt if not available
+            const openCategoryFunc = window.openCreateCategoryModal || openCreateCategoryModal;
+            if (typeof openCategoryFunc === 'function') {
+                openCategoryFunc();
+            } else {
+                // Try to manually open modal
+                const modal = document.getElementById('createCategoryModal');
+                if (modal) {
+                    const nameInput = document.getElementById('newCategoryName');
+                    if (nameInput) {
+                        nameInput.value = '';
+                    }
+                    modal.classList.add('show');
+                    setTimeout(() => {
+                        if (nameInput) {
+                            nameInput.focus();
+                        }
+                    }, 100);
+                } else {
+                    // Fallback to prompt
+                    const categoryName = prompt('Nhập tên thể loại mới:');
+                    if (categoryName && categoryName.trim()) {
+                        if (typeof createCategoryQuick === 'function') {
+                            createCategoryQuick(categoryName.trim());
+                        } else {
+                            alert('Vui lòng mở modal tạo task để tạo category');
+                        }
+                    }
+                }
+            }
+        });
+        categoryList.appendChild(createChip);
+        
+        // Add categories
+        categories.forEach(category => {
+            const chip = document.createElement('div');
+            chip.className = 'category-chip inactive';
+            chip.dataset.categoryId = category.id;
+            chip.textContent = category.name || category.title || 'Unnamed';
+            chip.onclick = () => toggleCategory(category.id);
+            categoryList.appendChild(chip);
+        });
+    }
+    
+    function toggleCategory(categoryId) {
+        const categoryList = document.getElementById('categoryList');
+        if (!categoryList) return;
+        
+        if (categoryId === 'all') {
+            selectedCategories = [];
+            categoryList.querySelectorAll('.category-chip').forEach(chip => {
+                chip.classList.remove('active');
+                chip.classList.add('inactive');
+            });
+            categoryList.querySelector('[data-category-id="all"]').classList.add('active');
+            categoryList.querySelector('[data-category-id="all"]').classList.remove('inactive');
+        } else {
+            const chip = categoryList.querySelector(`[data-category-id="${categoryId}"]`);
+            if (!chip) return;
+            
+            const index = selectedCategories.indexOf(categoryId);
+            if (index > -1) {
+                selectedCategories.splice(index, 1);
+                chip.classList.remove('active');
+                chip.classList.add('inactive');
+            } else {
+                selectedCategories.push(categoryId);
+                chip.classList.add('active');
+                chip.classList.remove('inactive');
+            }
+            
+            // Update "All" chip
+            const allChip = categoryList.querySelector('[data-category-id="all"]');
+            if (selectedCategories.length === 0) {
+                allChip.classList.add('active');
+                allChip.classList.remove('inactive');
+            } else {
+                allChip.classList.remove('active');
+                allChip.classList.add('inactive');
+            }
+        }
+        
+        applyFilters();
+    }
+    
+    async function loadCategories() {
+        try {
+            const response = await fetch('/api/v1/category', {
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const result = await response.json();
+            if (response.ok && result.status === 200) {
+                categories = result.data || [];
+                initializeCategoryFilter();
+            }
+        } catch (error) {
+            console.error('Error loading categories:', error);
+        }
+    }
+    
+    async function loadTasks() {
+        if (!apiToken) {
+            document.getElementById('loadingState').innerHTML = '<p>Please login to view tasks</p>';
+            return;
+        }
+        
+        try {
+            const selectedDateStr = selectedDate.toISOString().split('T')[0];
+            const response = await fetch(`/api/v1/task?date=${selectedDateStr}`, {
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const result = await response.json();
+            if (response.ok && result.status === 200) {
+                tasksData = result.data || [];
+                applyFilters();
+            }
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+            document.getElementById('loadingState').innerHTML = `<p>Error loading tasks: ${error.message}</p>`;
+        }
+    }
+    
+    function applyFilters() {
+        const selectedDateStr = selectedDate.toISOString().split('T')[0];
+        
+        filteredTasksData = tasksData.filter(task => {
+            // Date filter
+            const taskDate = new Date(task.due_date || task.dueDate).toISOString().split('T')[0];
+            const matchesDate = taskDate === selectedDateStr;
+            
+            // Category filter
+            let matchesCategory = true;
+            if (selectedCategories.length > 0) {
+                matchesCategory = selectedCategories.includes(task.category_id || task.categoryId);
+            }
+            
+            return matchesDate && matchesCategory;
+        });
+        
+        displayTasks();
+    }
+    
+    function getCategoryName(categoryId) {
+        const category = categories.find(c => c.id === categoryId);
+        return category ? (category.name || category.title || 'Unknown') : 'Unknown';
+    }
+    
+    function renderTaskCard(task) {
+        const priorityClass = `priority-${(task.priority || 'MEDIUM').toLowerCase()}`;
+        const completedClass = task.completed || task.isCompleted ? 'completed' : '';
+        const checkboxIcon = task.completed || task.isCompleted ? 'fas fa-check-circle' : 'far fa-circle';
+        const titleClass = task.completed || task.isCompleted ? 'completed' : '';
+        
+        const dueDate = new Date(task.due_date || task.dueDate);
+        const dueDateStr = `${dueDate.getDate()}/${dueDate.getMonth() + 1}/${dueDate.getFullYear()}`;
+        
+        const categoryName = task.category_id || task.categoryId ? getCategoryName(task.category_id || task.categoryId) : '';
+        const categoryHtml = categoryName ? `<span class="task-category">${escapeHtml(categoryName)}</span>` : '';
+        
+        const notificationHtml = task.notification_time ? `
+            <span class="task-notification">
+                <i class="fas fa-bell"></i>
+                ${task.notification_time}
+            </span>
+        ` : '';
+        
+        return `
+            <div class="personal-task-card ${completedClass} ${priorityClass}" 
+                 onclick="toggleTaskComplete(${task.id})">
+                <div class="task-card-left">
+                    <i class="${checkboxIcon} task-checkbox ${completedClass}"></i>
+                    <div class="task-content">
+                        <h4 class="task-title ${titleClass}">${escapeHtml(task.title || 'Untitled')}</h4>
+                        <div class="task-meta">
+                            ${categoryHtml}
+                            <span class="task-date">
+                                <i class="fas fa-clock"></i>
+                                ${dueDateStr}
+                            </span>
+                            ${notificationHtml}
+                        </div>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right task-arrow" onclick="event.stopPropagation(); viewTaskDetail(${task.id})"></i>
+            </div>
+        `;
+    }
+    
+    function displayTasks() {
+        const container = document.getElementById('taskListContainer');
+        if (!container) return;
+        
+        // Hide loading
+        const loadingState = document.getElementById('loadingState');
+        if (loadingState) {
+            loadingState.style.display = 'none';
+        }
+        
+        // Sort tasks: incomplete first, then by priority, then by date
+        const priorityOrder = { 'HIGH': 0, 'MEDIUM': 1, 'LOW': 2 };
+        const sortedTasks = filteredTasksData.slice().sort((a, b) => {
+            const aCompleted = a.completed || a.isCompleted;
+            const bCompleted = b.completed || b.isCompleted;
+            if (aCompleted !== bCompleted) return aCompleted ? 1 : -1;
+            
+            const aPriority = priorityOrder[a.priority?.toUpperCase()] ?? 2;
+            const bPriority = priorityOrder[b.priority?.toUpperCase()] ?? 2;
+            if (aPriority !== bPriority) return aPriority - bPriority;
+            
+            const aDate = new Date(a.due_date || a.dueDate);
+            const bDate = new Date(b.due_date || b.dueDate);
+            return aDate - bDate;
+        });
+        
+        if (sortedTasks.length > 0) {
+            container.innerHTML = sortedTasks.map(task => renderTaskCard(task)).join('');
+        } else {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-tasks"></i>
+                    <p>Không có task nào cho ngày đã chọn</p>
+        </div>
+            `;
+        }
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function setupEventListeners() {
+        // FAB button click handler
+        const fabBtn = document.getElementById('addTaskBtn');
+        if (fabBtn) {
+            fabBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Open create personal task modal
+                const openFunc = window.openCreatePersonalTaskModal || openCreatePersonalTaskModal;
+                if (typeof openFunc === 'function') {
+                    openFunc();
+                } else {
+                    console.error('openCreatePersonalTaskModal not found');
+                    // Try to manually open modal
+                    const modal = document.getElementById('createPersonalTaskModal');
+                    if (modal) {
+                        const dueDateInput = document.getElementById('personalTaskDueDate');
+                        if (dueDateInput) {
+                            dueDateInput.value = new Date().toISOString().split('T')[0];
+                        }
+                        const categoryContainer = document.getElementById('categoryListContainer');
+                        if (categoryContainer && categoryContainer.children.length === 0) {
+                            if (typeof loadCategoriesForPersonalTask === 'function') {
+                                loadCategoriesForPersonalTask();
+                            }
+                        }
+                        modal.classList.add('show');
+                    } else {
+                        alert('Modal không tìm thấy. Vui lòng refresh trang.');
+                    }
+                }
+            });
+        }
+    }
+    
+    async function createCategoryQuick(categoryName) {
+        if (!categoryName) return;
+        
+        try {
+            const response = await fetch('/api/v1/category', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: categoryName
+                })
+            });
+            
+            const result = await response.json();
+            if (response.ok && (result.status === 200 || result.status === 201)) {
+                alert('Tạo thể loại thành công!');
+                // Reload categories
+                await loadCategories();
+                // Select the newly created category
+                const newCategoryId = result.data?.id;
+                if (newCategoryId) {
+                    setTimeout(() => {
+                        toggleCategory(newCategoryId);
+                    }, 100);
+                }
+            } else {
+                alert(result.message || 'Có lỗi xảy ra khi tạo thể loại');
+            }
+        } catch (error) {
+            console.error('Error creating category:', error);
+            alert('Có lỗi xảy ra khi tạo thể loại');
+        }
+    }
+    
+    // Make function globally available
+    window.createCategoryQuick = createCategoryQuick;
+    
+    async function toggleTaskComplete(taskId) {
+        const task = tasksData.find(t => t.id === taskId);
+        if (!task) return;
+        
+        const newStatus = !(task.completed || task.isCompleted);
+        
+        try {
+            const response = await fetch(`/api/v1/task/${taskId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    completed: newStatus
+                })
+            });
+            
+            const result = await response.json();
+            if (response.ok && result.status === 200) {
+                task.completed = newStatus;
+                task.isCompleted = newStatus;
+                applyFilters();
+            } else {
+                alert(result.message || 'Failed to update task');
+            }
+        } catch (error) {
+            console.error('Error updating task:', error);
+            alert('Error updating task');
+        }
+    }
+    
+    function viewTaskDetail(taskId) {
+        // Navigate to task detail page (if exists)
+        // window.location.href = `/task/${taskId}`;
+        console.log('View task detail:', taskId);
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!apiToken) {
+            document.getElementById('loadingState').innerHTML = '<p>Please login to view tasks</p>';
+            return;
+        }
+        
+        // Initialize date picker
+        initializeDatePicker();
+        
+        // Load categories and tasks
+        loadCategories().then(() => {
+            loadTasks();
+        });
+        
+        // Setup event listeners
+        setupEventListeners();
+        function openCreateCategoryModalWelcome() {
+            const modal = document.getElementById('createCategoryModal');
+            if (modal) {
+                const nameInput = document.getElementById('newCategoryName');
+                if (nameInput) {
+                    nameInput.value = '';
+                }
+                modal.classList.add('show');
+            } else {
+                // Fallback to prompt if modal doesn't exist
+                const categoryName = prompt('Nhập tên thể loại mới:');
+                if (categoryName && categoryName.trim()) {
+                    createCategoryQuick(categoryName.trim());
+                }
+            }
+        }
+        
+        // Only set as fallback if not already set by modal
+        if (typeof window.openCreateCategoryModal !== 'function') {
+            window.openCreateCategoryModal = openCreateCategoryModalWelcome;
+        }
+        
+        // Make loadCategories and initializeCategoryFilter globally available
+        window.loadCategories = loadCategories;
+        window.initializeCategoryFilter = initializeCategoryFilter;
+    });
+</script>
+@endpush

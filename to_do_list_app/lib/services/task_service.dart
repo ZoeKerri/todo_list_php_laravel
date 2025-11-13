@@ -21,19 +21,20 @@ class TaskService {
       throw Exception('No access token found');
     }
 
-    String url = '/api/v1/task/$userId';
+    final queryParameters = <String, dynamic>{};
     if (dueDate != null) {
       final formattedDate = DateFormat('yyyy-MM-dd').format(dueDate);
-      url += '?dueDate=$formattedDate';
+      queryParameters['date'] = formattedDate;
     }
 
     final response = await dio.get(
-      url,
+      '/api/v1/task',
+      queryParameters: queryParameters.isEmpty ? null : queryParameters,
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
     if (response.statusCode == 200) {
-      final data = response.data['data'] as List;
+      final data = response.data['data'] as List? ?? [];
       return data.map((e) => Task.fromJson(e)).toList();
     } else {
       throw Exception('Failed to load tasks: ${response.statusCode}');

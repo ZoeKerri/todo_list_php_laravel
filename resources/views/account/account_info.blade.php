@@ -50,8 +50,8 @@
                                    onclick="event.preventDefault(); document.getElementById('avatar-input').click()"
                                    class="absolute z-20 bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white border-4 border-gray-700 hover:bg-blue-700 transition-colors duration-200 cursor-pointer">
                                     <i class="fas fa-camera text-sm"></i>
-                                </a>
-                            </div>
+        </a>
+    </div>
 
                             {{-- (Con 2) DIV BỌC THÔNG TIN (Tên, Email, Nút bấm) --}}
                             <div>
@@ -73,9 +73,9 @@
                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                                        class="bg-red-600 hover:bg-red-500 text-white px-5 py-2 rounded-lg font-semibold text-sm">Sign
                                         out</a>
-                                </div>
-                            </div>
-                            
+        </div>
+    </div>
+    
                         </div> {{-- Hết bọc chung --}}
 
 
@@ -120,12 +120,12 @@
                 </div>
                 <div id="likes" class="tab-panel hidden h-full w-full absolute top-8 left-0">
                     <div id="likesChart" class="h-full"></div>
-                </div>
+        </div>
             </section>
 
         </main>
     </div>
-
+    
     {{-- =============================================== --}}
     {{--         HTML CỦA POPUP CHỈNH SỬA PROFILE     --}}
     {{-- =============================================== --}}
@@ -188,8 +188,8 @@
                 <ul id="change-password-errors-list" class="list-disc pl-5 text-red-200 text-sm">
                     {{-- Lỗi sẽ được JS chèn vào đây --}}
                 </ul>
-            </div>
-            
+    </div>
+
             {{-- Vùng hiển thị thành công --}}
             <div id="change-password-success-container" class="hidden mt-4 p-3 bg-green-800 border border-green-700 rounded-lg">
                  <p class="text-green-200 text-sm">Password changed successfully!</p>
@@ -197,7 +197,7 @@
 
             {{-- Form đổi mật khẩu --}}
             <form id="change-password-form" action="{{ url('/account-info/change-password') }}" method="POST" class="mt-6 space-y-4">
-                @csrf
+        @csrf
                 
                 {{-- Old Password --}}
                 <div>
@@ -211,8 +211,8 @@
                     <label for="new_password" class="block text-sm font-medium text-gray-300">New Password</label>
                     <input type="password" id="new_password" name="new_password" required
                            class="mt-1 block w-full bg-gray-600 border border-gray-500 rounded-lg shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                
+</div>
+
                 {{-- Confirm New Password --}}
                 <div>
                     <label for="new_password_confirmation" class="block text-sm font-medium text-gray-300">Confirm New Password</label>

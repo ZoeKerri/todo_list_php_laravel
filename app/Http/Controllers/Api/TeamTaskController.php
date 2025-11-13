@@ -49,20 +49,23 @@ class TeamTaskController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'team_id' => 'required|exists:teams,id',
+            'team_id' => 'required|integer|exists:teams,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'deadline' => 'required|date',
             'priority' => 'required|in:LOW,MEDIUM,HIGH',
-            'member_id' => 'required|exists:team_members,id',
+            'member_id' => 'required|integer|exists:team_members,id',
         ]);
 
-        if (!$this->teamMemberService->isUserMemberOfTeam(Auth::id(), $validated['team_id'])) {
+        $teamId = (int) $validated['team_id'];
+        $userId = Auth::id();
+        
+        if (!$this->teamMemberService->isUserMemberOfTeam($userId, $teamId)) {
             return ApiResponse::forbidden('You are not a member of this team.');
         }
 
         try {
-            $task = $this->teamTaskService->createTask($validated, Auth::user()->email);
+            $task = $this->teamTaskService->createTask($validated, $teamId, $userId, Auth::user()->email);
             return ApiResponse::success(TeamTaskDTO::fromModel($task), 'Task created successfully', 201);
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
@@ -109,3 +112,4 @@ class TeamTaskController extends Controller
         }
     }
 }
+
