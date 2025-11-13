@@ -165,6 +165,7 @@
             } else {
                 console.error('Modal createPersonalTaskModal not found');
             }
+<<<<<<< HEAD
         }
 
         // Make function globally available immediately
@@ -197,6 +198,22 @@
                     'Authorization': `Bearer ${apiToken}`,
                     'Accept': 'application/json'
                 }
+=======
+        });
+        
+        const result = await response.json();
+        if (response.ok && result.status === 200) {
+            memberSelect.innerHTML = '<option value="">Chọn thành viên</option>';
+            const teamMembers = result.data.teamMembers || [];
+            teamMembers.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.id; // member_id
+                const userName = member.user ? (member.user.name || member.user.fullName || member.user.email) : 'Unknown';
+                const userEmail = member.user ? (member.user.email || '') : '';
+                // Display name + email like Flutter
+                option.textContent = userEmail ? `${userName} (${userEmail})` : userName;
+                memberSelect.appendChild(option);
+>>>>>>> c1f8d7d36bdc9cdb67c945cf409bccccd6ed7ac5
             });
 
             const result = await response.json();

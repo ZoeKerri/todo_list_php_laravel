@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:to_do_list_app/bloc/auth/auth_bloc.dart';
@@ -21,7 +20,7 @@ class AccountSettingsScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: colors.bgColor,
           title: Text(
-            'accountSettings'.tr(),
+            'Account Settings',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -108,7 +107,7 @@ class AccountSettingsScreen extends StatelessWidget {
                                 color: colors.primaryColor,
                               ),
                               title: Text(
-                                'name'.tr(),
+                                'Name',
                                 style: TextStyle(
                                   color: colors.textColor,
                                   fontSize: 14,
@@ -130,7 +129,7 @@ class AccountSettingsScreen extends StatelessWidget {
                                 color: colors.primaryColor,
                               ),
                               title: Text(
-                                'email'.tr(),
+                                'Email',
                                 style: TextStyle(
                                   color: colors.textColor,
                                   fontSize: 14,
@@ -152,14 +151,14 @@ class AccountSettingsScreen extends StatelessWidget {
                                 color: colors.primaryColor,
                               ),
                               title: Text(
-                                'phone'.tr(),
+                                'Phone',
                                 style: TextStyle(
                                   color: colors.textColor,
                                   fontSize: 14,
                                 ),
                               ),
                               subtitle: Text(
-                                user.phone ?? 'notProvided'.tr(),
+                                user.phone ?? 'Not provided',
                                 style: TextStyle(
                                   color: colors.textColor,
                                   fontSize: 18,
@@ -225,7 +224,7 @@ class AccountSettingsScreen extends StatelessWidget {
                                     ),
                                     SizedBox(width: 8),
                                     Text(
-                                      'update'.tr(),
+                                      'Update',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -279,7 +278,7 @@ class AccountSettingsScreen extends StatelessWidget {
                                     ),
                                     SizedBox(width: 8),
                                     Text(
-                                      'changePassword'.tr(),
+                                      'Change Password',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -342,7 +341,7 @@ class AccountSettingsScreen extends StatelessWidget {
                                     ),
                                     SizedBox(width: 8),
                                     Text(
-                                      'logout'.tr(),
+                                      'Logout',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,

@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do_list_app/models/auth_response.dart';
 import 'package:to_do_list_app/models/team.dart';
@@ -179,11 +178,11 @@ class TodoCardTeam extends StatelessWidget {
       builder: (BuildContext context) {
         if (!canEdit) {
           return AlertDialog(
-            title: Text('notification'.tr()),
-            content: Text('no_permission_to_perform_action'.tr()),
+            title: Text('Notification'),
+            content: Text('No permission to perform this action'),
             actions: [
               TextButton(
-                child: Text('close'.tr()),
+                child: Text('Close'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -192,12 +191,10 @@ class TodoCardTeam extends StatelessWidget {
           );
         } else {
           return ConfirmationDialog(
-            title: 'confirmation'.tr(),
-            content: 'are_you_sure_perform_action_with_task'.tr(
-              args: [taskName],
-            ),
-            confirmText: 'confirm'.tr(),
-            cancelText: 'cancel'.tr(),
+            title: 'Confirmation',
+            content: 'Are you sure you want to perform this action with this task?',
+            confirmText: 'Confirm',
+            cancelText: 'Cancel',
             onConfirm: () => onTap(task),
           );
         }

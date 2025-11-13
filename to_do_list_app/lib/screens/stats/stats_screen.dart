@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:to_do_list_app/bloc/auth/auth_bloc.dart';
@@ -137,7 +136,7 @@ class _StatsScreenState extends State<StatsScreen> {
       Duration(days: DateTime.now().weekday - 1 + weekOffset * 7),
     );
     final weekLabel =
-        '${'week_of'.tr()} ${DateFormat('yyyy-MM-dd').format(weekStartDate)}';
+        'Week of ${DateFormat('yyyy-MM-dd').format(weekStartDate)}';
 
     return SingleChildScrollView(
       child: Container(
@@ -152,7 +151,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
-                    'statistics'.tr(),
+                    'Statistics',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -162,7 +161,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 ),
               ),
               Text(
-                'summary'.tr(),
+                'Summary',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -174,14 +173,14 @@ class _StatsScreenState extends State<StatsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SummaryCard(
-                    title: 'completed'.tr(),
+                    title: 'Completed',
                     value: "$completedTasks",
                     icon: Icons.check_circle,
                     borderColor: isDark ? Colors.green.shade600 : Colors.green,
                     iconColor: isDark ? Colors.green : Colors.greenAccent,
                   ),
                   SummaryCard(
-                    title: 'pending'.tr(),
+                    title: 'Pending',
                     value: "$pendingTasks",
                     icon: Icons.access_time,
                     borderColor: Colors.amber,
@@ -194,7 +193,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SummaryCard(
-                    title: 'longest_streak'.tr(),
+                    title: 'Longest Streak',
                     value: "$longestStreak",
                     icon: Icons.local_fire_department,
                     borderColor:
@@ -202,7 +201,7 @@ class _StatsScreenState extends State<StatsScreen> {
                     iconColor: isDark ? Colors.orange : Colors.orangeAccent,
                   ),
                   SummaryCard(
-                    title: 'this_week'.tr(),
+                    title: 'This Week',
                     value: "$thisWeekTasks",
                     icon: Icons.show_chart,
                     borderColor: isDark ? Colors.blue.shade600 : Colors.blue,
@@ -229,7 +228,7 @@ class _StatsScreenState extends State<StatsScreen> {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          'current_streak'.tr(),
+                          'Current Streak',
                           style: TextStyle(
                             color: colors.textColor,
                             fontSize: 18,
@@ -240,7 +239,7 @@ class _StatsScreenState extends State<StatsScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '$currentStreak ${'days'.tr()}',
+                      '$currentStreak days',
                       style: TextStyle(
                         color: colors.textColor,
                         fontWeight: FontWeight.bold,
@@ -249,7 +248,7 @@ class _StatsScreenState extends State<StatsScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'keep_completing_tasks'.tr(),
+                      'Keep completing tasks to maintain your streak!',
                       style: TextStyle(
                         color: colors.subtitleColor,
                         fontSize: 16,
@@ -260,7 +259,7 @@ class _StatsScreenState extends State<StatsScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'progress'.tr(),
+                'Progress',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -271,18 +270,16 @@ class _StatsScreenState extends State<StatsScreen> {
               Column(
                 children: [
                   ProgressCard(
-                    title: 'completion_rate'.tr(),
-                    subTitle: 'youve_completed_tasks'.tr(
-                      args: ['$completedTasks'],
-                    ),
+                    title: 'Completion Rate',
+                    subTitle: 'You\'ve completed $completedTasks tasks',
                     progressText:
                         "${(completionRate * 100).toStringAsFixed(0)}%",
                     progressValue: completionRate,
                   ),
                   const SizedBox(height: 12),
                   ProgressCard(
-                    title: 'progress_this_week'.tr(),
-                    subTitle: 'weekly_task_completion_summary'.tr(),
+                    title: 'Progress This Week',
+                    subTitle: 'Weekly task completion summary',
                     progressText: "$thisWeekCompletedTasks/$thisWeekTasks",
                     progressValue:
                         thisWeekTasks > 0
@@ -293,7 +290,7 @@ class _StatsScreenState extends State<StatsScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'weekly_task_chart'.tr(),
+                'Weekly Task Chart',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -351,7 +348,7 @@ class _StatsScreenState extends State<StatsScreen> {
                         weeklyTaskData.every((data) => data['total'] == 0)
                             ? Center(
                               child: Text(
-                                'no_tasks_this_week'.tr(),
+                                'No tasks this week',
                                 style: TextStyle(
                                   color: colors.textColor,
                                   fontSize: 16,
@@ -385,8 +382,8 @@ class _StatsScreenState extends State<StatsScreen> {
                                       final value = rod.toY.toInt();
                                       final type =
                                           rodIndex == 0
-                                              ? 'completed'.tr()
-                                              : 'pending'.tr();
+                                              ? 'Completed' 
+                                              : 'Pending';
                                       return BarTooltipItem(
                                         '$day\n$type: $value',
                                         TextStyle(
@@ -480,7 +477,7 @@ class _StatsScreenState extends State<StatsScreen> {
                           Container(width: 12, height: 12, color: Colors.green),
                           const SizedBox(width: 4),
                           Text(
-                            'completed'.tr(),
+                            'Completed',
                             style: TextStyle(
                               color: colors.textColor,
                               fontSize: 12,
@@ -494,7 +491,7 @@ class _StatsScreenState extends State<StatsScreen> {
                           Container(width: 12, height: 12, color: Colors.amber),
                           const SizedBox(width: 4),
                           Text(
-                            'pending'.tr(),
+                            'Pending',
                             style: TextStyle(
                               color: colors.textColor,
                               fontSize: 12,

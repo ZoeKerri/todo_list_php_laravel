@@ -33,11 +33,14 @@ class TaskService {
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && response.data['status'] == 200) {
       final data = response.data['data'] as List? ?? [];
       return data.map((e) => Task.fromJson(e)).toList();
     } else {
-      throw Exception('Failed to load tasks: ${response.statusCode}');
+      throw Exception(
+        response.data?['message'] ?? 
+        'Failed to load tasks: ${response.statusCode}'
+      );
     }
   }
 
@@ -50,14 +53,17 @@ class TaskService {
     }
 
     final response = await dio.get(
-      '/api/v1/task/byId/$taskId',
+      '/api/v1/task/$taskId',
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && response.data['status'] == 200) {
       return Task.fromJson(response.data['data']);
     } else {
-      throw Exception('Failed to load task: ${response.statusCode}');
+      throw Exception(
+        response.data?['message'] ?? 
+        'Failed to load task: ${response.statusCode}'
+      );
     }
   }
 
@@ -75,10 +81,17 @@ class TaskService {
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
-    if (response.statusCode == 200) {
+    // Laravel returns 201 for successful creation, 200 for other success
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
-      return false;
+      // Log error for debugging
+      print('Failed to create task: ${response.statusCode}');
+      print('Response: ${response.data}');
+      throw Exception(
+        response.data?['message'] ?? 
+        'Failed to create task: Status ${response.statusCode}'
+      );
     }
   }
 
@@ -91,15 +104,18 @@ class TaskService {
     }
 
     final response = await dio.put(
-      '/api/v1/task',
+      '/api/v1/task/${task.id}',
       data: task.toJson(),
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && response.data['status'] == 200) {
       return true;
     } else {
-      return false;
+      throw Exception(
+        response.data?['message'] ?? 
+        'Failed to update task: ${response.statusCode}'
+      );
     }
   }
 
@@ -116,10 +132,13 @@ class TaskService {
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && response.data['status'] == 200) {
       return true;
     } else {
-      return false;
+      throw Exception(
+        response.data?['message'] ?? 
+        'Failed to delete task: ${response.statusCode}'
+      );
     }
   }
 }

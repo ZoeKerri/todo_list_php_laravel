@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do_list_app/models/auth_response.dart';
 import 'package:to_do_list_app/models/team.dart';
@@ -42,7 +41,7 @@ class _ChooseNewLeaderScreenState extends State<ChooseNewLeaderScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'choose_new_leader'.tr(),
+          'Choose New Leader',
           style: TextStyle(color: widget.colors.textColor),
         ),
         backgroundColor: widget.colors.bgColor,
@@ -56,7 +55,7 @@ class _ChooseNewLeaderScreenState extends State<ChooseNewLeaderScreen> {
           children: [
             _eligibleMembers.isEmpty
                 ? Text(
-                  'no_other_members_available'.tr(),
+                  'No other members available',
                   style: TextStyle(color: widget.colors.textColor),
                 )
                 : DropdownButtonFormField<TeamMember>(
@@ -64,7 +63,7 @@ class _ChooseNewLeaderScreenState extends State<ChooseNewLeaderScreen> {
                   dropdownColor: widget.colors.bgColor,
                   style: TextStyle(color: widget.colors.textColor),
                   decoration: InputDecoration(
-                    labelText: 'choose_new_leader'.tr(),
+                    labelText: 'Choose New Leader',
                     labelStyle: TextStyle(color: widget.colors.subtitleColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
@@ -84,10 +83,14 @@ class _ChooseNewLeaderScreenState extends State<ChooseNewLeaderScreen> {
                   ),
                   items:
                       _eligibleMembers.map((member) {
+                        final userName = member.user?.name ?? 'Unknown';
+                        final userEmail = member.user?.email ?? '';
                         return DropdownMenuItem<TeamMember>(
                           value: member,
                           child: Text(
-                            member.user?.name ?? 'unknown'.tr(),
+                            userEmail.isNotEmpty 
+                                ? '$userName ($userEmail)' 
+                                : userName,
                             style: TextStyle(color: widget.colors.textColor),
                           ),
                         );
@@ -109,7 +112,7 @@ class _ChooseNewLeaderScreenState extends State<ChooseNewLeaderScreen> {
                       Navigator.of(context).pop();
                     },
                     child: Text(
-                      'cancel'.tr(),
+                      'Cancel',
                       style: TextStyle(color: widget.colors.textColor),
                     ),
                   ),
@@ -134,7 +137,7 @@ class _ChooseNewLeaderScreenState extends State<ChooseNewLeaderScreen> {
                       ),
                     ),
                     child: Text(
-                      'confirm'.tr(),
+                      'Confirm',
                       style: TextStyle(
                         color:
                             _selectedNewLeader == null

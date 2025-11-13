@@ -5,9 +5,17 @@ import 'package:to_do_list_app/services/auth_service.dart';
 class ReqTeamDTO {
   final int? id;
   final String name;
-  ReqTeamDTO({required this.id, required this.name});
+  final List<TeamMember>? teamMembers;
+  ReqTeamDTO({required this.id, required this.name, this.teamMembers});
   Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name};
+    Map<String, dynamic> json = {'id': id, 'name': name};
+    if (teamMembers != null && teamMembers!.isNotEmpty) {
+      json['teamMembers'] = teamMembers!.map((member) => {
+        'userId': member.userId,
+        'role': member.role.toString().split('.').last,
+      }).toList();
+    }
+    return json;
   }
 }
 
@@ -43,14 +51,23 @@ class TeamRepository {
         reqTeamDTO.toJson(),
       );
 
-      if (response.data['status'] != 201 || response.statusCode != 200) {
-        throw Exception('Lỗi khi tạo nhóm');
+      // Laravel returns 201 for successful creation, 200 for other success
+      if (response.statusCode == 200 || response.data['status'] == 201) {
+        final data = response.data['data'];
+        final team = Team.fromJson(data);
+        return team.id;
+      } else {
+        // Log error for debugging
+        print('Failed to create team: ${response.statusCode}');
+        print('Response: ${response.data}');
+        throw Exception(
+          response.data?['message'] ?? 
+          'Lỗi khi tạo nhóm: Status ${response.statusCode}'
+        );
       }
-      final data = response.data['data'];
-      final team = Team.fromJson(data);
-      return team.id;
     } catch (e) {
-      throw Exception('Lỗi khi tạo nhóm');
+      print('Error in createTeam: $e');
+      rethrow;
     }
   }
 
@@ -75,12 +92,20 @@ class TeamRepository {
     }
   }
   Future<User> getUserbyEmail(String Email) async {
-    final response = await authService.get('/api/v1/$Email');
-    if (response.statusCode == 200) {
+    // URL encode email to handle special characters
+    final encodedEmail = Uri.encodeComponent(Email);
+    final response = await authService.get('/api/v1/user/by-email/$encodedEmail');
+    if (response.statusCode == 200 && response.data['status'] == 200) {
       final data = response.data['data'];
       return User.fromJson(data);
     } else {
-      throw Exception('Lỗi khi tải người dùng email: $Email');
+      // Log error for debugging
+      print('Failed to get user by email: ${response.statusCode}');
+      print('Response: ${response.data}');
+      throw Exception(
+        response.data?['message'] ?? 
+        'Lỗi khi tải người dùng email: $Email - Status ${response.statusCode}'
+      );
     }
   }
 

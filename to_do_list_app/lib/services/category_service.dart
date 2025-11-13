@@ -27,7 +27,7 @@ class CategoryService {
   Future<List<Category>> getCategories(int userId) async {
     try {
       final response = await dio.get(
-        '/api/v1/category/$userId',
+        '/api/v1/category',
         options: Options(headers: await _getAuthHeaders()),
       );
 
@@ -49,21 +49,30 @@ class CategoryService {
   }
 
   // Create a new category
+  // Note: userId parameter is kept for compatibility but not sent in request
+  // Laravel automatically gets userId from JWT token
   Future<Category> createCategory({
     required String name,
     required int userId,
+    String? color,
   }) async {
     try {
       final response = await dio.post(
         '/api/v1/category',
-        data: {'name': name, 'userId': userId},
+        data: {
+          'name': name,
+          if (color != null) 'color': color,
+        },
         options: Options(headers: await _getAuthHeaders()),
       );
 
-      if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to create category: Status ${response.statusCode}',
-        );
+      // Laravel returns 201 for successful creation, 200 for other success
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        // Try to get error message from response
+        final errorMessage = response.data?['message'] ?? 
+                           response.data?['error'] ?? 
+                           'Failed to create category: Status ${response.statusCode}';
+        throw Exception(errorMessage);
       }
 
       if (response.data == null || response.data['data'] == null) {

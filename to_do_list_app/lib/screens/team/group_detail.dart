@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -126,10 +126,10 @@ class _GroupDetailState extends State<GroupDetail> {
                           context: context,
                           builder: (context) {
                             return OneTextFieldDialog(
-                              title: 'rename_team'.tr(),
-                              hintText: 'enter_new_name'.tr(),
-                              buttonText: 'change'.tr(),
-                              cancelText: 'cancel'.tr(),
+                              title: 'Rename Team',
+                              hintText: 'Enter new name',
+                              buttonText: 'Change',
+                              cancelText: 'Cancel',
                               onFunction: onRename,
                               colors: colors,
                             );
@@ -152,19 +152,19 @@ class _GroupDetailState extends State<GroupDetail> {
                         (context) => [
                           PopupMenuItem(
                             value: 'Share',
-                            child: Text('share'.tr()),
+                            child: Text('Share'),
                           ),
                           PopupMenuItem(
                             value: 'Rename',
-                            child: Text('rename_team'.tr()),
+                            child: Text('Rename Team'),
                           ),
                           PopupMenuItem(
                             value: 'Disband',
-                            child: Text('disband'.tr()),
+                            child: Text('Disband'),
                           ),
                           PopupMenuItem(
                             value: 'Leave',
-                            child: Text('leave_team'.tr()),
+                            child: Text('Leave Team'),
                           ),
                         ],
                   )
@@ -187,11 +187,11 @@ class _GroupDetailState extends State<GroupDetail> {
                         (context) => [
                           PopupMenuItem(
                             value: 'Share',
-                            child: Text('share'.tr()),
+                            child: Text('Share'),
                           ),
                           PopupMenuItem(
                             value: 'Leave',
-                            child: Text('leave_team'.tr()),
+                            child: Text('Leave Team'),
                           ),
                         ],
                   ),
@@ -266,7 +266,7 @@ class _GroupDetailState extends State<GroupDetail> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'team_summary'.tr(),
+                        'Team Summary',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -290,7 +290,7 @@ class _GroupDetailState extends State<GroupDetail> {
                           }
                         },
                         child: Text(
-                          'see_more'.tr(),
+                          'See More',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -308,7 +308,7 @@ class _GroupDetailState extends State<GroupDetail> {
                         Padding(
                           padding: const EdgeInsets.only(right: 12.0),
                           child: SummaryCard(
-                            title: 'pending_and_late'.tr(),
+                            title: 'Pending & Late',
                             value: teamPendingLateTasksCount.toString(),
                             icon: Icons.warning_amber_rounded,
                             borderColor:
@@ -322,7 +322,7 @@ class _GroupDetailState extends State<GroupDetail> {
                         Padding(
                           padding: const EdgeInsets.only(right: 12.0),
                           child: SummaryCard(
-                            title: 'pending'.tr(),
+                            title: 'Pending',
                             value: teamPendingTasksCount.toString(),
                             icon: Icons.access_time,
                             borderColor:
@@ -334,7 +334,7 @@ class _GroupDetailState extends State<GroupDetail> {
                         Padding(
                           padding: const EdgeInsets.only(right: 12.0),
                           child: SummaryCard(
-                            title: 'completed'.tr(),
+                            title: 'Completed',
                             value: teamCompletedTasksCount.toString(),
                             icon: Icons.check_circle,
                             borderColor:
@@ -353,7 +353,7 @@ class _GroupDetailState extends State<GroupDetail> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'your_summary'.tr(),
+                          'Your Summary',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -370,7 +370,7 @@ class _GroupDetailState extends State<GroupDetail> {
                           Padding(
                             padding: const EdgeInsets.only(right: 12.0),
                             child: SummaryCard(
-                              title: 'pending_and_late'.tr(),
+                              title: 'Pending & Late',
                               value: myPendingLate.toString(),
                               icon: Icons.warning_amber_rounded,
                               borderColor:
@@ -384,7 +384,7 @@ class _GroupDetailState extends State<GroupDetail> {
                           Padding(
                             padding: const EdgeInsets.only(right: 12.0),
                             child: SummaryCard(
-                              title: 'pending'.tr(),
+                              title: 'Pending',
                               value: myPendingTasksCount.toString(),
                               icon: Icons.access_time,
                               borderColor:
@@ -398,7 +398,7 @@ class _GroupDetailState extends State<GroupDetail> {
                           Padding(
                             padding: const EdgeInsets.only(right: 12.0),
                             child: SummaryCard(
-                              title: 'completed'.tr(),
+                              title: 'Completed',
                               value: myCompletedTasksCount.toString(),
                               icon: Icons.check_circle,
                               borderColor:
@@ -447,7 +447,7 @@ class _GroupDetailState extends State<GroupDetail> {
                             children: [
                               if (myDisplayedTasks.isNotEmpty) ...[
                                 Text(
-                                  'your_tasks'.tr(),
+                                  'Your Tasks',
                                   style: TextStyle(
                                     color: colors.textColor,
                                     fontSize: 18,
@@ -473,7 +473,7 @@ class _GroupDetailState extends State<GroupDetail> {
                               ],
                               if (otherDisplayedTasks.isNotEmpty) ...[
                                 Text(
-                                  'other_members_tasks'.tr(),
+                                  'Other Members Tasks',
                                   style: TextStyle(
                                     color: colors.textColor,
                                     fontSize: 18,
@@ -500,7 +500,7 @@ class _GroupDetailState extends State<GroupDetail> {
                               if (state.tasks.isEmpty)
                                 Center(
                                   child: Text(
-                                    'no_tasks_available'.tr(),
+                                    'No tasks available',
                                     style: TextStyle(color: colors.textColor),
                                   ),
                                 ),
@@ -509,14 +509,14 @@ class _GroupDetailState extends State<GroupDetail> {
                         } else if (state is TeamTaskError) {
                           return Center(
                             child: Text(
-                              'error'.tr(args: [state.message]),
+                              'Error: ${state.message}',
                               style: TextStyle(color: colors.textColor),
                             ),
                           );
                         } else {
                           return Center(
                             child: Text(
-                              'no_data_available'.tr(),
+                              'No data available',
                               style: TextStyle(color: colors.textColor),
                             ),
                           );
@@ -581,10 +581,10 @@ class _GroupDetailState extends State<GroupDetail> {
       context: context,
       builder: (context) {
         return ConfirmationDialog(
-          title: 'confirmation'.tr(),
-          content: 'are_you_sure_disband_team'.tr(args: [team.name]),
-          confirmText: 'confirm'.tr(),
-          cancelText: 'cancel'.tr(),
+          title: 'Confirmation',
+          content: 'Are you sure you want to disband team ${team.name}?',
+          confirmText: 'Confirm',
+          cancelText: 'Cancel',
           onConfirm: () => onDisband(team.id),
         );
       },

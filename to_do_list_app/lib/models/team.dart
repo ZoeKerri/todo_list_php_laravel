@@ -77,13 +77,23 @@ class TeamMember {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'role': role.toString().split('.').last,
-      'userId': userId,
-      'teamId': teamId,
-      'user': user?.toJson(),
+    Map<String, dynamic> json = {
+      'role': role.toString().split('.').last, // "LEADER" or "MEMBER"
+      'user_id': userId, // Laravel expects snake_case: user_id
+      'team_id': teamId, // Laravel expects snake_case: team_id
     };
+    
+    // Only include id if it's not null (for updates)
+    if (id != null) {
+      json['id'] = id;
+    }
+    
+    // Include user data if available (optional, for responses)
+    if (user != null) {
+      json['user'] = user?.toJson();
+    }
+    
+    return json;
   }
 }
 
@@ -95,6 +105,7 @@ class TeamTask {
   Priority priority;
   bool isCompleted;
   int teamMemberId;
+  int? teamId; // Added teamId for API requests
   User? user;
   TeamTask({
     required this.id,
@@ -104,6 +115,7 @@ class TeamTask {
     required this.priority,
     required this.isCompleted,
     required this.teamMemberId,
+    this.teamId,
     this.user,
   });
   factory TeamTask.fromJson(Map<String, dynamic> json) {
@@ -132,25 +144,39 @@ class TeamTask {
       description: json['description'] as String?,
       deadline: taskDeadline,
       priority: taskPriority,
-      isCompleted: json['completed'] as bool? ?? false,
+      // API returns isCompleted (camelCase) or is_completed (snake_case)
+      isCompleted: json['isCompleted'] as bool? ?? 
+                   json['is_completed'] as bool? ?? 
+                   json['completed'] as bool? ?? 
+                   false,
       teamMemberId:
           json['teamMemberId'] as int? ??
+          json['memberId'] as int? ??
+          json['member_id'] as int? ??
           json['teamMember']?['id'] as int? ??
           0,
     );
   }
 
   Map<String, dynamic> toJson() {
-    String formattedDeadline = DateFormat("dd/MM/yyyy HH:mm").format(deadline);
+    // Laravel expects ISO format for deadline, not "dd/MM/yyyy HH:mm"
+    String formattedDeadline = deadline.toIso8601String();
 
-    return {
+    Map<String, dynamic> json = {
       'id': id,
       'title': title,
       'description': description,
       'deadline': formattedDeadline,
-      'priority': priority.toString().split('.').last,
-      'completed': isCompleted,
-      'teamMemberId': teamMemberId,
+      'priority': priority.toString().split('.').last, // Returns "LOW", "MEDIUM", "HIGH"
+      'is_completed': isCompleted, // Laravel expects snake_case: is_completed
+      'member_id': teamMemberId, // Laravel expects snake_case: member_id
     };
+    
+    // Include team_id if available (required for creating new tasks)
+    if (teamId != null) {
+      json['team_id'] = teamId;
+    }
+    
+    return json;
   }
 }

@@ -264,16 +264,19 @@
             confirmBtn.dataset.memberId = '';
         } else {
             listContainer.innerHTML = candidates.map(member => {
-                const name = escapeHtml(member.user?.name || member.user?.email || 'Không tên');
+                const name = escapeHtml(member.user?.name || 'Không tên');
                 const email = escapeHtml(member.user?.email || 'Không có email');
                 const avatar = renderAvatarHTML(member.user);
                 const isSelected = selectedId && selectedId === member.id;
+                // Display name + email like Flutter
+                const displayName = email && email !== 'Không có email' 
+                    ? `${name} (${email})` 
+                    : name;
                 return `
                     <div class="leader-card ${isSelected ? 'selected' : ''}" data-member-id="${member.id}" onclick="selectLeaderCandidate(${member.id})">
                         <div class="leader-avatar">${avatar}</div>
                         <div class="leader-info">
-                            <span class="leader-name">${name}</span>
-                            <span class="leader-email">${email}</span>
+                            <span class="leader-name">${displayName}</span>
                             <span class="leader-role">Thành viên</span>
                         </div>
                         <i class="fas fa-check checkmark"></i>
