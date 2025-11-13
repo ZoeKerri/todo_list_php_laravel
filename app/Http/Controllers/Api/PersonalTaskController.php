@@ -68,7 +68,7 @@ class PersonalTaskController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'due_date' => $request->due_date,
-            'priority' => $request->priority ?? 'medium',
+            'priority' => strtolower($request->priority) ?? 'medium',
             'completed' => $request->completed ?? false,
             'notification_time' => $request->notification_time,
             'user_id' => $user->id,

@@ -286,7 +286,7 @@
 
             try {
                 btn.disabled = true;
-                btn.textContent = 'Đang đăng nhập...';
+                btn.textContent = 'Logging in...';
 
                 // Sign out trước (giống Flutter)
                 await firebase.auth().signOut();
@@ -299,7 +299,7 @@
                 const user = result.user;
 
                 if (!user || !user.email) {
-                    throw new Error('Không thể lấy thông tin người dùng từ Google');
+                    throw new Error('Could not get user information from Google');
                 }
 
                 // Lấy thông tin người dùng (giống Flutter)
@@ -307,7 +307,7 @@
                 const displayName = user.displayName || '';
                 const photoURL = user.photoURL || '';
 
-                console.log('Đăng nhập thành công với Google:', email, displayName, photoURL);
+                console.log('Successfully logged in with Google:', email, displayName, photoURL);
 
                 // Gửi dữ liệu về Laravel API (giống Flutter)
                 const response = await fetch('/api/v1/auth/login-google', {
@@ -353,16 +353,16 @@
                         // Redirect đến trang chính
                         window.location.href = '/statistics';
                     } else {
-                        throw new Error('Không thể xác thực session');
+                        throw new Error('Could not authenticate session');
                     }
                 } else {
-                    throw new Error(data.message || 'Đăng nhập thất bại');
+                    throw new Error(data.message || 'Login failed');
                 }
             } catch (error) {
-                console.error('Lỗi khi đăng nhập bằng Google:', error);
+                console.error('Error logging in with Google:', error);
                 
-                // Hiển thị thông báo lỗi
-                alert('Lỗi: ' + (error.message || 'Đăng nhập Google thất bại'));
+                // Show error message
+                alert('Error: ' + (error.message || 'Google login failed'));
                 
                 // Reset button
                 if (btn) {

@@ -2,6 +2,11 @@
 
 @section('title', 'Your Tasks Dashboard')
 
+@push('modals')
+    @include('modals.create_category')
+    @include('modals.create_personal_task')
+@endpush
+
 @push('styles')
 <style>
     /* Category Filter - Horizontal Scroll */
@@ -275,17 +280,82 @@
         transform: scale(1.1);
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
     }
+    
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .modal.show {
+        display: flex;
+    }
+    
+    .modal-content {
+        background-color: var(--bg-primary);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--text-secondary);
+    }
+    
+    .modal-body {
+        padding: 20px 24px;
+    }
+    
+    .modal-footer {
+        padding: 16px 24px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
 </style>
 @endpush
 
 @section('content')
 <div style="padding: 30px;">
-    <div style="margin-bottom: 25px;">
-        <h2 style="font-size: 1.5rem; font-weight: 600; margin: 0; color: var(--text-primary);">
-            Hi there, {{ Auth::check() ? (Auth::user()->full_name ?? Auth::user()->email) : 'Guest' }}
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;">
+        <div>
+            <h2 style="font-size: 1.5rem; font-weight: 600; margin: 0; color: var(--text-primary);">
+                Hi there, {{ Auth::check() ? (Auth::user()->full_name ?? Auth::user()->email) : 'Guest' }}
             </h2>
-        <h4 style="font-size: 2.5rem; font-weight: bold; margin: 10px 0 0 0; color: var(--text-primary);">Your Tasks</h4>
+            <h4 style="font-size: 2.5rem; font-weight: bold; margin: 10px 0 0 0; color: var(--text-primary);">Your Tasks</h4>
         </div>
+        <button onclick="openCreateCategoryModal()" style="padding: 8px 16px; background-color: var(--accent-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            New Category
+        </button>
+    </div>
 
     <!-- Filters -->
     <div class="category-filter-container">
@@ -336,6 +406,58 @@
     
     // Make getApiToken available globally
     window.getApiToken = getApiToken;
+    
+    // Function to close the modal
+    function closePersonalTaskModal() {
+        const modal = document.getElementById('createPersonalTaskModal');
+        if (modal) {
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Re-enable scrolling
+        }
+    }
+
+    // Add Task button click handler
+    document.addEventListener('DOMContentLoaded', function() {
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const modal = document.getElementById('createPersonalTaskModal');
+        
+        // Open modal when clicking Add Task button
+        if (addTaskBtn) {
+            addTaskBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (modal) {
+                    modal.classList.add('show');
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+                } else {
+                    console.error('Create personal task modal not found');
+                }
+            });
+        }
+        
+        // Close modal when clicking outside the modal content
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closePersonalTaskModal();
+                }
+            });
+            
+            // Close modal when clicking the close button
+            const closeBtn = modal.querySelector('.modal-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closePersonalTaskModal);
+            }
+        }
+        
+        // Close modal when pressing Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePersonalTaskModal();
+            }
+        });
+    });
     
     const apiToken = getApiToken();
     let tasksData = [];
@@ -908,8 +1030,9 @@
     async function toggleTaskComplete(taskId) {
         const task = tasksData.find(t => t.id === taskId);
         if (!task) return;
-        
-        const newStatus = !(task.completed || task.isCompleted);
+        const newStatus = !(task.completed);
+        task.completed = newStatus;
+        console.log(task);
         
         try {
             const response = await fetch(`/api/v1/task/${taskId}`, {
@@ -920,6 +1043,12 @@
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
+                    id: task.id,
+                    title: task.title,
+                    description: task.description,
+                    due_date: task.dueDate,
+                    priority: task.priority, 
+                    category_id: task.categoryId,
                     completed: newStatus
                 })
             });
@@ -927,7 +1056,6 @@
             const result = await response.json();
             if (response.ok && result.status === 200) {
                 task.completed = newStatus;
-                task.isCompleted = newStatus;
                 applyFilters();
             } else {
                 alert(result.message || 'Failed to update task');
@@ -977,10 +1105,25 @@
             }
         }
         
-        // Only set as fallback if not already set by modal
-        if (typeof window.openCreateCategoryModal !== 'function') {
-            window.openCreateCategoryModal = openCreateCategoryModalWelcome;
-        }
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('createCategoryModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            const modal = document.getElementById('createCategoryModal');
+            if (event.key === 'Escape' && modal && modal.classList.contains('show')) {
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            }
+        });
         
         // Make loadCategories and initializeCategoryFilter globally available
         window.loadCategories = loadCategories;

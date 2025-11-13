@@ -1019,7 +1019,9 @@
 
     </script>
 
+    @stack('modals')
     @stack('scripts')
+    @include('modals.create_personal_task')
 </body>
 
 </html>
