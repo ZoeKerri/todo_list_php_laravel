@@ -48,9 +48,20 @@ class TeamService {
   }
 
   Future<bool> ToggleTeamTaskComplete(TeamTask teamTask) async {
-    teamTask.isCompleted = !teamTask.isCompleted;
-    await teamTaskRepository.updatePersonalTask(teamTask);
-    return true;
+    try {
+      teamTask.isCompleted = !teamTask.isCompleted;
+      final success = await teamTaskRepository.updatePersonalTask(teamTask);
+      if (!success) {
+        // Revert the change if update failed
+        teamTask.isCompleted = !teamTask.isCompleted;
+      }
+      return success;
+    } catch (e) {
+      // Revert the change if update failed
+      teamTask.isCompleted = !teamTask.isCompleted;
+      print('Error toggling team task: $e');
+      return false;
+    }
   }
 
   Future<void> AddTeamMember(int teamId, int userId) async {
@@ -81,6 +92,7 @@ class TeamService {
       ),
       isCompleted: false,
       teamMemberId: member.id!,
+      teamId: teamId, // Include teamId for API request
     );
     await teamTaskRepository.createPersonalTask(teamTask);
 
@@ -128,26 +140,30 @@ class TeamService {
     return users;
   }
   Future<void> createTeamWithMembers(Team team, int userId) async {
-    ReqTeamDTO reqTeamDTO = ReqTeamDTO(id: null, name: team.name);
-    final teamId = await teamRepository.createTeam(reqTeamDTO, userId);
-    if (teamId != null) {
-      final teamMemberList = await teamMemberRepository.getMembersByUserId(
-        userId,
-      );
-      final leader = teamMemberList.firstWhere((e) => e.teamId == teamId);
-      leader.role = Role.LEADER;
-      await teamMemberRepository.updateMember(leader);
-      team.teamMembers.removeWhere((e) => e.userId == userId);
-      for (var member in team.teamMembers) {
-        await teamMemberRepository.createTeamMember(
-          TeamMember(
-            id: null,
-            role: member.role,
-            userId: member.userId,
-            teamId: teamId,
-          ),
-        );
+    // Laravel automatically creates the creator as LEADER, so we only need to send other members
+    // Filter out the creator from teamMembers if present
+    final otherMembers = team.teamMembers
+        .where((member) => member.userId != userId)
+        .toList();
+    
+    ReqTeamDTO reqTeamDTO = ReqTeamDTO(
+      id: null, 
+      name: team.name,
+      teamMembers: otherMembers.isNotEmpty ? otherMembers : null,
+    );
+    
+    try {
+      final teamId = await teamRepository.createTeam(reqTeamDTO, userId);
+      // Laravel automatically creates the team with:
+      // 1. Creator as LEADER (automatic)
+      // 2. Other members from teamMembers array (if provided)
+      // So we don't need to do anything else
+      if (teamId == null) {
+        throw Exception('Failed to create team: No team ID returned');
       }
+    } catch (e) {
+      print('Error creating team with members: $e');
+      rethrow;
     }
   }
 }

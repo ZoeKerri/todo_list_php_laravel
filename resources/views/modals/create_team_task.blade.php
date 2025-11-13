@@ -102,7 +102,9 @@ async function loadTeamMembersForTask(teamId) {
                 const option = document.createElement('option');
                 option.value = member.id; // member_id
                 const userName = member.user ? (member.user.name || member.user.fullName || member.user.email) : 'Unknown';
-                option.textContent = `${userName} (${member.role})`;
+                const userEmail = member.user ? (member.user.email || '') : '';
+                // Display name + email like Flutter
+                option.textContent = userEmail ? `${userName} (${userEmail})` : userName;
                 memberSelect.appendChild(option);
             });
         }

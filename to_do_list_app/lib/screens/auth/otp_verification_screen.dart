@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -81,12 +80,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('otp_code_resent'.tr())));
+        ).showSnackBar(SnackBar(content: Text('OTP code has been resent')));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('error_sending_otp'.tr(args: ['$e']))),
+          SnackBar(content: Text('Error sending OTP: $e')),
         );
       }
     }
@@ -98,7 +97,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('invalid_otp_code'.tr())));
+        ).showSnackBar(SnackBar(content: Text('Invalid OTP code')));
       }
       return;
     }
@@ -157,7 +156,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             title: Text(
-              'otp_verification'.tr(),
+              'OTP Verification',
               style: TextStyle(
                 color: colors.textColor,
                 fontSize: 20,
@@ -181,7 +180,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     ),
                     const SizedBox(height: 30),
                     Text(
-                      'enter_otp_code'.tr(),
+                      'Enter OTP Code',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -191,7 +190,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'verification_code_sent_to'.tr(args: [widget.email]),
+                      'Verification code sent to ${widget.email}',
                       style: TextStyle(
                         fontSize: 16,
                         color: colors.subtitleColor,
@@ -255,8 +254,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     const SizedBox(height: 20),
                     Text(
                       _isResendAvailable
-                          ? 'you_can_resend_code'.tr()
-                          : 'resend_code_in'.tr(args: ['$_secondsRemaining']),
+                          ? 'You can resend the code now' 
+                          : 'Resend code in $_secondsRemaining seconds',
                       style: TextStyle(
                         color: colors.subtitleColor,
                         fontSize: 16,
@@ -273,7 +272,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                   _startCountdown();
                                 },
                         child: Text(
-                          'resend_code'.tr(),
+                          'Resend Code',
                           style: TextStyle(
                             fontSize: 16,
                             color: colors.primaryColor,
@@ -297,7 +296,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                 color: Colors.white,
                               )
                               : Text(
-                                'verify'.tr(),
+                                'Verify',
                                 style: TextStyle(fontSize: 16),
                               ),
                     ),

@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do_list_app/bloc/Team/teamMember_bloc.dart';
@@ -9,7 +8,7 @@ import 'package:to_do_list_app/services/team_service.dart';
 import 'package:to_do_list_app/utils/TeamMemberSearchDelegate.dart';
 import 'package:to_do_list_app/utils/theme_config.dart';
 import 'package:to_do_list_app/widgets/Dialog_Confirmation.dart';
-import 'package:to_do_list_app/widgets/Dialog_OneTextField.dart';
+import 'package:to_do_list_app/widgets/Dialog_SearchUsers.dart';
 import 'package:to_do_list_app/widgets/team_member_card.dart';
 
 // ignore: must_be_immutable
@@ -60,12 +59,23 @@ class _GroupListMemberState extends State<GroupListMember> {
               widget.isLeader
                   ? IconButton(
                     onPressed: () {
+                      // Get current members to exclude from search
+                      List<int> excludeUserIds = [];
+                      if (teamMemberBloc.state is TeamMemberLoaded) {
+                        final state = teamMemberBloc.state as TeamMemberLoaded;
+                        excludeUserIds = state.members.map((m) => m.id).toList();
+                      }
+                      
                       showDialog(
                         context: context,
                         builder: (context) {
-                          return OneTextFieldDialog(
-                            onFunction: onAddMember,
+                          return SearchUsersDialog(
+                            onUserSelected: (selectedUser) {
+                              onAddMemberFromSearch(selectedUser);
+                            },
+                            onSearch: onSearchUsers,
                             colors: colors,
+                            excludeUserIds: excludeUserIds,
                           );
                         },
                       );
@@ -123,7 +133,7 @@ class _GroupListMemberState extends State<GroupListMember> {
                         children: [
                           if (leaderMember.isNotEmpty) ...[
                             Text(
-                              'leader'.tr(),
+                              'Leader',
                               style: TextStyle(
                                 color: colors.textColor,
                                 fontSize: 18,
@@ -141,7 +151,7 @@ class _GroupListMemberState extends State<GroupListMember> {
                           ],
                           if (normalMembers.isNotEmpty) ...[
                             Text(
-                              'members'.tr(),
+                              'Members',
                               style: TextStyle(
                                 color: colors.textColor,
                                 fontSize: 18,
@@ -161,7 +171,7 @@ class _GroupListMemberState extends State<GroupListMember> {
                         ],
                       );
                     } else {
-                      return Center(child: Text('no_data_available'.tr()));
+                      return Center(child: Text('No data available'));
                     }
                   },
                 ),
@@ -182,7 +192,30 @@ class _GroupListMemberState extends State<GroupListMember> {
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('error'.tr(args: [e.toString()]))));
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+    }
+  }
+
+  void onAddMemberFromSearch(User user) async {
+    try {
+      await teamService.AddTeamMember(widget.team.id, user.id);
+      teamMemberBloc.add(LoadTeamMembersByTeamId(widget.team.id));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Member added successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+    }
+  }
+
+  Future<List<User>> onSearchUsers(String prefix) async {
+    try {
+      final users = await teamService.searchUsersByEmailPrefix(prefix);
+      return users;
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -196,10 +229,10 @@ class _GroupListMemberState extends State<GroupListMember> {
       context: context,
       builder: (context) {
         return ConfirmationDialog(
-          title: 'confirmation'.tr(),
-          content: 'are_you_sure_delete_member'.tr(args: [user.name]),
-          confirmText: 'confirm'.tr(),
-          cancelText: 'cancel'.tr(),
+          title: 'Confirmation',
+          content: 'Are you sure you want to delete member ${user.name}?',
+          confirmText: 'Confirm',
+          cancelText: 'Cancel',
           onConfirm: () => onRemoveMember(user),
         );
       },

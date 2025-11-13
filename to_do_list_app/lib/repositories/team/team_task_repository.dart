@@ -37,20 +37,33 @@ class TeamTaskRepository {
 
   Future<void> createPersonalTask(TeamTask reqTeamTaskDTO) async {
     final response = await authService.post('$path', reqTeamTaskDTO.toJson());
-    if (response.data['status'] != 201 && response.statusCode != 200) {
-      throw Exception('Lỗi khi thêm task nhóm');
+    // Laravel returns 201 for successful creation, 200 for other success
+    if (response.statusCode == 200 || response.data['status'] == 201) {
+      return; // Success
     }
+    // If we get here, it's an error
+    print('Failed to create team task: ${response.statusCode}');
+    print('Response: ${response.data}');
+    throw Exception(
+      response.data?['message'] ?? 
+      'Lỗi khi thêm task nhóm: Status ${response.statusCode}'
+    );
   }
 
   Future<bool> updatePersonalTask(TeamTask reqTeamTaskDTO) async {
     try {
       final response = await authService.put('$path', reqTeamTaskDTO.toJson());
+      // Laravel returns 200 for successful update
       if (response.statusCode == 200 && response.data['status'] == 200) {
         return true;
       } else {
+        // Log error for debugging
+        print('Failed to update team task: ${response.statusCode}');
+        print('Response: ${response.data}');
         return false;
       }
     } catch (e) {
+      print('Error updating team task: $e');
       return false;
     }
   }

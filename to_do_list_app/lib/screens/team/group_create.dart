@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do_list_app/models/auth_response.dart';
 import 'package:to_do_list_app/models/team.dart';
@@ -45,7 +44,7 @@ class _GroupCreateState extends State<GroupCreate> {
     final colors = AppThemeConfig.getColors(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('create_team'.tr()),
+        title: Text('Create Team'),
         backgroundColor: colors.bgColor,
       ),
       body: Container(
@@ -59,7 +58,7 @@ class _GroupCreateState extends State<GroupCreate> {
                 style: TextStyle(color: colors.textColor),
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: 'name'.tr(),
+                  labelText: 'Name',
                   labelStyle: TextStyle(color: colors.textColor),
                   filled: true,
                   fillColor: colors.itemBgColor,
@@ -83,7 +82,7 @@ class _GroupCreateState extends State<GroupCreate> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'members'.tr(),
+                    'Members',
                     style: TextStyle(
                       fontSize: 18,
                       color: colors.textColor,
@@ -104,7 +103,7 @@ class _GroupCreateState extends State<GroupCreate> {
                           member.user ??
                           User(
                             id: -9,
-                            name: 'unknown'.tr(),
+                            name: 'Unknown',
                             email: 'unknown@example.com',
                             phone: '0000000000',
                           ),
@@ -134,7 +133,7 @@ class _GroupCreateState extends State<GroupCreate> {
                     ),
                   ),
                   child: Text(
-                    'create_group'.tr(),
+                    'Create Group',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -212,7 +211,7 @@ class _GroupCreateState extends State<GroupCreate> {
     } catch (e) {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('user_with_email_not_found'.tr(args: [email]))),
+        SnackBar(content: Text('User with email $email not found')),
       );
     }
   }

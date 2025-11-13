@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:image_picker/image_picker.dart';
@@ -38,10 +37,10 @@ class _QR_JoinGroupState extends State<QR_JoinGroup> {
       if (teamId == 0) {
         if (mounted) {
           setState(() {
-            qrResultText = 'invalid_qr_not_team_id'.tr();
+            qrResultText = 'Invalid QR code: Not a valid team ID';
           });
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('scanned_qr_not_valid_team_id'.tr())),
+            SnackBar(content: Text('Scanned QR code is not a valid team ID')),
           );
         }
 
@@ -51,7 +50,7 @@ class _QR_JoinGroupState extends State<QR_JoinGroup> {
       if (mounted) {
         setState(() {
           isProcessing = true;
-          qrResultText = 'team_id_found_joining'.tr(args: ['$teamId']);
+          qrResultText = 'Team ID found: $teamId. Joining...';
         });
 
         TeamMember member = TeamMember(
@@ -69,11 +68,11 @@ class _QR_JoinGroupState extends State<QR_JoinGroup> {
     } else {
       if (mounted) {
         setState(() {
-          qrResultText = 'no_qr_code_found'.tr();
+          qrResultText = 'No QR code found';
         });
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('no_qr_code_found'.tr())));
+        ).showSnackBar(SnackBar(content: Text('No QR code found')));
       }
     }
   }
@@ -88,7 +87,7 @@ class _QR_JoinGroupState extends State<QR_JoinGroup> {
       if (imageFile != null) {
         if (mounted) {
           setState(() {
-            qrResultText = 'analyzing_image'.tr();
+            qrResultText = 'Analyzing image...';
           });
         }
         final BarcodeCapture? capture = await scannerController.analyzeImage(
@@ -104,17 +103,17 @@ class _QR_JoinGroupState extends State<QR_JoinGroup> {
       } else {
         if (mounted) {
           setState(() {
-            qrResultText = 'image_selection_cancelled'.tr();
+            qrResultText = 'Image selection cancelled';
           });
         }
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          qrResultText = 'error_picking_scanning_image'.tr();
+          qrResultText = 'Error picking or scanning image';
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('error_picking_scanning_image'.tr())),
+          SnackBar(content: Text('Error picking or scanning image')),
         );
       }
     }
@@ -126,7 +125,7 @@ class _QR_JoinGroupState extends State<QR_JoinGroup> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'join_team_via_qr'.tr(),
+          'Join Team via QR',
           style: TextStyle(color: colors.textColor),
         ),
         backgroundColor: colors.primaryColor,
@@ -156,7 +155,7 @@ class _QR_JoinGroupState extends State<QR_JoinGroup> {
               icon: Icon(Icons.image_search, color: colors.textColor),
               onPressed: _pickAndScanImage,
               label: Text(
-                'scan_qr_from_gallery'.tr(),
+                'Scan QR from Gallery',
                 style: TextStyle(color: colors.textColor),
               ),
               style: ElevatedButton.styleFrom(
@@ -173,7 +172,7 @@ class _QR_JoinGroupState extends State<QR_JoinGroup> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  qrResultText ?? 'point_camera_at_qr'.tr(),
+                  qrResultText ?? 'Point camera at QR code',
                   style: TextStyle(
                     fontSize: 16,
                     color: colors.textColor.withOpacity(0.8),

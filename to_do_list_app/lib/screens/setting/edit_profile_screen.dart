@@ -7,7 +7,6 @@ import 'package:to_do_list_app/bloc/auth/auth_event.dart';
 import 'package:to_do_list_app/bloc/auth/auth_state.dart';
 import 'package:to_do_list_app/services/profile_service.dart';
 import 'package:to_do_list_app/utils/theme_config.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String name;
@@ -34,7 +33,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _fullImagePath; // Lưu đường dẫn đầy đủ để upload
 
   // Base URL để hiển thị ảnh từ server
-  static const String _baseImageUrl = 'http://localhost:8080/storage/avatar/';
+  // Laravel stores files in 'uploads' folder, not 'avatar'
+  static const String _baseImageUrl = 'http://localhost:8080/storage/';
 
   @override
   void initState() {
@@ -66,7 +66,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_nameController.text.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('nameEmpty'.tr())));
+      ).showSnackBar(SnackBar(content: Text('nameEmpty' )));
       return;
     }
 
@@ -76,7 +76,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated && authState.authResponse != null) {
-      final userId = authState.authResponse!.user.id;
       try {
         String? avatarUrl =
             _avatarImagePath?.startsWith(_baseImageUrl) == true
@@ -87,12 +86,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (_fullImagePath != null &&
             !_fullImagePath!.startsWith(_baseImageUrl)) {
           final userService = ProfileService();
-          final fileName = await userService.uploadFile({
+          final filePath = await userService.uploadFile({
             'filePath': _fullImagePath!,
-            'folder': 'avatar',
+            // Laravel doesn't need 'folder' parameter
           });
-          avatarUrl =
-              '$_baseImageUrl$fileName'; // Tạo avatarUrl từ fileName trả về
+          // filePath is relative path like "uploads/uuid.ext"
+          avatarUrl = '$_baseImageUrl$filePath'; // Tạo avatarUrl từ filePath trả về
         }
 
         // Gọi updateProfile với avatarUrl đã được cập nhật
@@ -101,7 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           'name': _nameController.text,
           'phone': _phoneController.text,
           'avatarImagePath': avatarUrl,
-          'userId': userId,
+          // userId không cần vì Laravel lấy từ JWT token
         });
 
         // Cập nhật AuthBloc
@@ -123,18 +122,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         // Hiển thị thông báo thành công
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('profileUpdated'.tr())));
+        ).showSnackBar(SnackBar(content: Text('profileUpdated' )));
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('updateProfileFailed'.tr(args: [e.toString()])),
+            content: Text('updateProfileFailed' + e.toString()),
           ),
         );
       }
     } else {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('userNotAuthenticated'.tr())));
+      ).showSnackBar(SnackBar(content: Text('userNotAuthenticated' )));
     }
 
     setState(() {
@@ -157,7 +156,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           icon: Icon(Icons.arrow_back, color: colors.textColor, size: 24),
         ),
         title: Text(
-          'editProfile'.tr(),
+          'editProfile' ,
           style: TextStyle(
             color: colors.textColor,
             fontWeight: FontWeight.bold,
@@ -301,7 +300,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         TextField(
                           controller: _nameController,
                           decoration: InputDecoration(
-                            labelText: 'name'.tr(),
+                            labelText: 'Name',
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -309,7 +308,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         TextField(
                           controller: _phoneController,
                           decoration: InputDecoration(
-                            labelText: 'phone'.tr(),
+                            labelText: 'Phone',
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -350,7 +349,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   color: Colors.white,
                                 )
                                 : Text(
-                                  'save'.tr(),
+                                  'Save',
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,

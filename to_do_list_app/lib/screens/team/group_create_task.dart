@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do_list_app/models/auth_response.dart';
 import 'package:to_do_list_app/models/team.dart';
@@ -53,7 +52,7 @@ class _GroupCreateTaskState extends State<GroupCreateTask> {
               icon: Icon(Icons.arrow_back, color: colors.textColor, size: 34),
             ),
             title: Text(
-              'add_task'.tr(),
+              'Add Task',
               style: TextStyle(
                 color: colors.textColor,
                 fontWeight: FontWeight.bold,
@@ -71,7 +70,7 @@ class _GroupCreateTaskState extends State<GroupCreateTask> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'task_title'.tr(),
+                      'Task Title',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -83,7 +82,7 @@ class _GroupCreateTaskState extends State<GroupCreateTask> {
                       controller: _titleController,
                       style: TextStyle(color: colors.textColor),
                       decoration: InputDecoration(
-                        hintText: 'enter_task_title'.tr(),
+                        hintText: 'Enter task title',
                         hintStyle: TextStyle(
                           fontSize: 16,
                           color: colors.subtitleColor,
@@ -116,7 +115,7 @@ class _GroupCreateTaskState extends State<GroupCreateTask> {
                     ),
                     SizedBox(height: 18),
                     Text(
-                      'task_description'.tr(),
+                      'Task Description',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -131,7 +130,7 @@ class _GroupCreateTaskState extends State<GroupCreateTask> {
                       decoration: InputDecoration(
                         fillColor: colors.itemBgColor,
                         filled: true,
-                        hintText: 'enter_task_description'.tr(),
+                        hintText: 'Enter task description',
                         hintStyle: TextStyle(
                           fontSize: 16,
                           color: colors.subtitleColor,
@@ -162,7 +161,7 @@ class _GroupCreateTaskState extends State<GroupCreateTask> {
                     ),
                     SizedBox(height: 18),
                     Text(
-                      'due_date'.tr(),
+                      'Due Date',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -193,7 +192,7 @@ class _GroupCreateTaskState extends State<GroupCreateTask> {
                             SizedBox(width: 8),
                             Text(
                               _selectedDate == null
-                                  ? 'select_date'.tr()
+                                  ? 'Select Date' 
                                   : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
                               style: TextStyle(
                                 fontSize: 16,
@@ -206,7 +205,7 @@ class _GroupCreateTaskState extends State<GroupCreateTask> {
                     ),
                     SizedBox(height: 18),
                     Text(
-                      'assign_to'.tr(),
+                      'Assign To',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -222,7 +221,7 @@ class _GroupCreateTaskState extends State<GroupCreateTask> {
                             return DropdownMenuItem<int>(
                               value: member.id,
                               child: Text(
-                                member.name,
+                                '${member.name} (${member.email})', // Display name + email like web
                                 style: TextStyle(color: colors.textColor),
                               ),
                             );
@@ -273,21 +272,31 @@ class _GroupCreateTaskState extends State<GroupCreateTask> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    'please_fill_in_all_information'.tr(),
+                                    'Please fill in all information',
                                   ),
                                 ),
                               );
                               return;
                             }
-                            await _teamService.CreateTeamTask(
-                              _titleController.text,
-                              _descriptionController.text,
-                              _selectedDate!,
-                              _selectedPriority!,
-                              widget.team.id,
-                              _selectedMember!,
-                            );
-                            Navigator.of(context).pop('refresh');
+                            try {
+                              await _teamService.CreateTeamTask(
+                                _titleController.text,
+                                _descriptionController.text,
+                                _selectedDate!,
+                                _selectedPriority!,
+                                widget.team.id,
+                                _selectedMember!,
+                              );
+                              Navigator.of(context).pop('refresh');
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Lỗi khi tạo task: ${e.toString()}',
+                                  ),
+                                ),
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: colors.primaryColor,
@@ -301,7 +310,7 @@ class _GroupCreateTaskState extends State<GroupCreateTask> {
                             ),
                           ),
                           child: Text(
-                            'create_task'.tr(),
+                            'Create Task',
                             style: TextStyle(
                               color: colors.textColor,
                               fontWeight: FontWeight.bold,

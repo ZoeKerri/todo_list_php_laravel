@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:to_do_list_app/providers/theme_provider.dart';
 
 class AppThemeConfig {
-  static AppColors getColors(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context, listen: true);
+  static AppColors getColors(BuildContext context, {bool listen = true}) {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: listen);
     bool isDark = themeProvider.isDarkMode;
     return isDark ? DarkColors() : LightColors();
   }
