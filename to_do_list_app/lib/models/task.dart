@@ -44,7 +44,7 @@ class Task {
               )
               : null,
       categoryId: json['categoryId'],
-      priority: json['priority'],
+      priority: json['priority'] ?? 'medium', // Default to medium if null
       completed: json['completed'],
       createdAt:
           json['created'] != null
@@ -59,14 +59,14 @@ class Task {
       'id': id,
       'title': title,
       'description': description,
-      'dueDate': DateFormat('yyyy-MM-dd').format(taskDate),
-      'categoryId': categoryId,
+      'due_date': DateFormat('yyyy-MM-dd').format(taskDate), // Laravel expects snake_case
+      'category_id': categoryId, // Laravel expects snake_case
       'completed': completed,
-      'notificationTime':
+      'notification_time': // Laravel expects snake_case
           notificationTime != null
               ? '${notificationTime!.hour.toString().padLeft(2, '0')}:${notificationTime!.minute.toString().padLeft(2, '0')}'
               : null,
-      'priority': priority,
+      'priority': priority.toLowerCase(), // Laravel expects lowercase: low, medium, high
     };
   }
 

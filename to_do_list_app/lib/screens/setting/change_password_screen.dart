@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:to_do_list_app/bloc/auth/auth_bloc.dart';
@@ -34,12 +33,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final confirmPass = _confirmPasswordController.text.trim();
 
     if (newPass != confirmPass) {
-      _showMessage('newPasswordNotMatch'.tr());
+      _showMessage('New password and confirm password do not match');
       return;
     }
 
     if (oldPass == newPass) {
-      _showMessage('newPasswordMustDifferent'.tr());
+      _showMessage('New password must be different from old password');
       return;
     }
 
@@ -53,18 +52,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       try {
         final profileService = ProfileService();
         await profileService.changePassWord({
-          'userId': userId,
+          // userId không cần vì Laravel lấy từ JWT token
           'newPassword': newPass,
           'oldPassword': oldPass,
         });
 
-        _showMessage('passwordChangedSuccess'.tr(), success: true);
+        _showMessage('Password changed successfully', success: true);
         _oldPasswordController.clear();
         _newPasswordController.clear();
         _confirmPasswordController.clear();
         Navigator.pop(context);
       } catch (e) {
-        _showMessage('passwordChangeFailed'.tr(args: [e.toString()]));
+        _showMessage('Failed to change password: ${e.toString()}');
       } finally {
         setState(() {
           _isLoading = false;
@@ -74,7 +73,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       setState(() {
         _isLoading = false;
       });
-      _showMessage('userNotAuthenticated'.tr());
+      _showMessage('User not authenticated');
     }
   }
 
@@ -118,7 +117,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   Icon(Icons.lock_reset, size: 100, color: colors.primaryColor),
                   const SizedBox(height: 16),
                   Text(
-                    'changeYourPassword'.tr(),
+                    'Change Your Password',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -146,13 +145,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           controller: _oldPasswordController,
                           obscureText: true,
                           decoration: InputDecoration(
-                            labelText: 'oldPassword'.tr(),
+                            labelText: 'Old Password',
                             border: OutlineInputBorder(),
                           ),
                           validator:
                               (value) =>
                                   value == null || value.isEmpty
-                                      ? 'pleaseEnterOldPassword'.tr()
+                                      ? 'Please enter old password' 
                                       : null,
                         ),
                         const SizedBox(height: 16),
@@ -160,22 +159,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           controller: _newPasswordController,
                           obscureText: true,
                           decoration: InputDecoration(
-                            labelText: 'newPassword'.tr(),
+                            labelText: 'New Password',
                             border: OutlineInputBorder(),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'pleaseEnterNewPassword'.tr();
+                              return 'Please enter new password';
                             }
                             if (value == _oldPasswordController.text) {
-                              return 'newPasswordMustDiffer'.tr();
+                              return 'New password must be different from old password';
                             }
                             if (value.length < 8 ||
                                 !RegExp(r'(?=.*[A-Z])').hasMatch(value) ||
                                 !RegExp(r'(?=.*[a-z])').hasMatch(value) ||
                                 !RegExp(r'(?=.*[0-9])').hasMatch(value) ||
                                 !RegExp(r'(?=.*[!@#\$%^&*])').hasMatch(value)) {
-                              return 'passwordRequirement'.tr();
+                              return 'Password must be at least 8 characters with uppercase, lowercase, number and special character';
                             }
                             return null;
                           },
@@ -185,15 +184,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           controller: _confirmPasswordController,
                           obscureText: true,
                           decoration: InputDecoration(
-                            labelText: 'confirmPassword'.tr(),
+                            labelText: 'Confirm Password',
                             border: OutlineInputBorder(),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'pleaseConfirmPassword'.tr();
+                              return 'Please confirm password';
                             }
                             if (value != _newPasswordController.text) {
-                              return 'passwordsDoNotMatch'.tr();
+                              return 'Passwords do not match';
                             }
                             return null;
                           },
@@ -209,7 +208,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             SizedBox(width: 6),
                             Expanded(
                               child: Text(
-                                'passwordRequirement'.tr(),
+                                'passwordRequirement' ,
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: Colors.grey,
@@ -240,7 +239,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 color: Colors.white,
                               )
                               : Text(
-                                'changePassword'.tr(),
+                                'Change Password',
                                 style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,

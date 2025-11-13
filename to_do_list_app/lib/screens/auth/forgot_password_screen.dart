@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:to_do_list_app/services/auth_service.dart';
@@ -51,7 +50,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
         );
       } else {
-        _showMessage('invalid_email'.tr());
+        _showMessage('Invalid email');
       }
     }
   }
@@ -66,7 +65,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'forgot_password'.tr(),
+          'Forgot Password',
           style: TextStyle(
             color: colors.textColor,
             fontSize: 20,
@@ -99,7 +98,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     const SizedBox(height: 30),
                     Text(
-                      'reset_password'.tr(),
+                      'Reset Password',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -109,7 +108,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'enter_email_for_otp'.tr(),
+                      'Enter your email to receive OTP code',
                       style: TextStyle(
                         fontSize: 16,
                         color: colors.subtitleColor,
@@ -123,7 +122,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        labelText: 'email'.tr(),
+                        labelText: 'Email',
                         prefixIcon: Icon(
                           Icons.email,
                           color: colors.subtitleColor,
@@ -132,12 +131,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       style: const TextStyle(fontSize: 16),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'please_enter_email'.tr();
+                          return 'Please enter your email';
                         }
                         if (!RegExp(
                           r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                         ).hasMatch(value)) {
-                          return 'please_enter_valid_email'.tr();
+                          return 'Please enter a valid email';
                         }
                         return null;
                       },
@@ -166,7 +165,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 ),
                               )
                               : Text(
-                                'send_otp'.tr(),
+                                'Send OTP',
                                 style: TextStyle(fontSize: 16),
                               ),
                     ),
@@ -266,10 +265,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     });
 
     if (success) {
-      _showMessage('otp_resent_success'.tr(), success: true);
+      _showMessage('OTP code has been resent successfully', success: true);
       _startCountdown();
     } else {
-      _showMessage('otp_resent_failed'.tr());
+      _showMessage('Failed to resend OTP code');
     }
   }
 
@@ -296,7 +295,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         setState(() {
           _isLoading = false;
         });
-        _showMessage('passwords_not_match'.tr());
+        _showMessage('Passwords do not match');
         return;
       }
 
@@ -311,7 +310,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       });
 
       if (success) {
-        _showMessage('password_reset_success'.tr(), success: true);
+        _showMessage('Password reset successfully', success: true);
         _codeController.clear();
         _newPasswordController.clear();
         _confirmPasswordController.clear();
@@ -321,7 +320,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           ).pushNamedAndRemoveUntil('/login', (route) => false);
         });
       } else {
-        _showMessage('password_reset_failed'.tr());
+        _showMessage('Failed to reset password');
       }
     }
   }
@@ -350,7 +349,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           icon: Icon(Icons.arrow_back, color: colors.textColor, size: 24),
         ),
         title: Text(
-          'reset_password'.tr(),
+          'Reset Password',
           style: TextStyle(
             color: colors.textColor,
             fontWeight: FontWeight.bold,
@@ -390,7 +389,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'enter_6_digit_otp'.tr(),
+                        'Enter 6-digit OTP code',
                         style: TextStyle(
                           fontSize: 16,
                           color: colors.textColor,
@@ -445,8 +444,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       const SizedBox(height: 10),
                       Text(
                         _isResendAvailable
-                            ? 'you_can_resend_otp'.tr()
-                            : 'resend_code_in'.tr(args: ['$_secondsRemaining']),
+                            ? 'You can resend OTP code now' 
+                            : 'Resend code in $_secondsRemaining seconds',
                         style: TextStyle(
                           fontSize: 14,
                           color: colors.subtitleColor,
@@ -457,7 +456,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         TextButton(
                           onPressed: _isLoading ? null : _resendCode,
                           child: Text(
-                            'resend_otp_code'.tr(),
+                            'Resend OTP Code',
                             style: TextStyle(
                               fontSize: 16,
                               color: colors.primaryColor,
@@ -489,7 +488,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         controller: _newPasswordController,
                         obscureText: _obscureNewPassword,
                         decoration: InputDecoration(
-                          labelText: 'new_password'.tr(),
+                          labelText: 'New Password',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -513,13 +512,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'please_enter_new_password'.tr();
+                            return 'Please enter new password';
                           }
                           final passwordRegex = RegExp(
                             r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$',
                           );
                           if (!passwordRegex.hasMatch(value.trim())) {
-                            return 'password_requirements'.tr();
+                            return 'Password must be at least 8 characters with uppercase, lowercase, number and special character';
                           }
                           return null;
                         },
@@ -530,7 +529,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         controller: _confirmPasswordController,
                         obscureText: _obscureConfirmPassword,
                         decoration: InputDecoration(
-                          labelText: 'confirm_password'.tr(),
+                          labelText: 'Confirm Password',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -555,11 +554,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'please_confirm_password'.tr();
+                            return 'Please confirm password';
                           }
                           if (value.trim() !=
                               _newPasswordController.text.trim()) {
-                            return 'passwords_not_match'.tr();
+                            return 'Passwords do not match';
                           }
                           return null;
                         },
@@ -575,7 +574,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              'password_requirements'.tr(),
+                              'Password must be at least 8 characters with uppercase, lowercase, number and special character',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: colors.subtitleColor,
@@ -630,7 +629,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               ),
                             )
                             : Text(
-                              'reset_password'.tr(),
+                              'Reset Password',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,

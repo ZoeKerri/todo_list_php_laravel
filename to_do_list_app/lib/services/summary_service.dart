@@ -47,8 +47,12 @@ class SummaryService {
     return _fetchCount('/count/day/completed', userId, date);
   }
 
-  Future<int> countUncompletedTasksInDay(int userId, DateTime date) {
-    return _fetchCount('/count/day/uncompleted', userId, date);
+  Future<int> countUncompletedTasksInDay(int userId, DateTime date) async {
+    // Calculate uncompleted = total - completed
+    // Laravel doesn't have /count/day/uncompleted endpoint
+    final total = await countTasksInDay(userId, date);
+    final completed = await countCompletedTasksInDay(userId, date);
+    return total - completed;
   }
 
   Future<int> countTasksInWeek(int userId, DateTime date) {

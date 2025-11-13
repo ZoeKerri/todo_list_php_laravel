@@ -19,7 +19,10 @@ class TodoCard extends StatelessWidget {
   });
 
   Color _getPriorityColor(String priority) {
-    switch (priority) {
+    // Normalize priority to uppercase for comparison
+    // API returns lowercase ("high", "medium", "low") but we need to handle both
+    final normalizedPriority = priority.toUpperCase();
+    switch (normalizedPriority) {
       case "HIGH":
         return Colors.red;
       case "MEDIUM":

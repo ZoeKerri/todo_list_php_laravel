@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:to_do_list_app/services/auth_service.dart';
@@ -50,7 +49,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('registration_success'.tr()),
+            content: Text('Registration successful'),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 2),
           ),
@@ -99,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'register'.tr(),
+                    'Register',
                     style: TextStyle(
                       color: colors.textColor,
                       fontSize: 36,
@@ -113,13 +112,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: _fullNameController,
                     style: const TextStyle(color: Colors.white),
                     decoration: _buildInputDecoration(
-                      'full_name'.tr(),
+                      'Full Name',
                       Icons.person,
                     ),
                     validator:
                         (value) =>
                             value == null || value.isEmpty
-                                ? 'enter_name'.tr()
+                                ? 'Please enter your name' 
                                 : null,
                   ),
                   const SizedBox(height: 16),
@@ -130,17 +129,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     keyboardType: TextInputType.emailAddress,
                     style: const TextStyle(color: Colors.white),
                     decoration: _buildInputDecoration(
-                      'email'.tr(),
+                      'Email',
                       Icons.email,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'enter_email'.tr();
+                        return 'Please enter your email';
                       }
                       if (!RegExp(
                         r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
                       ).hasMatch(value)) {
-                        return 'invalid_email'.tr();
+                        return 'Invalid email format';
                       }
                       return null;
                     },
@@ -154,15 +153,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     style: const TextStyle(color: Colors.white),
                     decoration: _buildInputDecoration(
-                      'phone'.tr(),
+                      'Phone',
                       Icons.phone,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'enter_phone_number'.tr();
+                        return 'Please enter your phone number';
                       }
                       if (value.length != 10) {
-                        return 'invalid_phone_number'.tr();
+                        return 'Phone number must be 10 digits';
                       }
                       return null;
                     },
@@ -175,15 +174,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     obscureText: true,
                     style: const TextStyle(color: Colors.white),
                     decoration: _buildInputDecoration(
-                      'password'.tr(),
+                      'Password',
                       Icons.lock,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'enter_password'.tr();
+                        return 'Please enter your password';
                       }
                       if (value.length < 8) {
-                        return 'password_too_short'.tr();
+                        return 'Password must be at least 8 characters';
                       }
                       return null;
                     },
@@ -195,15 +194,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     obscureText: true,
                     style: const TextStyle(color: Colors.white),
                     decoration: _buildInputDecoration(
-                      'confirm_password'.tr(),
+                      'Confirm Password',
                       Icons.lock,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'confirm_password_empty'.tr();
+                        return 'Please confirm your password';
                       }
                       if (value != _passwordController.text) {
-                        return 'passwords_not_match'.tr();
+                        return 'Passwords do not match';
                       }
                       return null;
                     },
@@ -215,7 +214,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       SizedBox(width: 6),
                       Expanded(
                         child: Text(
-                          'password_requirements'.tr(),
+                          'Password must be at least 8 characters with uppercase, lowercase, number and special character',
                           style: TextStyle(
                             fontSize: 14,
                             color: colors.subtitleColor,
@@ -238,7 +237,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     child: Text(
-                      'register'.tr(),
+                      'Register',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -252,7 +251,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'already_have_account'.tr(),
+                        'Already have an account?',
                         style: TextStyle(color: colors.subtitleColor),
                       ),
                       TextButton(
@@ -260,7 +259,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Navigator.pop(context);
                         },
                         child: Text(
-                          'login'.tr(),
+                          'Login',
                           style: TextStyle(color: colors.subtitleColor),
                         ),
                       ),

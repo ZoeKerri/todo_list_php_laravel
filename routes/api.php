@@ -83,6 +83,7 @@ Route::prefix('v1')->group(function () {
         // Team Member routes (matching Flutter app)
         Route::prefix('member')->group(function () {
             Route::get('/by-team/{team}', [TeamMemberController::class, 'index']);
+            Route::get('/{team}/{user}', [TeamMemberController::class, 'show']); // Get member by team and user ID
             Route::post('/', [TeamMemberController::class, 'store']);
             Route::put('/', [TeamMemberController::class, 'update']);
             Route::delete('/{memberId}', [TeamMemberController::class, 'destroy']);

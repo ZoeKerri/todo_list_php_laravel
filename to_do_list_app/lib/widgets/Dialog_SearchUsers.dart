@@ -56,7 +56,7 @@ class _SearchUsersDialogState extends State<SearchUsersDialog> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Lỗi khi tìm kiếm: ${e.toString()}';
+        _errorMessage = 'Error searching: ${e.toString()}';
         _searchResults = [];
       });
     } finally {

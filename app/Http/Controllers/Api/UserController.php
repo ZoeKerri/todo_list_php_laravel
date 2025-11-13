@@ -42,6 +42,8 @@ class UserController extends Controller
         $request->validate([
             'full_name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:users,email,' . $user->id,
+            'phone' => 'sometimes|string|max:20',
+            'avatar' => 'sometimes|string|max:255',
             'current_password' => 'required_with:password|string',
             'password' => 'sometimes|string|min:6|confirmed',
         ]);
@@ -54,6 +56,14 @@ class UserController extends Controller
         
         if ($request->has('email')) {
             $updateData['email'] = $request->email;
+        }
+        
+        if ($request->has('phone')) {
+            $updateData['phone'] = $request->phone;
+        }
+        
+        if ($request->has('avatar')) {
+            $updateData['avatar'] = $request->avatar;
         }
         
         if ($request->has('password')) {

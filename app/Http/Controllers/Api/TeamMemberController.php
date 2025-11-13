@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\DTOs\ApiResponse;
 use App\DTOs\Team\TeamMemberDTO;
 use App\Services\TeamMemberService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TeamMemberController extends Controller
@@ -22,6 +23,15 @@ class TeamMemberController extends Controller
     {
         $members = $this->teamMemberService->getMembersByTeamId($teamId);
         return ApiResponse::success(TeamMemberDTO::fromCollection($members, true), 'Members retrieved successfully');
+    }
+
+    public function show(int $teamId, int $userId)
+    {
+        $member = $this->teamMemberService->getMemberByTeamIdAndUserId($teamId, $userId);
+        if (!$member) {
+            return ApiResponse::notFound('Member not found');
+        }
+        return ApiResponse::success(TeamMemberDTO::fromModel($member, true)->toArray(), 'Member retrieved successfully');
     }
 
     public function store(Request $request)

@@ -149,7 +149,18 @@ class _CategoryListState extends State<CategoryList> {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: GestureDetector(
                 onTap: () {
-                  widget.scaffoldKey!.currentState?.openDrawer();
+                  // Ưu tiên dùng callback nếu có
+                  if (widget.onAddButtonPressed != null) {
+                    widget.onAddButtonPressed!();
+                  } 
+                  // Nếu có scaffoldKey, dùng nó
+                  else if (widget.scaffoldKey != null) {
+                    widget.scaffoldKey!.currentState?.openDrawer();
+                  }
+                  // Nếu không có cả hai, thử lấy từ context
+                  else {
+                    Scaffold.of(context).openDrawer();
+                  }
                 },
                 child: Container(
                   width: 40,
