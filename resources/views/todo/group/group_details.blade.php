@@ -38,7 +38,7 @@
     }
     .content-header .primary-action {
         background-color: var(--accent-color);
-        color: #fff !important;
+        color: var(--text-primary) !important;
         font-size: 0.9rem !important;
         padding: 8px 14px;
         border-radius: 999px;
@@ -84,6 +84,7 @@
     .text-danger { color: #e74c3c; }
     .text-warning { color: #f39c12; }
     .text-success { color: #2ecc71; }
+    /* Note: These are semantic colors, keep as is for consistency */
     
     .section-title {
         font-size: 1.1rem;
@@ -211,7 +212,7 @@
         align-items: center;
         justify-content: center;
         font-size: 2rem;
-        color: #fff;
+        color: var(--text-primary);
         text-decoration: none;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -457,7 +458,8 @@
     }
     .btn-primary {
         background-color: var(--accent-color);
-        color: white;
+        color: var(--text-primary);
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
     .btn-primary:hover {
         opacity: 0.9;
@@ -553,6 +555,7 @@
 @include('todo.group.modals.choose_new_leader')
 @include('todo.group.modals.confirm_dialog')
 @include('modals.create_team_task')
+@include('modals.team_task_detail')
 
 @endsection
 
@@ -595,6 +598,18 @@
             window.location.href = '/group';
             return;
         }
+        
+        // Listen for settings changes
+        window.addEventListener('settingsChanged', function(e) {
+            if (e.detail && 'show_completed_tasks' in e.detail) {
+                // Reload tasks to apply filter
+                if (typeof loadTasks === 'function') {
+                    loadTasks();
+                } else {
+                    displayTasks(); // Fallback if loadTasks not available
+                }
+            }
+        });
         
         loadTeamData();
         setupEventListeners();
@@ -797,6 +812,11 @@
         `;
     }
     
+    // Get show completed tasks setting from localStorage
+    function getShowCompletedTasks() {
+        return localStorage.getItem('show_completed_tasks') === 'true';
+    }
+
     function displayTasks() {
         const yourTasksTitle = document.getElementById('yourTasksTitle');
         const yourTasksList = document.getElementById('yourTasksList');
@@ -814,14 +834,25 @@
             return new Date(a.deadline) - new Date(b.deadline);
         };
 
+        // Filter tasks based on show_completed_tasks setting
+        const showCompleted = getShowCompletedTasks();
+        let filteredTasks = tasksData;
+        if (!showCompleted) {
+            // Filter out completed tasks
+            filteredTasks = tasksData.filter(t => {
+                const isCompleted = t.isCompleted || t.completed;
+                return !isCompleted;
+            });
+        }
+
         let myTasks = [];
         let otherTasks = [];
 
         if (currentUserMember) {
-            myTasks = tasksData.filter(t => t.memberId === currentUserMember.id).sort(sortTasks);
-            otherTasks = tasksData.filter(t => t.memberId !== currentUserMember.id).sort(sortTasks);
+            myTasks = filteredTasks.filter(t => t.memberId === currentUserMember.id).sort(sortTasks);
+            otherTasks = filteredTasks.filter(t => t.memberId !== currentUserMember.id).sort(sortTasks);
         } else {
-            otherTasks = tasksData.slice().sort(sortTasks);
+            otherTasks = filteredTasks.slice().sort(sortTasks);
         }
 
         // Render Your Tasks
@@ -1057,8 +1088,20 @@
     }
     
     function viewTaskDetail(taskId) {
-        // Navigate to task detail page
-        window.location.href = `/group/${teamId}/task/${taskId}`;
+        // Always open task detail modal
+        if (typeof openTeamTaskDetailModal === 'function') {
+            openTeamTaskDetailModal(taskId, teamId);
+        } else {
+            // If modal function not available, wait a bit and try again
+            setTimeout(() => {
+                if (typeof openTeamTaskDetailModal === 'function') {
+                    openTeamTaskDetailModal(taskId, teamId);
+                } else {
+                    console.error('openTeamTaskDetailModal function not found. Please refresh the page.');
+                    alert('Modal not loaded. Please refresh the page.');
+                }
+            }, 100);
+        }
     }
     
     function showToggleTaskDialog(taskId, newStatus) {

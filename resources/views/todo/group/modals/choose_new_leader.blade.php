@@ -125,11 +125,12 @@
         height: 44px;
         border-radius: 50%;
         overflow: hidden;
-        background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+        background: var(--accent-color);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #fff;
+        color: var(--text-primary);
+        transition: background-color 0.3s ease, color 0.3s ease;
         font-weight: 600;
         flex-shrink: 0;
     }

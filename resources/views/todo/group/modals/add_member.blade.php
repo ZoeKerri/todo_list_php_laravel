@@ -225,7 +225,9 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+        background: var(--accent-color);
+        color: var(--text-primary);
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
     .btn-primary:disabled {
         opacity: 0.7;
@@ -426,13 +428,13 @@
             return `
                 <div class="avatar-wrapper" style="width: ${size}px; height: ${size}px;">
                     <img src="${avatarUrl}" alt="Avatar" style="width: ${size}px; height: ${size}px; border-radius: 50%; object-fit: cover;" onerror="this.remove(); this.closest('.avatar-wrapper').querySelector('.avatar-fallback').style.display='flex';">
-                    <div class="avatar-fallback" style="width: ${size}px; height: ${size}px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); display: none; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: ${size * 0.4}px;">${initials}</div>
+                    <div class="avatar-fallback" style="width: ${size}px; height: ${size}px; border-radius: 50%; background-color: var(--accent-color); display: none; align-items: center; justify-content: center; color: var(--text-primary); font-weight: bold; font-size: ${size * 0.4}px;">${initials}</div>
                 </div>
             `;
         } else {
             return `
                 <div class="avatar-wrapper" style="width: ${size}px; height: ${size}px;">
-                    <div class="avatar-fallback" style="width: ${size}px; height: ${size}px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: ${size * 0.4}px;">${initials}</div>
+                    <div class="avatar-fallback" style="width: ${size}px; height: ${size}px; border-radius: 50%; background-color: var(--accent-color); display: flex; align-items: center; justify-content: center; color: var(--text-primary); font-weight: bold; font-size: ${size * 0.4}px;">${initials}</div>
                 </div>
             `;
         }

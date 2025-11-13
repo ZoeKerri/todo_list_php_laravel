@@ -15,6 +15,41 @@
     $authThemeVars = App\Helpers\ThemeHelper::getAuthThemeColors($isLightTheme);
 @endphp
 
+    <!-- Load theme from localStorage immediately to prevent flash -->
+    <script>
+        (function() {
+            // Load theme from localStorage immediately (before page renders)
+            const darkMode = localStorage.getItem('dark_mode') !== 'false'; // default to dark mode
+            
+            // Apply auth theme colors immediately
+            const authDarkTheme = {
+                '--auth-bg': '#000',
+                '--auth-text': '#fff',
+                '--auth-text-muted': '#888',
+                '--auth-input-bg': '#1e1e1e',
+                '--auth-border': '#333',
+                '--auth-accent': '#7f00ff',
+                '--auth-secondary': '#fff'
+            };
+            
+            const authLightTheme = {
+                '--auth-bg': '#ffffff',
+                '--auth-text': '#212529',
+                '--auth-text-muted': '#6c757d',
+                '--auth-input-bg': '#f8f9fa',
+                '--auth-border': '#dee2e6',
+                '--auth-accent': '#7f00ff',
+                '--auth-secondary': '#000'
+            };
+            
+            const colors = darkMode ? authDarkTheme : authLightTheme;
+            const root = document.documentElement;
+            Object.keys(colors).forEach(key => {
+                root.style.setProperty(key, colors[key]);
+            });
+        })();
+    </script>
+
     <style>
         /* Theme variables for auth pages */
         :root {
@@ -94,12 +129,12 @@
             background-color: var(--auth-accent);
             border: none;
             border-radius: 10px;
-            color: #fff;
+            color: var(--auth-text);
             font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             margin-top: 20px;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .btn-secondary {
             width: 100%;
@@ -179,32 +214,32 @@
 
         .alert-success {
             background-color: #28a745;
-            color: white;
+            color: var(--auth-text);
         }
 
         .alert-danger {
             background-color: #dc3545;
-            color: white;
+            color: var(--auth-text);
         }
 
         .alert-warning {
             background-color: #ffc107;
-            color: #212529;
+            color: var(--auth-text);
         }
 
         .alert-info {
             background-color: #17a2b8;
-            color: white;
+            color: var(--auth-text);
         }
 
         /* Google Login Button Styles */
         .btn-google {
             width: 100%;
             padding: 15px;
-            background-color: #fff;
+            background-color: var(--auth-input-bg);
             border: 1px solid var(--auth-border);
             border-radius: 10px;
-            color: #333;
+            color: var(--auth-text);
             font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
@@ -213,10 +248,10 @@
             justify-content: center;
             align-items: center;
             gap: 10px;
-            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
         }
         .btn-google:hover {
-            background-color: #f8f9fa;
+            background-color: var(--auth-bg);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .btn-google img {

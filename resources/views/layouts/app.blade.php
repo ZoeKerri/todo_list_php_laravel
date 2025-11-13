@@ -17,6 +17,49 @@
         $themeVars = App\Helpers\ThemeHelper::getThemeColors($isLightTheme);
     @endphp
 
+    <!-- Load theme from localStorage immediately to prevent flash -->
+    <script>
+        (function() {
+            // Load theme from localStorage immediately (before page renders)
+            const darkMode = localStorage.getItem('dark_mode') !== 'false'; // default to dark mode
+            
+            // Apply theme colors immediately
+            const darkTheme = {
+                '--bg-primary': '#121212',
+                '--bg-secondary': '#1e1e1e',
+                '--bg-tertiary': '#2c2c2c',
+                '--text-primary': '#fff',
+                '--text-secondary': '#ccc',
+                '--text-muted': '#888',
+                '--accent-color': '#6a1b9a',
+                '--border-color': '#333',
+                '--hover-bg': '#333',
+                '--card-bg': '#1e1e1e',
+                '--input-bg': '#1e1e1e'
+            };
+            
+            const lightTheme = {
+                '--bg-primary': '#ffffff',
+                '--bg-secondary': '#f8f9fa',
+                '--bg-tertiary': '#e9ecef',
+                '--text-primary': '#212529',
+                '--text-secondary': '#495057',
+                '--text-muted': '#6c757d',
+                '--accent-color': '#6a1b9a',
+                '--border-color': '#dee2e6',
+                '--hover-bg': '#e9ecef',
+                '--card-bg': '#ffffff',
+                '--input-bg': '#ffffff'
+            };
+            
+            const colors = darkMode ? darkTheme : lightTheme;
+            const root = document.documentElement;
+            Object.keys(colors).forEach(key => {
+                root.style.setProperty(key, colors[key]);
+            });
+        })();
+    </script>
+
     <style>
         /* --- THEME VARIABLES --- */
         :root {
@@ -113,13 +156,13 @@
             top: 15px;
             left: 10px;
             background-color: var(--accent-color);
-            color: white;
+            color: var(--text-primary);
             border: none;
             border-radius: 5px;
             padding: 5px 10px;
             cursor: pointer;
             z-index: 1100;
-            transition: left 0.3s ease, background-color 0.3s ease;
+            transition: left 0.3s ease, background-color 0.3s ease, color 0.3s ease;
         }
 
         .sidebar.expanded .toggle-btn {
@@ -219,7 +262,7 @@
 
         .dropdown-menu a:hover {
             background-color: var(--accent-color);
-            color: #fff;
+            color: var(--text-primary);
         }
 
         .dropdown-menu i {
@@ -270,8 +313,8 @@
         }
 
         .btn-purple {
-            background-color: #6a1b9a;
-            color: white;
+            background-color: var(--accent-color);
+            color: var(--text-primary);
             border: none;
             padding: 10px 20px;
             border-radius: 20px;
@@ -279,17 +322,20 @@
             white-space: nowrap;
             flex-shrink: 0;
             touch-action: manipulation;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .modal {
             display: none;
             position: fixed;
             inset: 0;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
             z-index: 2000;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            transition: background-color 0.3s ease;
         }
 
         .modal-content {
@@ -389,7 +435,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #555;
+            background-color: var(--border-color);
             transition: .4s;
             border-radius: 34px;
         }
@@ -401,13 +447,13 @@
             width: 26px;
             left: 4px;
             bottom: 4px;
-            background-color: white;
+            background-color: var(--text-primary);
             transition: .4s;
             border-radius: 50%;
         }
 
         input:checked+.slider {
-            background-color: #6a1b9a;
+            background-color: var(--accent-color);
         }
 
         input:checked+.slider:before {
@@ -592,7 +638,7 @@
             background-color: transparent;
             border: 1px solid var(--border-color);
             color: #e74c3c;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, color 0.3s ease;
         }
 
         .large-icon {
@@ -618,22 +664,22 @@
 
         .alert-success {
             background-color: #28a745;
-            color: white;
+            color: var(--text-primary);
         }
 
         .alert-danger {
             background-color: #dc3545;
-            color: white;
+            color: var(--text-primary);
         }
 
         .alert-warning {
             background-color: #ffc107;
-            color: #212529;
+            color: var(--text-primary);
         }
 
         .alert-info {
             background-color: #17a2b8;
-            color: white;
+            color: var(--text-primary);
         }
     </style>
 
@@ -696,12 +742,12 @@
                             style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;"
                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <div
-                            style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--accent-color); display: none; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                            style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--accent-color); display: none; align-items: center; justify-content: center; color: var(--text-primary); font-weight: bold; font-size: 14px;">
                             {{ $initials }}
                         </div>
                     @else
                         <div
-                            style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--accent-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                            style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--accent-color); display: flex; align-items: center; justify-content: center; color: var(--text-primary); font-weight: bold; font-size: 14px;">
                             {{ $initials }}
                         </div>
                     @endif
@@ -746,21 +792,21 @@
     {{-- Modal Thêm Thể loại (Ẩn mặc định) --}}
     <div id="category-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
         {{-- Lớp phủ --}}
-        <div id="category-modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div id="category-modal-overlay" class="fixed inset-0" style="background-color: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px);"></div>
 
         {{-- Nội dung Modal --}}
-        <div class="relative bg-gray-800 w-full max-w-md p-6 rounded-lg shadow-xl border border-gray-700">
-            <h3 class="text-xl font-semibold text-white mb-4">Create New Category</h3>
+        <div class="relative" style="background-color: var(--bg-secondary); width: 100%; max-width: 28rem; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); border: 1px solid var(--border-color);">
+            <h3 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">Create New Category</h3>
             <form id="category-modal-form">
                 <div>
-                    <label for="category-name" class="block text-sm font-medium text-gray-300 mb-2">Category
+                    <label for="category-name" class="block text-sm font-medium mb-2" style="color: var(--text-secondary);">Category
                         Name</label>
                     <input type="text" id="category-name" class="form-input" required>
                 </div>
                 <div class="mt-6 flex justify-end gap-3">
                     <button type="button" id="category-modal-close"
-                        class_l="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">Save
+                        style="padding: 0.5rem 1rem; background-color: var(--bg-tertiary); color: var(--text-primary); border-radius: 0.5rem; border: none; cursor: pointer; transition: background-color 0.3s ease;">Cancel</button>
+                    <button type="submit" style="padding: 0.5rem 1rem; background-color: var(--accent-color); color: var(--text-primary); border-radius: 0.5rem; border: none; cursor: pointer; transition: background-color 0.3s ease;">Save
                         Category</button>
                 </div>
             </form>
@@ -774,15 +820,15 @@
         class="fixed inset-0 z-50 hidden flex items-start justify-center pt-16 sm:pt-24 overflow-y-auto">
 
         {{-- Lớp phủ nền (Overlay) --}}
-        <div id="task-modal-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm cursor-pointer"></div>
+        <div id="task-modal-overlay" class="fixed inset-0" style="background-color: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); cursor: pointer;"></div>
 
         {{-- Panel Nội dung Modal [5, 7] --}}
-        <div class="relative bg-gray-800 w-full max-w-2xl p-6 sm:p-8 rounded-xl shadow-xl border border-gray-700">
+        <div class="relative w-full max-w-2xl p-6 sm:p-8 rounded-xl shadow-xl" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);">
 
             {{-- Tiêu đề Modal --}}
             <div class="flex justify-between items-center mb-6">
-                <h3 id="task-modal-title" class="text-2xl font-semibold text-white">Add New Task</h3>
-                <button id="task-modal-close" class="text-gray-400 hover:text-white transition-colors">
+                <h3 id="task-modal-title" class="text-2xl font-semibold" style="color: var(--text-primary);">Add New Task</h3>
+                <button id="task-modal-close" style="color: var(--text-secondary); transition: color 0.3s ease;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd"
                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -798,13 +844,13 @@
 
                 {{-- Task Title --}}
                 <div>
-                    <label for="task-title" class="block text-sm font-medium text-gray-300 mb-1">Task Title</label>
+                    <label for="task-title" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Task Title</label>
                     <input type="text" id="task-title" placeholder="Enter task title" class="form-input" required>
                 </div>
 
                 {{-- Task Description --}}
                 <div>
-                    <label for="task-description" class="block text-sm font-medium text-gray-300 mb-1">Task
+                    <label for="task-description" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Task
                         Description</label>
                     <textarea id="task-description" rows="4" placeholder="Enter task description"
                         class="form-textarea"></textarea>
@@ -814,22 +860,22 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {{-- Task Date --}}
                     <div>
-                        <label for="task-date" class="block text-sm font-medium text-gray-300 mb-1">Task Date</label>
-                        <input type="date" id="task-date" class="form-input" style="color-scheme: dark;">
+                        <label for="task-date" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Task Date</label>
+                        <input type="date" id="task-date" class="form-input">
                     </div>
 
                     {{-- Notification Time --}}
                     <div>
-                        <label for="task-time" class="block text-sm font-medium text-gray-300 mb-1">Notification
+                        <label for="task-time" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Notification
                             Time</label>
-                        <input type="time" id="task-time" class="form-input" style="color-scheme: dark;">
+                        <input type="time" id="task-time" class="form-input">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {{-- Priority (Dropdown, như Image 3) --}}
                     <div>
-                        <label for="task-priority" class="block text-sm font-medium text-gray-300 mb-1">Priority</label>
+                        <label for="task-priority" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Priority</label>
                         <select id="task-priority" class="form-select">
                             <option value="Low">Low</option>
                             <option value="Medium" selected>Medium</option>
@@ -839,7 +885,7 @@
 
                     {{-- Category (Dropdown) --}}
                     <div>
-                        <label for="task-category" class="block text-sm font-medium text-gray-300 mb-1">Category</label>
+                        <label for="task-category" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Category</label>
                         <select id="task-category" class="form-select">
                             {{-- JS sẽ điền các <option> này từ /v1/categories API (đã đề xuất) --}}
                             <option value="">Select Category</option>
@@ -854,26 +900,26 @@
                 <div class="pt-4 flex justify-between items-center">
                     {{-- Nút Xóa (Chỉ hiển thị khi Edit) --}}
                     <button type="button" id="task-modal-delete-btn"
-                        class="hidden px-5 py-2.5 text-sm font-medium text-red-500 bg-transparent rounded-lg hover:bg-gray-700 hover:text-red-400 focus:z-10 transition-colors">
+                        class="hidden px-5 py-2.5 text-sm font-medium rounded-lg focus:z-10 transition-colors" style="color: #e74c3c; background-color: transparent;" onmouseover="this.style.backgroundColor='var(--bg-tertiary)'" onmouseout="this.style.backgroundColor='transparent'">
                         Delete Task
                     </button>
 
                     {{-- Nút Hủy và Lưu/Cập nhật --}}
                     <div class="flex-grow flex justify-end gap-3">
                         <button type="button" id="task-modal-cancel-btn"
-                            class="px-5 py-2.5 text-sm font-medium text-gray-400 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
+                            class="px-5 py-2.5 text-sm font-medium rounded-lg transition-colors" style="color: var(--text-secondary); background-color: var(--bg-tertiary);" onmouseover="this.style.backgroundColor='var(--hover-bg)'" onmouseout="this.style.backgroundColor='var(--bg-tertiary)'">
                             Cancel
                         </button>
 
                         {{-- Nút Create (Mặc định) --}}
                         <button type="submit" id="task-modal-create-btn"
-                            class="px-5 py-2.5 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors">
+                            class="px-5 py-2.5 text-sm font-medium rounded-lg transition-colors" style="color: var(--text-primary); background-color: var(--accent-color);" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                             Create Task
                         </button>
 
                         {{-- Nút Update (Chỉ hiển thị khi Edit) --}}
                         <button type="submit" id="task-modal-update-btn"
-                            class="hidden px-5 py-2.5 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors">
+                            class="hidden px-5 py-2.5 text-sm font-medium rounded-lg transition-colors" style="color: var(--text-primary); background-color: var(--accent-color);" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                             Update Task
                         </button>
                     </div>
@@ -889,26 +935,20 @@
         .form-select {
             display: block;
             width: 100%;
-            background-color: #374151;
-            /* bg-gray-700 */
-            color: #F9FAFB;
-            /* text-gray-50 */
-            border: 1px solid #4B5563;
-            /* border-gray-600 */
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
             border-radius: 0.5rem;
-            /* rounded-lg */
             padding: 0.75rem 1rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s, background-color 0.3s ease, color 0.3s ease;
         }
 
         .form-input:focus,
         .form-textarea:focus,
         .form-select:focus {
             outline: none;
-            border-color: #8B5CF6;
-            /* border-purple-500 */
-            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.4);
-            /* ring-purple-500 */
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(106, 27, 154, 0.2);
         }
     </style>
 

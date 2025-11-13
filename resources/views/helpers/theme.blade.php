@@ -80,31 +80,21 @@ window.ThemeHelper = {
     },
     
     /**
-     * Load and apply theme from server
+     * Load and apply theme from localStorage
      */
     loadTheme: function() {
-        fetch('/settings', {
-            credentials: 'include'
-        })
-            .then(response => response.json())
-            .then(settings => {
-                this.applyTheme(settings.dark_mode);
-            })
-            .catch(error => console.error('Error loading settings:', error));
+        // Load from localStorage (default to true/dark mode)
+        const darkMode = localStorage.getItem('dark_mode') !== 'false';
+        this.applyTheme(darkMode);
     },
     
     /**
-     * Load and apply auth theme from server
+     * Load and apply auth theme from localStorage
      */
     loadAuthTheme: function() {
-        fetch('/settings', {
-            credentials: 'include'
-        })
-            .then(response => response.json())
-            .then(settings => {
-                this.applyAuthTheme(settings.dark_mode);
-            })
-            .catch(error => console.error('Error loading settings:', error));
+        // Load from localStorage (default to true/dark mode)
+        const darkMode = localStorage.getItem('dark_mode') !== 'false';
+        this.applyAuthTheme(darkMode);
     }
 };
 </script>

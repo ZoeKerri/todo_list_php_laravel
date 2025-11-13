@@ -114,9 +114,10 @@
         justify-content: center;
         font-weight: bold;
         font-size: 1rem;
-        color: white;
+        color: var(--text-primary);
         background-color: var(--accent-color);
         position: relative;
+        transition: background-color 0.3s ease, color 0.3s ease;
         overflow: hidden;
     }
     .member-avatar.has-image .avatar-initials {
@@ -152,8 +153,8 @@
         border-radius: 4px;
         font-size: 0.75rem;
         font-weight: 600;
-        background-color: #7c3aed;
-        color: white;
+        background-color: var(--accent-color);
+        color: var(--text-primary);
         margin-left: 8px;
     }
     .remove-btn {
@@ -301,7 +302,8 @@
     }
     .btn-primary {
         background-color: var(--accent-color);
-        color: white;
+        color: var(--text-primary);
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
     .btn-primary:hover {
         opacity: 0.9;
