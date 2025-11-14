@@ -97,8 +97,8 @@ function initCharts() {
 
 // 2. Initialize Tab Switching
 function initTabs() {
-    const activeClasses = ['border-b-2', 'border-blue-500', 'text-white', 'font-semibold'];
-    const inactiveClasses = ['text-gray-400', 'hover:text-white'];
+    const activeClasses = ['active-tab'];
+    const inactiveClasses = ['inactive-tab'];
     const tabs = document.querySelectorAll('.tab-link');
     const panels = document.querySelectorAll('.tab-panel');
 
@@ -147,7 +147,7 @@ function initTabs() {
     });
 
     // Activate the first tab by default if no tab is active
-    const activeTab = document.querySelector('.tab-link.border-blue-500');
+    const activeTab = document.querySelector('.tab-link.active-tab');
     if (!activeTab && tabs.length > 0) {
         const firstTab = tabs[0];
         const firstPanelId = firstTab.dataset.tab;
