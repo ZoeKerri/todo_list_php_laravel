@@ -17,45 +17,151 @@
         $themeVars = App\Helpers\ThemeHelper::getThemeColors($isLightTheme);
     @endphp
 
-    <!-- Load theme from localStorage immediately to prevent flash -->
+    <!-- Theme + Auth Helpers -->
     <script>
         (function() {
+            const AUTH_PAGES = ['/login', '/register', '/forgot-password', '/otp', '/reset-password'];
+            const sessionCookieName = 'super-todo-list-session';
+
+            const AuthManager = {
+                isAuthPage(pathname) {
+                    return AUTH_PAGES.some((route) => pathname.startsWith(route));
+                },
+                getToken() {
+                    return localStorage.getItem('access_token');
+                },
+                clearToken() {
+                    localStorage.removeItem('access_token');
+                },
+                async validateToken() {
+                    const token = this.getToken();
+                    if (!token) return false;
+
+                    try {
+                        const response = await fetch('/api/v1/auth/profile', {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            window.__currentUserProfile = data?.data || null;
+                            return true;
+                        }
+
+                        if (response.status === 401 || response.status === 403) {
+                            this.clearToken();
+                        }
+                    } catch (error) {
+                        console.error('Token validation failed:', error);
+                    }
+
+                    return false;
+                }
+            };
+
+            window.AuthManager = AuthManager;
+
             // Load theme from localStorage immediately (before page renders)
-            const darkMode = localStorage.getItem('dark_mode') !== 'false'; // default to dark mode
-            
-            // Apply theme colors immediately
-            const darkTheme = {
-                '--bg-primary': '#121212',
-                '--bg-secondary': '#1e1e1e',
-                '--bg-tertiary': '#2c2c2c',
-                '--text-primary': '#fff',
-                '--text-secondary': '#ccc',
-                '--text-muted': '#888',
-                '--accent-color': '#6a1b9a',
-                '--border-color': '#333',
-                '--hover-bg': '#333',
-                '--card-bg': '#1e1e1e',
-                '--input-bg': '#1e1e1e'
-            };
-            
-            const lightTheme = {
-                '--bg-primary': '#ffffff',
-                '--bg-secondary': '#f8f9fa',
-                '--bg-tertiary': '#e9ecef',
-                '--text-primary': '#212529',
-                '--text-secondary': '#495057',
-                '--text-muted': '#6c757d',
-                '--accent-color': '#6a1b9a',
-                '--border-color': '#dee2e6',
-                '--hover-bg': '#e9ecef',
-                '--card-bg': '#ffffff',
-                '--input-bg': '#ffffff'
-            };
-            
-            const colors = darkMode ? darkTheme : lightTheme;
-            const root = document.documentElement;
-            Object.keys(colors).forEach(key => {
-                root.style.setProperty(key, colors[key]);
+            (function applyInitialTheme() {
+                const darkMode = localStorage.getItem('dark_mode') !== 'false'; // default to dark mode
+                
+                const darkTheme = {
+                    '--bg-primary': '#121212',
+                    '--bg-secondary': '#1e1e1e',
+                    '--bg-tertiary': '#2c2c2c',
+                    '--text-primary': '#fff',
+                    '--text-secondary': '#ccc',
+                    '--text-muted': '#888',
+                    '--accent-color': '#6a1b9a',
+                    '--border-color': '#333',
+                    '--hover-bg': '#333',
+                    '--card-bg': '#1e1e1e',
+                    '--input-bg': '#1e1e1e'
+                };
+                
+                const lightTheme = {
+                    '--bg-primary': '#ffffff',
+                    '--bg-secondary': '#f8f9fa',
+                    '--bg-tertiary': '#e9ecef',
+                    '--text-primary': '#212529',
+                    '--text-secondary': '#495057',
+                    '--text-muted': '#6c757d',
+                    '--accent-color': '#6a1b9a',
+                    '--border-color': '#dee2e6',
+                    '--hover-bg': '#e9ecef',
+                    '--card-bg': '#ffffff',
+                    '--input-bg': '#ffffff'
+                };
+                
+                const colors = darkMode ? darkTheme : lightTheme;
+                const root = document.documentElement;
+                Object.keys(colors).forEach(key => {
+                    root.style.setProperty(key, colors[key]);
+                });
+            })();
+
+            // Redirect unauthenticated visitors
+            (function enforceGuard() {
+                try {
+                    const hasSession = document.cookie?.includes(sessionCookieName);
+                    const hasApiToken = !!AuthManager.getToken();
+                    const isAuthPage = AuthManager.isAuthPage(window.location.pathname);
+
+                    if (!hasSession && !hasApiToken && !isAuthPage) {
+                        window.location.replace('/login');
+                    }
+                } catch (error) {
+                    console.error('Auth guard error:', error);
+                }
+            })();
+
+            // Post-load hooks
+            document.addEventListener('DOMContentLoaded', function() {
+                const isAuthPage = AuthManager.isAuthPage(window.location.pathname);
+
+                if (AuthManager.getToken()) {
+                    AuthManager.validateToken().then((isValid) => {
+                        if (!isValid && !isAuthPage) {
+                            window.location.replace('/login');
+                        }
+                    });
+                }
+
+                // Clear token on any logout form submit
+                document.addEventListener('submit', function(event) {
+                    const form = event.target;
+                    if (!(form instanceof HTMLFormElement)) return;
+                    const action = form.getAttribute('action') || '';
+                    if (action.includes('/logout')) {
+                        AuthManager.clearToken();
+                    }
+                }, true);
+
+                window.handleLogout = function(event, formId = 'logout-form') {
+                    if (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    if (window.AuthManager) {
+                        window.AuthManager.clearToken();
+                    } else {
+                        localStorage.removeItem('access_token');
+                    }
+                    const form = document.getElementById(formId) || document.querySelector(`form[action*="/logout"]`);
+                    if (form) {
+                        form.submit();
+                    } else {
+                        window.location.href = '/logout';
+                    }
+                };
+
+                document.querySelectorAll('[data-logout-trigger]').forEach(trigger => {
+                    trigger.addEventListener('click', (event) => window.handleLogout(event, trigger.getAttribute('data-logout-form') || 'logout-form'));
+                });
             });
         })();
     </script>
@@ -765,8 +871,7 @@
 
                 <form method="POST" action="{{ url('/logout') }}" id="logout-form">
                     @csrf
-                    <a href="{{ url('/logout') }}"
-                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <a href="{{ url('/logout') }}" data-logout-trigger data-logout-form="logout-form">
                         <i class="fas fa-sign-out-alt"></i>
                         Đăng xuất
                     </a>
