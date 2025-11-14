@@ -65,9 +65,9 @@
                     <select id="personalTaskPriority" 
                             name="priority" 
                             class="form-input form-select">
-                        <option value="LOW">Low</option>
-                        <option value="MEDIUM" selected>Medium</option>
-                        <option value="HIGH">High</option>
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
                     </select>
                 </div>
 
@@ -537,7 +537,7 @@
 
         const selectedCategoryIds = personalTaskSelectedCategoryIds;
         const prioritySelect = document.getElementById('personalTaskPriority');
-        const selectedPriority = prioritySelect ? prioritySelect.value : 'MEDIUM';
+        const selectedPriority = prioritySelect ? prioritySelect.value : 'medium';
 
         if (selectedCategoryIds.length === 0) {
             alert('Please select at least one category');
