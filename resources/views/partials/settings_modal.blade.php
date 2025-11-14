@@ -46,22 +46,6 @@
                 </label>
             </div>
 
-            <div class="setting-item">
-                <div class="meta">
-                    <div class="setting-title"><i class="fas fa-th-large"></i><span>Default View</span></div>
-                    <p class="setting-desc">Choose your default task view</p>
-                </div>
-                <div style="width:60px; text-align:right; color:var(--text-muted); font-size:0.9em;">Open</div>
-            </div>
-
-            <div class="setting-item">
-                <div class="meta">
-                    <div class="setting-title"><i class="fas fa-globe"></i><span>Language</span></div>
-                    <p class="setting-desc">Change the app language</p>
-                </div>
-                <div style="width:60px; text-align:right; color:var(--text-muted); font-size:0.9em;">Edit</div>
-            </div>
-
         </div>
     </div>
 </div>

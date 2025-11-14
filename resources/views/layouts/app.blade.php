@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @php
@@ -866,14 +867,14 @@
             <div class="dropdown-menu" id="user-dropdown">
                 <a href="{{ url('/account-info') }}">
                     <i class="fas fa-user-cog"></i>
-                    Thông tin chi tiết
+                    Profile
                 </a>
 
                 <form method="POST" action="{{ url('/logout') }}" id="logout-form">
                     @csrf
                     <a href="{{ url('/logout') }}" data-logout-trigger data-logout-form="logout-form">
                         <i class="fas fa-sign-out-alt"></i>
-                        Đăng xuất
+                        Logout
                     </a>
                 </form>
             </div>

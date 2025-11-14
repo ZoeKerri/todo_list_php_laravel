@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->dateTime('deadline');
-            $table->string('priority')->default('MEDIUM'); // LOW, MEDIUM, HIGH
+            $table->string('priority')->default('medium'); // LOW, MEDIUM, HIGH
             $table->boolean('is_completed')->default(false);
             $table->foreignId('member_id')->constrained('team_members')->onDelete('cascade');
             $table->string('created_by')->nullable();

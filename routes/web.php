@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -34,9 +35,8 @@ Route::post('/settings', [SettingsController::class, 'update']);
 // Protected routes (require authentication)
 Route::middleware(['auth'])->group(function () {
     // Dashboard and main pages
-    Route::get('/statistics', function () {
-        return view('todo.statistics');
-    });
+    Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics');
+    Route::get('/statistics/monthly-json', [StatisticsController::class, 'monthly'])->name('statistics.monthly');
 
     // Group pages
     Route::get('/group', function () {
@@ -70,7 +70,8 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/account-info/change-password', [AccountController::class, 'changePassword']);
     Route::post('/account-info/change-password', [AccountController::class, 'updatePassword']);
     Route::post('/account-info/upload-avatar', [AccountController::class, 'uploadAvatar']);
-
+    
     // API token route for frontend
     Route::get('/api-token', [AuthController::class, 'getApiToken']);
+    
 });

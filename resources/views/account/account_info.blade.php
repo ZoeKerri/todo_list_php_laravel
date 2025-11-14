@@ -176,8 +176,8 @@
                                 <a href="#"
                                    onclick="event.preventDefault(); document.getElementById('avatar-input').click()"
                                    class="absolute z-20 bottom-0 right-0 w-10 h-10 rounded-full flex items-center justify-center avatar-action-button cursor-pointer">
-                                    <i class="fas fa-camera text-sm"></i>
-        </a>
+                                     <i class="fas fa-camera text-sm"></i>
+    </a>
     </div>
 
                             {{-- (Con 2) DIV BỌC THÔNG TIN (Tên, Email, Nút bấm) --}}
@@ -189,11 +189,10 @@
                                 {{-- Các nút bấm --}}
                                 <div class="mt-4 flex flex-wrap gap-3">
                                     <button id="open-edit-modal-button"
-                                       class="btn-accent px-5 py-2 rounded-lg font-semibold text-sm cursor-pointer">Update</button>
+                                        class="btn-accent px-5 py-2 rounded-lg font-semibold text-sm cursor-pointer">Update</button>
                                     
-                                    {{-- [SỬA] Đổi <a> thành <button> và thêm id --}}
                                     <button id="open-change-password-modal-button"
-                                       class="btn-secondary-surface px-5 py-2 rounded-lg font-semibold text-sm cursor-pointer">Change
+                                        class="btn-secondary-surface px-5 py-2 rounded-lg font-semibold text-sm cursor-pointer">Change
                                         password</button>
                                     
                                     <a href="{{ url('/logout') }}"
@@ -201,7 +200,7 @@
                                        data-logout-form="account-logout-form"
                                        class="btn-danger-outline px-5 py-2 rounded-lg font-semibold text-sm">Sign
                                         out</a>
-        </div>
+    </div>
     </div>
     
                         </div> {{-- Hết bọc chung --}}
@@ -231,31 +230,33 @@
             {{-- Nav Tab (Giữ nguyên) --}}
             <nav class="mt-8 border-b account-tab-nav flex-shrink-0">
                 <div class="flex space-x-8">
-                    <a href="#" class="tab-link active-tab py-3 px-1" data-tab="work">Work <span
-                            class="ml-1 badge-muted text-xs px-2 py-0.5 rounded-full">34</span></a>
-                    <a href="#" class="tab-link inactive-tab py-3 px-1" data-tab="moodboards">Moodboards</a>
-                    <a href="#" class="tab-link inactive-tab py-3 px-1" data-tab="likes">Likes</a>
+                    <a href="#" class="tab-link active-tab py-3 px-1" data-tab="work">All</a>
+                    <a href="#" class="tab-link inactive-tab py-3 px-1" data-tab="moodboards">Personal tasks</a>
+                    <a href="#" class="tab-link inactive-tab py-3 px-1" data-tab="likes">Team tasks</a>
                 </div>
             </nav>
 
-            {{-- Nội dung Tab (Giữ nguyên) --}}
+            {{-- Nội dung Tab (Giữ nguyên HTML, `absolute` là OK) --}}
             <section id="tab-content-container" class="flex-1 min-h-0 relative py-8">
-                <div id="work" class="tab-panel h-full w-full chart-container">
-                    <div id="workChart" class="h-full"></div>
+                
+                <div id="work" class="tab-panel h-full w-full absolute top-8 left-0 chart-container">
+                    <div id="accountWorkChart" class="h-full"></div>
                 </div>
+
                 <div id="moodboards" class="tab-panel hidden h-full w-full absolute top-8 left-0 chart-container">
-                    <div id="moodboardsChart" class="h-full"></div>
+                    <div id="accountMoodboardsChart" class="h-full"></div>
                 </div>
+
                 <div id="likes" class="tab-panel hidden h-full w-full absolute top-8 left-0 chart-container">
-                    <div id="likesChart" class="h-full"></div>
-        </div>
+                    <div id="accountLikesChart" class="h-full"></div>
+                </div>
             </section>
 
         </main>
     </div>
     
     {{-- =============================================== --}}
-    {{--         HTML CỦA POPUP CHỈNH SỬA PROFILE     --}}
+    {{--     HTML CỦA POPUP CHỈNH SỬA PROFILE       --}}
     {{-- =============================================== --}}
     <div id="edit-profile-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div id="modal-overlay" class="absolute inset-0 modal-overlay"></div>
@@ -293,7 +294,7 @@
 
 
     {{-- =============================================== --}}
-    {{--         [MỚI] HTML CỦA POPUP ĐỔI MẬT KHẨU     --}}
+    {{--     [MỚI] HTML CỦA POPUP ĐỔI MẬT KHẨU       --}}
     {{-- =============================================== --}}
     <div id="change-password-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         
@@ -314,7 +315,6 @@
             {{-- Vùng hiển thị lỗi Validation --}}
             <div id="change-password-errors-container" class="hidden mt-4 p-3 rounded-lg" style="background-color: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4);">
                 <ul id="change-password-errors-list" class="list-disc pl-5 text-sm" style="color: #fecaca;">
-                    {{-- Lỗi sẽ được JS chèn vào đây --}}
                 </ul>
             </div>
 
@@ -325,7 +325,7 @@
 
             {{-- Form đổi mật khẩu --}}
             <form id="change-password-form" action="{{ url('/account-info/change-password') }}" method="POST" class="mt-6 space-y-4">
-        @csrf
+    @csrf
                 
                 {{-- Old Password --}}
                 <div>
@@ -359,8 +359,469 @@
         </div>
     </div>
     {{-- =============================================== --}}
-    {{--           KẾT THÚC: POPUP ĐỔI MẬT KHẨU     --}}
+    {{--           KẾT THÚC: POPUP ĐỔI MẬT KHẨU      --}}
     {{-- =============================================== --}}
 
 
 @endsection
+
+{{-- =============================================== --}}
+{{--           [SỬA LỚN] KHỐI SCRIPT                --}}
+{{-- =============================================== --}}
+@push('scripts')
+<script>
+// Biến toàn cục để lưu trữ các đối tượng chart
+window.accountCharts = {
+    work: null,
+    moodboards: null,
+    likes: null
+};
+// Biến toàn cục để lưu trữ options (chứa data từ fetch)
+window.chartOptionsStore = {
+    work: null,
+    moodboards: null,
+    likes: null
+};
+
+// Initialize charts when document is ready
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. [MỚI] Chỉ fetch data và chuẩn bị options
+    prepareChartData();
+
+    // 2. Initialize Tab Switching (sẽ được sửa để render chart)
+    initTabs();
+
+    // 3. Initialize Avatar Upload
+    initAvatarUpload();
+
+    // 4. Initialize Edit Profile Modal
+    initEditProfileModal();
+
+    // 5. Initialize Change Password Modal
+    initChangePasswordModal();
+});
+
+// 1. [SỬA LỚN] Đổi tên từ initCharts -> prepareChartData
+// Hàm này chỉ fetch data và tạo options, KHÔNG render
+function prepareChartData() {
+    fetch('/statistics/monthly-json', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(stats => {
+        const categories = stats.labels || [];
+
+        // Chart "All"
+        window.chartOptionsStore.work = {
+            series: [
+                { name: 'Completed', data: (stats.all?.completed || []) },
+                { name: 'Pending', data: (stats.all?.pending || []) }
+            ],
+            chart: { type: 'bar', height: '100%', toolbar: { show: false }, background: 'transparent', stacked: true },
+            theme: { mode: 'dark' },
+            xaxis: { categories },
+            yaxis: {
+                labels: {
+                    formatter: function (val) { return val.toFixed(0); }
+                },
+                tickAmount: 5 // Đảm bảo trục Y có chia vạch
+            },
+            colors: ['#10B981', '#F59E0B']
+        };
+
+        // Chart "Personal"
+        window.chartOptionsStore.moodboards = {
+            series: [
+                { name: 'Completed', data: (stats.personal?.completed || []) },
+                { name: 'Pending', data: (stats.personal?.pending || []) }
+            ],
+            chart: { type: 'bar', height: '100%', toolbar: { show: false }, background: 'transparent', stacked: true },
+            theme: { mode: 'dark' },
+            xaxis: { categories },
+            yaxis: {
+                labels: {
+                    formatter: function (val) { return val.toFixed(0); }
+                },
+                tickAmount: 5
+            },
+            colors: ['#3B82F6', '#F59E0B']
+        };
+
+        // Chart "Team"
+        window.chartOptionsStore.likes = {
+            series: [
+                { name: 'Completed', data: (stats.team?.completed || []) },
+                { name: 'Pending', data: (stats.team?.pending || []) }
+            ],
+            chart: { type: 'bar', height: '100%', toolbar: { show: false }, background: 'transparent', stacked: true },
+            theme: { mode: 'dark' },
+            xaxis: { categories },
+            yaxis: {
+                labels: {
+                    formatter: function (val) { return val.toFixed(0); }
+                },
+                tickAmount: 5
+            },
+            colors: ['#8B5CF6', '#F59E0B']
+        };
+
+        // [QUAN TRỌNG] Sau khi fetch xong, render chart cho tab đang active
+        // Kích hoạt lại tab active ban đầu để trigger render
+        const activeTab = document.querySelector('.tab-link.active-tab');
+        if (activeTab) {
+            activateTab(activeTab, activeTab.dataset.tab, true); // true = force render
+        }
+
+    })
+    .catch(() => {});
+}
+
+// 2. [SỬA LỚN] Hàm initTabs sẽ chứa logic render
+function initTabs() {
+    const tabs = document.querySelectorAll('.tab-link');
+    
+    // Set up click handlers for all tabs
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetTab = e.currentTarget;
+            const targetPanelId = targetTab.dataset.tab;
+            activateTab(targetTab, targetPanelId, false); // false = don't force
+        });
+    });
+
+    // Kích hoạt tab đầu tiên (nếu data chưa về, nó sẽ được gọi lại trong prepareChartData)
+    const activeTab = document.querySelector('.tab-link.active-tab');
+    if (activeTab) {
+         activateTab(activeTab, activeTab.dataset.tab, false);
+    }
+}
+
+// [SỬA LỚN] Hàm activateTab, giờ là trung tâm xử lý
+// forceRender = true nghĩa là render lại ngay cả khi chart đã tồn tại
+function activateTab(tab, targetPanelId, forceRender = false) {
+    const activeClasses = ['active-tab'];
+    const inactiveClasses = ['inactive-tab'];
+    const allTabs = document.querySelectorAll('.tab-link');
+    const allPanels = document.querySelectorAll('.tab-panel');
+
+    // 1. Update active tab
+    allTabs.forEach(t => {
+        t.classList.remove(...activeClasses);
+        t.classList.add(...inactiveClasses);
+    });
+    tab.classList.add(...activeClasses);
+    tab.classList.remove(...inactiveClasses);
+
+    // 2. Show target panel
+    allPanels.forEach(panel => {
+        if (panel.id === targetPanelId) {
+            panel.classList.remove('hidden');
+        } else {
+            panel.classList.add('hidden');
+        }
+    });
+
+    // 3. [SỬA] Logic render chart
+    // targetPanelId là 'work', 'moodboards', 'likes'
+    // chartId là 'accountWorkChart', 'accountMoodboardsChart', 'accountLikesChart'
+    const chartMapping = {
+        work: { id: 'accountWorkChart', options: window.chartOptionsStore.work, chart: window.accountCharts.work },
+        moodboards: { id: 'accountMoodboardsChart', options: window.chartOptionsStore.moodboards, chart: window.accountCharts.moodboards },
+        likes: { id: 'accountLikesChart', options: window.chartOptionsStore.likes, chart: window.accountCharts.likes }
+    };
+
+    const targetChart = chartMapping[targetPanelId];
+
+    if (targetChart) {
+        // Chỉ render NẾU:
+        // 1. Data đã về (options tồn tại)
+        // 2. Chart chưa được khởi tạo (chart === null) HOẶC bị ép render (forceRender)
+        if (targetChart.options && (!targetChart.chart || forceRender)) {
+            
+            // Nếu chart đã tồn tại (forceRender), hủy nó đi
+            if (targetChart.chart) {
+                targetChart.chart.destroy();
+            }
+
+            // Lấy div
+            const chartEl = document.querySelector("#" + targetChart.id);
+            if (chartEl) {
+                // Tạo chart mới
+                const newChart = new ApexCharts(chartEl, targetChart.options);
+                newChart.render();
+                
+                // Lưu lại
+                window.accountCharts[targetPanelId] = newChart;
+            }
+        }
+    }
+}
+
+
+// 3. Initialize Avatar Upload (Hàm này giữ nguyên)
+function initAvatarUpload() {
+    const avatarInput = document.getElementById('avatar-input');
+    const avatarImage = document.getElementById('avatar-image');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : null;
+
+    if (avatarInput && avatarImage && csrfToken) {
+        avatarInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('avatar', file);
+                formData.append('_token', csrfToken); 
+
+                avatarImage.style.opacity = '0.5';
+
+                fetch('/account-info/upload-avatar', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json' 
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw err; });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success && data.avatar_url) {
+                            avatarImage.src = data.avatar_url;
+                        } else {
+                            alert(data.message || 'Failed to update avatar');
+                        }
+                    })
+                    .catch(error => {
+                        if (error.errors && error.errors.avatar) {
+                            alert(error.errors.avatar[0]); 
+                        } else {
+                            console.error('Error:', error);
+                            alert('Error updating avatar. Check console.');
+                        }
+                    })
+                    .finally(() => {
+                        avatarImage.style.opacity = '1';
+                        avatarInput.value = ''; 
+                    });
+            }
+        });
+    } else if (!csrfToken) {
+        console.error("CSRF token meta tag not found!");
+    }
+}
+
+// 4. Initialize Edit Profile Modal (Hàm này giữ nguyên)
+function initEditProfileModal() {
+    const modal = document.getElementById('edit-profile-modal');
+    const openModalButton = document.getElementById('open-edit-modal-button');
+    const closeModalButton = document.getElementById('close-edit-modal-button');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const editForm = document.getElementById('edit-profile-form');
+    const errorsContainer = document.getElementById('modal-errors-container');
+    const errorsList = document.getElementById('modal-errors-list');
+    const profileNameDisplay = document.getElementById('profile-name-display');
+    const profilePhoneDisplay = document.getElementById('profile-phone-display');
+    const formInputName = document.getElementById('full_name');
+    const formInputPhone = document.getElementById('phone');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : null;
+
+    if (!modal || !openModalButton || !csrfToken) return;
+
+    const openModal = () => {
+        formInputName.value = profileNameDisplay.childNodes[0].nodeValue.trim();
+        formInputPhone.value = (profilePhoneDisplay.textContent === 'N/A') ? '' : profilePhoneDisplay.textContent;
+        modal.classList.remove('hidden');
+    };
+
+    const closeModal = () => {
+        modal.classList.add('hidden');
+        errorsContainer.classList.add('hidden');
+        errorsList.innerHTML = '';
+    };
+
+    openModalButton.addEventListener('click', openModal);
+
+    if (closeModalButton) {
+        closeModalButton.addEventListener('click', closeModal);
+    }
+
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', closeModal);
+    }
+
+    if (editForm) {
+        editForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            errorsContainer.classList.add('hidden');
+            errorsList.innerHTML = '';
+            const formData = new FormData(editForm);
+
+            fetch(editForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken 
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        profileNameDisplay.childNodes[0].nodeValue = data.full_name; 
+                        if (data.phone) {
+                            profilePhoneDisplay.textContent = data.phone;
+                        } else {
+                            profilePhoneDisplay.textContent = 'N/A'; 
+                        }
+
+                        const successMessage = document.createElement('div');
+                        successMessage.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-[9999] transform translate-x-0 transition-all duration-300';
+                        successMessage.style.position = 'fixed';
+                        successMessage.style.zIndex = '9999';
+                        successMessage.textContent = data.message || 'Cập nhật thông tin thành công!';
+                        document.body.appendChild(successMessage);
+
+                        setTimeout(() => {
+                            successMessage.style.opacity = '0';
+                            successMessage.style.transform = 'translateX(100%)';
+                            setTimeout(() => {
+                                successMessage.remove();
+                                closeModal();
+                            }, 300);
+                        }, 2000);
+                    } else if (data.errors) {
+                        errorsContainer.classList.remove('hidden');
+                        Object.values(data.errors).forEach(error => {
+                            const li = document.createElement('li');
+                            li.textContent = Array.isArray(error) ? error[0] : error;
+                            errorsList.appendChild(li);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'fixed top-20 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-[9999] transform translate-x-0 transition-all duration-300';
+                    errorMessage.style.position = 'fixed';
+                    errorMessage.style.zIndex = '9999';
+                    errorMessage.textContent = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+                    document.body.appendChild(errorMessage);
+
+                    setTimeout(() => {
+                        errorMessage.style.opacity = '0';
+                        errorMessage.style.transform = 'translateX(100%)';
+                        setTimeout(() => {
+                            errorMessage.remove();
+                        }, 300);
+                    }, 3000);
+                });
+        });
+    }
+}
+
+// 5. Initialize Change Password Modal (Hàm này giữ nguyên)
+function initChangePasswordModal() {
+    const pwModal = document.getElementById('change-password-modal');
+    const openPwModalButton = document.getElementById('open-change-password-modal-button');
+    const closePwModalButton = document.getElementById('close-change-password-modal-button');
+    const pwModalOverlay = document.getElementById('change-password-modal-overlay');
+    const pwForm = document.getElementById('change-password-form');
+    const pwErrorsContainer = document.getElementById('change-password-errors-container');
+    const pwErrorsList = document.getElementById('change-password-errors-list');
+    const pwSuccessContainer = document.getElementById('change-password-success-container'); 
+    const csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : null;
+
+    if (!pwModal || !openPwModalButton || !csrfToken) return;
+
+    const openPwModal = () => {
+        pwModal.classList.remove('hidden');
+        pwErrorsContainer.classList.add('hidden');
+        pwSuccessContainer.classList.add('hidden'); 
+        pwErrorsList.innerHTML = ''; 
+        pwForm.reset();
+    };
+
+    const closePwModal = () => {
+        pwModal.classList.add('hidden');
+    };
+
+    openPwModalButton.addEventListener('click', openPwModal);
+
+    if (closePwModalButton) {
+        closePwModalButton.addEventListener('click', closePwModal);
+    }
+
+    if (pwModalOverlay) {
+        pwModalOverlay.addEventListener('click', closePwModal);
+    }
+
+    if (pwForm) {
+        pwForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            pwErrorsContainer.classList.add('hidden');
+            pwSuccessContainer.classList.add('hidden');
+            pwErrorsList.innerHTML = '';
+            const formData = new FormData(pwForm);
+
+            try {
+                const response = await fetch(pwForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-[9999] transform translate-x-0 transition-all duration-300';
+                    successMessage.style.position = 'fixed';
+                    successMessage.style.zIndex = '9999';
+                    successMessage.textContent = data.message || 'Update password successfully!';
+                    document.body.appendChild(successMessage);
+
+                    setTimeout(() => {
+                        successMessage.style.opacity = '0';
+                        successMessage.style.transform = 'translateX(100%)';
+                        setTimeout(() => {
+                            successMessage.remove();
+                            closePwModal();
+                            pwForm.reset();
+                        }, 300);
+                    }, 2000);
+
+                } else if (data.errors) {
+                    pwErrorsContainer.classList.remove('hidden');
+                    Object.entries(data.errors).forEach(([field, messages]) => {
+                        const li = document.createElement('li');
+                        li.textContent = Array.isArray(messages) ? messages[0] : messages;
+                        pwErrorsList.appendChild(li);
+                    });
+                } else {
+                     pwErrorsContainer.classList.remove('hidden');
+                     const li = document.createElement('li');
+                     li.textContent = data.message || 'An unknown error occurred.';
+                     pwErrorsList.appendChild(li);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                pwErrorsContainer.classList.remove('hidden');
+                const li = document.createElement('li');
+                li.textContent = 'Lỗi kết nối. Vui lòng thử lại sau.';
+                pwErrorsList.appendChild(li);
+            }
+        });
+    }
+}
+</script>
+@endpush
