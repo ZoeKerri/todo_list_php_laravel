@@ -196,8 +196,9 @@
                                        class="btn-secondary-surface px-5 py-2 rounded-lg font-semibold text-sm cursor-pointer">Change
                                         password</button>
                                     
-                                    <a href="#"
-                                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                                    <a href="{{ url('/logout') }}"
+                                       data-logout-trigger
+                                       data-logout-form="account-logout-form"
                                        class="btn-danger-outline px-5 py-2 rounded-lg font-semibold text-sm">Sign
                                         out</a>
         </div>
@@ -223,7 +224,7 @@
             </section>
 
             {{-- Form logout ẩn --}}
-            <form id="logout-form" action="{{ url('/logout') }}" method="POST" class="hidden">
+            <form id="account-logout-form" action="{{ url('/logout') }}" method="POST" class="hidden">
                 @csrf
             </form>
 
