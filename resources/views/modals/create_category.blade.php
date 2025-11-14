@@ -105,7 +105,7 @@
     .category-modal {
         display: none;
         position: fixed;
-        z-index: 1000;
+        z-index: 3000;
         left: 0;
         top: 0;
         width: 100%;

@@ -705,11 +705,6 @@
                     <i class="fas fa-chart-pie"></i><span>Statistics</span>
                 </a>
             </li>
-            <li class="{{ Request::is('share') ? 'active' : '' }}">
-                <a href="{{ url('/share') }}">
-                    <i class="fas fa-share-alt"></i><span>Share</span>
-                </a>
-            </li>
             <li id="setting" onclick="showSettings()">
                 <i class="fas fa-cog"></i><span>Setting</span>
             </li>

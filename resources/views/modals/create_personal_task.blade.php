@@ -376,6 +376,7 @@
             const modal = document.getElementById('createPersonalTaskModal');
             if (modal) {
                 modal.classList.add('show');
+                modal.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
                 
                 const dueDateInput = document.getElementById('personalTaskDueDate');
@@ -402,6 +403,7 @@
         const modal = document.getElementById('createPersonalTaskModal');
         if (modal) {
             modal.classList.remove('show');
+            modal.style.display = 'none';
             document.body.style.overflow = 'auto';
             const form = document.getElementById('createPersonalTaskForm');
             if (form) form.reset();
@@ -412,6 +414,8 @@
             if (selectedIdsInput) selectedIdsInput.value = '';
         }
     }
+
+    window.closeCreatePersonalTaskModal = closeCreatePersonalTaskModal;
 
     let personalTaskSelectedCategoryIds = [];
 
