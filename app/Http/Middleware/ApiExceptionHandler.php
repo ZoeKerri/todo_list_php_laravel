@@ -12,9 +12,6 @@ use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class ApiExceptionHandler
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next)
     {
         try {

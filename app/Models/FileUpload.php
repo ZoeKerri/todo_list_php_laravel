@@ -20,9 +20,6 @@ class FileUpload extends Model
         'updated_by',
     ];
 
-    /**
-     * Get the user that owns the file upload.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);

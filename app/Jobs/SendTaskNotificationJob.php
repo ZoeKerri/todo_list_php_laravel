@@ -19,9 +19,7 @@ class SendTaskNotificationJob implements ShouldQueue
         public PersonalTask $task
     ) {}
 
-    /**
-     * Execute the job.
-     */
+    
     public function handle(): void
     {
         Mail::to($this->task->user->email)

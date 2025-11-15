@@ -28,17 +28,11 @@ class PersonalTask extends Model
         'completed' => 'boolean',
     ];
 
-    /**
-     * Get the user that owns the personal task.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the category for the personal task.
-     */
     public function category()
     {
         return $this->belongsTo(Category::class);

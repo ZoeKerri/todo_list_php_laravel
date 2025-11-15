@@ -21,9 +21,7 @@ class SettingsController extends Controller
             'dark_mode' => $request->boolean('dark_mode'),
         ];
 
-        // Store settings in cookies (expires in 1 year)
-        // httpOnly: false allows JavaScript to read the cookie
-        $cookie = Cookie::make('user_settings', json_encode($settings), 525600, '/', null, false, false); // 1 year in minutes
+        $cookie = Cookie::make('user_settings', json_encode($settings), 525600, '/', null, false, false);
 
         return response()->json([
             'success' => true,
@@ -33,17 +31,15 @@ class SettingsController extends Controller
 
     public function get(Request $request)
     {
-        // Get settings from cookies
         $settingsJson = $request->cookie('user_settings');
         
         if ($settingsJson) {
             $settings = json_decode($settingsJson, true);
         } else {
-            // Default settings
             $settings = [
                 'show_completed_tasks' => false,
                 'notifications' => false,
-                'dark_mode' => true, // Default to dark mode
+                'dark_mode' => true,
             ];
         }
 

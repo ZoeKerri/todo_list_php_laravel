@@ -11,25 +11,12 @@ use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// API v1 routes
 Route::prefix('v1')->group(function () {
 
-    // Authentication routes (public)
     Route::prefix('auth')->group(function () {
         Route::post('login', [AuthController::class, 'login']);
         Route::post('register', [AuthController::class, 'register']);
@@ -39,7 +26,6 @@ Route::prefix('v1')->group(function () {
         Route::post('check-code', [AuthController::class, 'verifyOtp']);
         Route::post('resend-code', [AuthController::class, 'resendCode']);
 
-        // Protected authentication routes
         Route::middleware('auth:api')->group(function () {
             Route::post('logout', [AuthController::class, 'logout']);
             Route::post('refresh', [AuthController::class, 'refresh']);
@@ -47,21 +33,16 @@ Route::prefix('v1')->group(function () {
         });
     });
 
-    // Categories routes (public)
     Route::middleware('auth:api')->group(function () {
         Route::get('category', [CategoryController::class, 'index']);
         Route::post('category', [CategoryController::class, 'store']);
         Route::delete('category/{category}', [CategoryController::class, 'destroy']);
     });
 
-    // Task count routes (public endpoints as per documentation)
     Route::get('task/count/day/total', [PersonalTaskController::class, 'getTasksCountForDay']);
     Route::get('task/count/day/completed', [PersonalTaskController::class, 'getCompletedTasksCountForDay']);
 
-    // Protected routes
     Route::middleware('auth:api')->group(function () {
-
-        // Personal Tasks routes
         Route::prefix('task')->group(function () {
             Route::get('/', [PersonalTaskController::class, 'index']);
             Route::post('/', [PersonalTaskController::class, 'store']);
@@ -70,27 +51,24 @@ Route::prefix('v1')->group(function () {
             Route::delete('{personalTask}', [PersonalTaskController::class, 'destroy']);
         });
 
-        // Team routes (matching Flutter app)
         Route::prefix('team')->group(function () {
             Route::get('/{userId}', [TeamController::class, 'getTeamsByUserId']);
             Route::get('/detail/{team}', [TeamController::class, 'show']);
-            Route::post('/{userId}', [TeamController::class, 'store']); // userId is not used, but matches path
+            Route::post('/{userId}', [TeamController::class, 'store']);
             Route::put('/', [TeamController::class, 'update']);
             Route::delete('/{team}', [TeamController::class, 'destroy']);
-            Route::delete('/task/{team}', [TeamController::class, 'destroy']); // Assumes this means delete team and tasks
+            Route::delete('/task/{team}', [TeamController::class, 'destroy']);
         });
 
-        // Team Member routes (matching Flutter app)
         Route::prefix('member')->group(function () {
             Route::get('/by-team/{team}', [TeamMemberController::class, 'index']);
-            Route::get('/{team}/{user}', [TeamMemberController::class, 'show']); // Get member by team and user ID
+            Route::get('/{team}/{user}', [TeamMemberController::class, 'show']);
             Route::post('/', [TeamMemberController::class, 'store']);
             Route::put('/', [TeamMemberController::class, 'update']);
             Route::delete('/{memberId}', [TeamMemberController::class, 'destroy']);
             Route::delete('/tasks/{teamId}/{userId}', [TeamMemberController::class, 'deleteMemberAndTasks']);
         });
 
-        // Team Task routes (matching Flutter app)
         Route::prefix('team-task')->group(function () {
             Route::get('/by-team/{team}', [TeamTaskController::class, 'index']);
             Route::get('/by-user/{user}', [TeamTaskController::class, 'getTasksForUser']);
@@ -100,16 +78,14 @@ Route::prefix('v1')->group(function () {
             Route::delete('/{task}', [TeamTaskController::class, 'destroy']);
         });
 
-        // User routes - Đặt route cụ thể TRƯỚC prefix để tránh conflict
-        Route::get('user/search', [TeamController::class, 'searchUsersByEmailPrefix']); // Search by prefix
-        Route::get('user/by-email/{email}', [TeamController::class, 'getUserByEmail']); // Exact match
+        Route::get('user/search', [TeamController::class, 'searchUsersByEmailPrefix']);
+        Route::get('user/by-email/{email}', [TeamController::class, 'getUserByEmail']);
         Route::prefix('user')->group(function () {
             Route::get('profile', [UserController::class, 'profile']);
             Route::put('profile', [UserController::class, 'updateProfile']);
             Route::post('avatar', [UserController::class, 'uploadAvatar']);
         });
 
-        // File upload routes
         Route::prefix('file')->group(function () {
             Route::post('upload', [FileController::class, 'upload']);
             Route::get('upload', [FileController::class, 'index']);

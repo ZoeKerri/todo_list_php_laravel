@@ -4,7 +4,6 @@
 
 @push('styles')
 <style>
-    /* Header màu tím */
     .group-header {
         background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-color) 100%);
         padding: 20px;
@@ -38,7 +37,6 @@
         transition: opacity 0.3s ease;
     }
     
-    /* Section headers */
     .section-header {
         display: flex;
         align-items: center;
@@ -80,7 +78,6 @@
         margin: 0;
     }
     
-    /* Danh sách nhóm */
     .group-list {
         margin-bottom: 100px;
     }
@@ -140,7 +137,6 @@
         transition: color 0.3s ease;
     }
     
-    /* Empty state */
     .empty-state {
         text-align: center;
         padding: 40px 20px;
@@ -152,7 +148,6 @@
         opacity: 0.5;
     }
     
-    /* Nút Thêm (FAB) */
     .fab {
         position: fixed;
         bottom: 30px;
@@ -178,7 +173,6 @@
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
     }
     
-    /* Modal */
     .modal {
         display: none;
         position: fixed;
@@ -370,7 +364,6 @@
     <i class="fas fa-plus"></i>
 </a>
 
-<!-- Modal Create Group -->
 <div id="createGroupModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -390,7 +383,6 @@
                     <div id="searchResults" class="search-results" style="display: none;"></div>
                 </div>
                 <div class="members-list" id="membersList">
-                    <!-- Members will be added here -->
                 </div>
             </div>
             
@@ -405,30 +397,25 @@
 <script>
     const userId = {{ Auth::id() ?? 'null' }};
     
-    // Lấy token từ session hoặc localStorage
     function getApiToken() {
-        // Thử lấy từ session (PHP) - cho login thông thường
         const sessionToken = '{{ session("jwt_token") }}';
         if (sessionToken && sessionToken !== '' && sessionToken !== 'null') {
             console.log('Using token from session');
             return sessionToken;
         }
         
-        // Fallback: lấy từ localStorage (nếu login bằng Google)
         const localToken = localStorage.getItem('access_token');
         if (localToken) {
             console.log('Using token from localStorage');
             return localToken;
         }
         
-        // Nếu không có token
         console.error('No API token found in session or localStorage');
         return null;
     }
     
     const apiToken = getApiToken();
     
-    // Debug info
     console.log('User ID:', userId);
     console.log('API Token available:', apiToken ? 'Yes (' + apiToken.substring(0, 20) + '...)' : 'No');
     
@@ -439,11 +426,9 @@
     let searchTimeout = null;
     let currentMembers = [];
     
-    // Load teams on page load
     document.addEventListener('DOMContentLoaded', function() {
         loadTeams();
         
-        // Setup search debounce
         document.getElementById('searchMember').addEventListener('input', function(e) {
             clearTimeout(searchTimeout);
             const prefix = e.target.value.trim();
@@ -453,27 +438,23 @@
                 return;
             }
             
-            // Debounce: wait 0.8 seconds before searching (prefix search)
             searchTimeout = setTimeout(() => {
                 searchUsersByEmailPrefix(prefix);
             }, 800);
         });
         
-        // Close search results when clicking outside
         document.addEventListener('click', function(e) {
             if (!e.target.closest('#searchMember') && !e.target.closest('#searchResults')) {
                 document.getElementById('searchResults').style.display = 'none';
             }
         });
         
-        // Form submit
         document.getElementById('createGroupForm').addEventListener('submit', function(e) {
             e.preventDefault();
             createGroup();
         });
     });
     
-    // Load teams from API
     async function loadTeams() {
         if (!apiToken) {
             showError('Please login to view groups');
@@ -503,7 +484,6 @@
             } else {
                 if (response.status === 401) {
                     showError('Session expired. Please login again.');
-                    // Có thể redirect về login
                     setTimeout(() => {
                         window.location.href = '/login';
                     }, 2000);
@@ -517,7 +497,6 @@
         }
     }
     
-    // Display teams in 2 sections
     function displayTeams(teams) {
         const container = document.getElementById('groupList');
         
@@ -531,7 +510,6 @@
             return;
         }
         
-        // Separate leader and member teams
         const leaderTeams = teams.filter(team => {
             return team.teamMembers.some(member => 
                 member.userId === userId && member.role === 'LEADER'
@@ -546,7 +524,6 @@
         
         let html = '';
         
-        // Leader section
         if (leaderTeams.length > 0) {
             html += `
                 <div class="section-wrapper" data-section="leader">
@@ -565,7 +542,6 @@
             html += '</div></div>';
         }
         
-        // Member section
         if (memberTeams.length > 0) {
             html += `
                 <div class="section-wrapper" data-section="member">
@@ -587,17 +563,14 @@
         container.innerHTML = html;
     }
     
-    // Helper function to get avatar URL
     function getAvatarUrl(avatar) {
         if (!avatar) return null;
-        // Check if avatar is a URL (from Google login) or a storage path
         if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
             return avatar;
         }
         return `/storage/${avatar}`;
     }
     
-    // Helper function to get initials from name
     function getInitials(name, email) {
         if (name && name.length > 0) {
             return name[0].toUpperCase();
@@ -608,7 +581,6 @@
         return 'U';
     }
     
-    // Helper function to render avatar with fallback
     function renderAvatar(avatar, name, email, size = 32) {
         const avatarUrl = getAvatarUrl(avatar);
         const initials = getInitials(name, email);
@@ -627,7 +599,6 @@
         }
     }
     
-    // Create team item HTML
     function createTeamItem(team, leader, isLeader) {
         const leaderName = leader?.user?.name || leader?.user?.email || 'Unknown';
         const leaderEmail = leader?.user?.email || '';
@@ -651,7 +622,6 @@
         `;
     }
     
-    // Search users by email prefix
     async function searchUsersByEmailPrefix(prefix) {
         if (!apiToken) {
             alert('Please login to search users');
@@ -683,13 +653,12 @@
                     return;
                 }
                 
-                // Filter out already added members and current user
                 const filteredUsers = users.filter(user => {
                     if (currentMembers.some(m => m.id === user.id)) {
-                        return false; // Already added
+                        return false;
                     }
                     if (user.id === userId) {
-                        return false; // Current user (automatically leader)
+                        return false;
                     }
                     return true;
                 });
@@ -699,7 +668,6 @@
                     return;
                 }
                 
-                // Display list of users
                 let html = '';
                 filteredUsers.forEach(user => {
                     html += `
@@ -729,15 +697,11 @@
         }
     }
     
-    // Add member to list
     function addMember(id, name, email, avatar = null) {
-        // Check if already added
         if (currentMembers.some(m => m.id === id)) {
             alert('User already added');
             return;
         }
-        
-        // Check if user is current user
         if (id === userId) {
             alert('You are automatically the leader');
             return;
@@ -749,13 +713,11 @@
         document.getElementById('searchResults').style.display = 'none';
     }
     
-    // Remove member from list
     function removeMember(id) {
         currentMembers = currentMembers.filter(m => m.id !== id);
         updateMembersList();
     }
     
-    // Update members list display
     function updateMembersList() {
         const listDiv = document.getElementById('membersList');
         
@@ -785,7 +747,6 @@
         listDiv.innerHTML = html;
     }
     
-    // Create group
     async function createGroup() {
         if (!apiToken) {
             alert('Please login to create a group');
@@ -852,7 +813,6 @@
         }
     }
     
-    // Toggle section collapse/expand
     function toggleSection(sectionName) {
         const header = document.querySelector(`[data-section="${sectionName}"] .section-header`);
         const content = document.getElementById(`section-${sectionName}`);
@@ -863,7 +823,6 @@
         content.classList.toggle('collapsed');
     }
     
-    // Modal functions
     function openCreateModal() {
         document.getElementById('createGroupModal').classList.add('show');
         currentMembers = [];
@@ -878,7 +837,6 @@
         document.getElementById('searchResults').style.display = 'none';
     }
     
-    // Close modal when clicking outside
     window.onclick = function(event) {
         const modal = document.getElementById('createGroupModal');
         if (event.target === modal) {
@@ -886,7 +844,6 @@
         }
     }
     
-    // Utility functions
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;

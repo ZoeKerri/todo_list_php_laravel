@@ -21,20 +21,16 @@ class StatisticsController extends Controller
     {
         $user = Auth::user();
 
-        // [SỬA] Đổi sang thống kê theo năm hiện tại (Jan - Dec)
-        $startDate = now()->startOfYear(); // Bắt đầu từ tháng 1
-        $endDate = now()->endOfYear();   // Kết thúc vào tháng 12
+        $startDate = now()->startOfYear();
+        $endDate = now()->endOfYear();
 
-        // Preload team member ids
         $userMemberIds = TeamMember::where('user_id', $user->id)->pluck('id');
 
         $months = [];
         $labels = [];
         $current = $startDate->copy();
 
-        // Vòng lặp
         while ($current->lte($endDate)) {
-            // Chỉ lặp 12 tháng của năm hiện tại
             if ($current->year != $startDate->year) {
                 break;
             }
@@ -42,9 +38,9 @@ class StatisticsController extends Controller
             $months[] = [
                 'start' => $current->copy()->startOfMonth(),
                 'end'   => $current->copy()->endOfMonth(),
-                'label' => $current->format('M') // Chỉ hiển thị Jan, Feb...
+                'label' => $current->format('M')
             ];
-            $labels[] = $current->format('M'); // [SỬA] Chỉ hiển thị tên tháng (Jan, Feb...)
+            $labels[] = $current->format('M');
             $current->addMonth();
         }
 
@@ -54,13 +50,11 @@ class StatisticsController extends Controller
         $teamPending = [];
 
         foreach ($months as $m) {
-            // Personal
             $pCompleted = PersonalTask::where('user_id', $user->id)
                 ->where('completed', true)
                 ->whereBetween('updated_at', [$m['start'], $m['end']])
                 ->count();
             
-            // [SỬA] Đổi logic đếm pending cho hợp lý (theo due_date trong tháng đó)
             $pPending = PersonalTask::where('user_id', $user->id)
                 ->where('completed', false)
                 ->whereBetween('due_date', [$m['start'], $m['end']])
@@ -69,13 +63,11 @@ class StatisticsController extends Controller
             $personalCompleted[] = $pCompleted;
             $personalPending[] = $pPending;
 
-            // Team
             $tCompleted = TeamTask::whereIn('member_id', $userMemberIds)
                 ->where('is_completed', true)
                 ->whereBetween('updated_at', [$m['start'], $m['end']])
                 ->count();
 
-            // [SỬA] Đổi logic đếm pending cho hợp lý (theo deadline trong tháng đó)
             $tPending = TeamTask::whereIn('member_id', $userMemberIds)
                 ->where('is_completed', false)
                 ->whereBetween('deadline', [$m['start'], $m['end']])
@@ -112,10 +104,6 @@ class StatisticsController extends Controller
         return response()->json($response);
     }
 
-    // ==================================================================
-    // CÁC HÀM KHÁC CỦA STATISTICS CONTROLLER (giữ nguyên, không thay đổi)
-    // ==================================================================
-    
     public function index(Request $request)
     {
         $user = Auth::user();

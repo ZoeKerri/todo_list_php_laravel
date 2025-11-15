@@ -16,13 +16,11 @@
             </div>
             
             <div id="taskDetailContent" style="display: none;">
-                <!-- Title -->
                 <div class="task-detail-field">
                     <label class="task-detail-label">Title</label>
                     <div class="task-detail-value" id="taskDetailTitle">-</div>
                 </div>
                 
-                <!-- Status -->
                 <div class="task-detail-field">
                     <label class="task-detail-label">Status</label>
                     <div class="task-detail-value">
@@ -30,7 +28,6 @@
                     </div>
                 </div>
                 
-                <!-- Category -->
                 <div class="task-detail-field">
                     <label class="task-detail-label">Category</label>
                     <div class="task-detail-value">
@@ -38,7 +35,6 @@
                     </div>
                 </div>
                 
-                <!-- Priority -->
                 <div class="task-detail-field">
                     <label class="task-detail-label">Priority</label>
                     <div class="task-detail-value">
@@ -46,19 +42,16 @@
                     </div>
                 </div>
                 
-                <!-- Due Date -->
                 <div class="task-detail-field">
                     <label class="task-detail-label">Due Date</label>
                     <div class="task-detail-value" id="taskDetailDueDate">-</div>
                 </div>
                 
-                <!-- Notification Time -->
                 <div class="task-detail-field" id="taskDetailNotificationField" style="display: none;">
                     <label class="task-detail-label">Notification Time</label>
                     <div class="task-detail-value" id="taskDetailNotificationTime">-</div>
                 </div>
                 
-                <!-- Description -->
                 <div class="task-detail-field">
                     <label class="task-detail-label">Description</label>
                     <div class="task-detail-value task-detail-description" id="taskDetailDescription">-</div>
@@ -356,14 +349,12 @@
         contentDiv.style.display = 'none';
 
         try {
-            // Get API token - try multiple methods
             let apiToken = null;
             if (typeof getApiToken === 'function') {
                 apiToken = getApiToken();
             } else if (typeof window.getApiToken === 'function') {
                 apiToken = window.getApiToken();
             } else {
-                // Fallback: try to get from localStorage or session
                 apiToken = localStorage.getItem('access_token');
             }
             
@@ -443,10 +434,8 @@
     }
 
     function displayTaskDetail(task) {
-        // Title
         document.getElementById('taskDetailTitle').textContent = task.title || 'Untitled';
 
-        // Status
         const statusBadge = document.getElementById('taskDetailStatus');
         if (task.completed) {
             statusBadge.textContent = 'Completed';
@@ -456,20 +445,17 @@
             statusBadge.className = 'task-status-badge pending';
         }
 
-        // Category
         const categoryBadge = document.getElementById('taskDetailCategory');
         if (task.category_id || task.categoryId) {
             const categoryId = task.category_id || task.categoryId;
             let categoryName = 'No category';
             let categoryColor = null;
             
-            // First try: check if category data is in task object
             if (task.category) {
                 categoryName = task.category.name || task.category.title || 'Unknown';
                 categoryColor = task.category.color || null;
                 updateCategoryBadge(categoryBadge, categoryName, categoryColor);
             }
-            // Second try: get category from global categories array
             else if (typeof categories !== 'undefined' && Array.isArray(categories)) {
                 const category = categories.find(c => c.id === categoryId);
                 if (category) {
@@ -478,7 +464,6 @@
                 }
                 updateCategoryBadge(categoryBadge, categoryName, categoryColor);
             }
-            // Third try: use helper functions if available
             else if (typeof getCategoryName === 'function') {
                 categoryName = getCategoryName(categoryId);
                 if (typeof getCategoryColor === 'function') {
@@ -486,7 +471,6 @@
                 }
                 updateCategoryBadge(categoryBadge, categoryName, categoryColor);
             }
-            // Fourth try: load category from API
             else {
                 loadCategoryForTask(categoryId).then(category => {
                     if (category) {
@@ -504,13 +488,11 @@
             updateCategoryBadge(categoryBadge, 'No category', null);
         }
 
-        // Priority
         const priorityBadge = document.getElementById('taskDetailPriority');
         const priority = (task.priority || 'MEDIUM').toUpperCase();
         priorityBadge.textContent = priority === 'HIGH' ? 'High' : priority === 'MEDIUM' ? 'Medium' : 'Low';
         priorityBadge.className = `task-priority-badge ${priority.toLowerCase()}`;
 
-        // Due Date
         if (task.due_date || task.dueDate) {
             const dueDate = new Date(task.due_date || task.dueDate);
             const formattedDate = `${dueDate.getDate()}/${dueDate.getMonth() + 1}/${dueDate.getFullYear()}`;
@@ -519,7 +501,6 @@
             document.getElementById('taskDetailDueDate').textContent = 'No due date';
         }
 
-        // Notification Time
         if (task.notification_time) {
             document.getElementById('taskDetailNotificationTime').textContent = task.notification_time;
             document.getElementById('taskDetailNotificationField').style.display = 'block';
@@ -527,33 +508,25 @@
             document.getElementById('taskDetailNotificationField').style.display = 'none';
         }
 
-        // Description
         const description = task.description || 'No description';
         document.getElementById('taskDetailDescription').textContent = description;
 
-        // Edit button (always show for now, can add permission check later)
         document.getElementById('taskDetailEditBtn').style.display = 'inline-flex';
     }
 
     function editPersonalTask() {
         if (currentTaskId && typeof openCreatePersonalTaskModal === 'function') {
-            // Close detail modal
             closePersonalTaskDetailModal();
             
-            // TODO: Load task data into edit modal
-            // For now, just open the create modal
-            // You can enhance this to load task data and populate the form
             setTimeout(() => {
                 openCreatePersonalTaskModal();
             }, 300);
         }
     }
 
-    // Make functions globally available immediately
     window.openPersonalTaskDetailModal = openPersonalTaskDetailModal;
     window.closePersonalTaskDetailModal = closePersonalTaskDetailModal;
 
-    // Close modal when clicking outside
     document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('personalTaskDetailModal');
         if (modal) {
@@ -565,7 +538,6 @@
         }
     });
 
-    // Close with Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             const modal = document.getElementById('personalTaskDetailModal');

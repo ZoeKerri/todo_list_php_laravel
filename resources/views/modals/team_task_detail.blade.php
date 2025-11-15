@@ -331,7 +331,6 @@
         let currentTeamTaskId = null;
         let currentTeamId = null;
 
-        // Define functions immediately and make them globally available
         function openTeamTaskDetailModal(taskId, teamId) {
             currentTeamTaskId = taskId;
             currentTeamId = teamId;
@@ -355,7 +354,6 @@
             currentTeamId = null;
         }
 
-        // Make functions globally available immediately (before DOM is ready)
         window.openTeamTaskDetailModal = openTeamTaskDetailModal;
         window.closeTeamTaskDetailModal = closeTeamTaskDetailModal;
 
@@ -438,7 +436,6 @@
                 document.getElementById('teamTaskDetailDeadline').textContent = 'No deadline';
             }
 
-            // Assigned To - try multiple possible structures
             let assigneeName = 'Not assigned';
             if (task.teamMember && task.teamMember.user) {
                 const user = task.teamMember.user;
@@ -453,7 +450,6 @@
             }
             document.getElementById('teamTaskDetailAssignee').textContent = assigneeName;
 
-            // Created By - try multiple possible structures
             let createdByName = '-';
             if (task.created && task.created.by) {
                 createdByName = task.created.by;
@@ -488,7 +484,6 @@
             }
         }
 
-        // Close modal when clicking outside
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('teamTaskDetailModal');
             if (modal) {
@@ -500,7 +495,6 @@
             }
         });
 
-        // Close with Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 const modal = document.getElementById('teamTaskDetailModal');

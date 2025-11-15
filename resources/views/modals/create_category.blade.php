@@ -26,7 +26,6 @@
                 <div class="form-group">
                     <label class="form-label">Color Selection</label>
                     
-                    <!-- Preset Colors -->
                     <div class="color-presets-section">
                         <p class="color-section-label">Preset Colors</p>
                         <div class="color-presets">
@@ -73,7 +72,6 @@
                         </div>
                     </div>
 
-                    <!-- Custom Color Picker -->
                     <div class="custom-color-section">
                         <p class="color-section-label">Custom Color</p>
                         <div class="custom-color-wrapper">
@@ -223,7 +221,6 @@
         background-color: var(--bg-color, #f9fafb);
     }
 
-    /* Form Styles */
     .form-group {
         margin-bottom: 24px;
     }
@@ -263,7 +260,6 @@
         color: var(--text-secondary, #9ca3af);
     }
 
-    /* Color Selection Styles */
     .color-presets-section {
         margin-bottom: 24px;
     }
@@ -315,7 +311,6 @@
         opacity: 1;
     }
 
-    /* Custom Color Picker Styles */
     .custom-color-section {
         margin-top: 8px;
     }
@@ -379,7 +374,6 @@
         transition: color 0.3s ease;
     }
 
-    /* Button Styles */
     .btn-secondary,
     .btn-primary {
         padding: 12px 24px;
@@ -426,34 +420,28 @@
 </style>
 
 <script>
-    // Global variable to store the selected color
-    let selectedColor = '#FF6B6B'; // Default color
+    let selectedColor = '#FF6B6B';
 
-    // Modal control functions
     function openCreateCategoryModal() {
         const modal = document.getElementById('createCategoryModal');
         if (modal) {
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
             
-            // Reset form
             const form = document.getElementById('createCategoryForm');
             if (form) {
                 form.reset();
             }
             
-            // Reset to default color
             selectedColor = '#FF6B6B';
             updateSelectedColor('#FF6B6B');
             
-            // Reset preset color selection
             document.querySelectorAll('#createCategoryModal .category-color-option').forEach((option, index) => {
                 option.classList.remove('selected');
                 const checkmark = option.querySelector('.category-checkmark');
                 if (checkmark) {
                     checkmark.style.opacity = '0';
                 }
-                // Select first color option by default
                 if (index === 0) {
                     option.classList.add('selected');
                     const checkmark = option.querySelector('.category-checkmark');
@@ -463,7 +451,6 @@
                 }
             });
             
-            // Set focus to the input field when modal opens
             const input = document.getElementById('newCategoryName');
             if (input) {
                 setTimeout(() => input.focus(), 100);
@@ -471,7 +458,6 @@
         }
     };
 
-    // Close category modal
     function closeCreateCategoryModal() {
         const modal = document.getElementById('createCategoryModal');
         if (modal) {
@@ -480,9 +466,7 @@
         }
     }
     
-    // Handle preset color selection
     function selectCategoryColor(element, color) {
-        // Remove selection from all preset options
         document.querySelectorAll('#createCategoryModal .category-color-option').forEach(option => {
             option.classList.remove('selected');
             const checkmark = option.querySelector('.category-checkmark');
@@ -491,7 +475,6 @@
             }
         });
         
-        // Add selection to clicked option
         if (element) {
             element.classList.add('selected');
             const checkmark = element.querySelector('.category-checkmark');
@@ -500,14 +483,11 @@
             }
         }
         
-        // Update selected value
         selectedColor = color;
         updateSelectedColor(color);
     }
 
-    // Handle custom color selection
     function selectCustomColor(color) {
-        // Remove selection from all preset options
         document.querySelectorAll('#createCategoryModal .category-color-option').forEach(option => {
             option.classList.remove('selected');
             const checkmark = option.querySelector('.category-checkmark');
@@ -516,16 +496,13 @@
             }
         });
         
-        // Update selected value
         selectedColor = color;
         
-        // Update hidden input
         const hiddenInput = document.getElementById('selectedCategoryColor');
         if (hiddenInput) {
             hiddenInput.value = color;
         }
         
-        // Update custom color preview
         const colorPreview = document.getElementById('customColorPreview');
         const colorHex = document.getElementById('customColorHex');
         if (colorPreview) {
@@ -533,26 +510,22 @@
         }
         if (colorHex) {
             colorHex.textContent = color.toUpperCase();
-            // Update text color based on background brightness
             const contrastColor = getContrastColor(color);
             colorHex.style.color = contrastColor;
         }
     }
 
-    // Update selected color in hidden input and sync with custom picker
     function updateSelectedColor(color) {
         const hiddenInput = document.getElementById('selectedCategoryColor');
         if (hiddenInput) {
             hiddenInput.value = color;
         }
         
-        // Sync custom color picker (only if it exists and value is different to avoid infinite loop)
         const colorPicker = document.getElementById('customColorPicker');
         if (colorPicker && colorPicker.value !== color) {
             colorPicker.value = color;
         }
         
-        // Update custom color preview
         const colorPreview = document.getElementById('customColorPreview');
         const colorHex = document.getElementById('customColorHex');
         if (colorPreview) {
@@ -565,13 +538,12 @@
         }
     }
 
-    // Submit new category
     async function submitCreateCategory() {
         const nameInput = document.getElementById('newCategoryName');
         const colorInput = document.getElementById('selectedCategoryColor');
         
         const categoryName = nameInput ? nameInput.value.trim() : '';
-        const categoryColor = colorInput ? colorInput.value : '#FF6B6B'; // Get selected color
+        const categoryColor = colorInput ? colorInput.value : '#FF6B6B';
 
         if (!categoryName) {
             alert('Please enter category name');
@@ -579,7 +551,6 @@
             return;
         }
 
-        // Call API
         try {
             if (typeof getApiToken === 'undefined') {
                 console.error("Error: getApiToken() function not found.");
@@ -608,7 +579,6 @@
                 
                 closeCreateCategoryModal(); 
 
-                // Update the task creation modal
                 if (typeof loadCategoriesForPersonalTask === 'function') {
                     await loadCategoriesForPersonalTask();
                 }
@@ -638,7 +608,6 @@
         }
     }
 
-    // Hàm getContrastColor không thay đổi, giữ nguyên nếu bạn cần
     function getContrastColor(hexColor) {
         if (!hexColor) return '#000000';
         const r = parseInt(hexColor.substr(1, 2), 16);
@@ -648,8 +617,6 @@
         return luminance > 0.5 ? '#000000' : '#ffffff';
     }
 
-    // --- CÁC EVENT LISTENER CHO MODAL NÀY ---
-    
     document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('createCategoryModal');
         if (modal) {
@@ -667,7 +634,6 @@
             }
         });
         
-        // Initialize custom color preview
         const colorPreview = document.getElementById('customColorPreview');
         const colorHex = document.getElementById('customColorHex');
         if (colorPreview && colorHex) {

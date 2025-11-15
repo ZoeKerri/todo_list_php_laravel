@@ -46,12 +46,10 @@ class TeamTaskDTO
         $teamId = null;
         $userId = null;
 
-        // Always try to get teamId and userId from relationships if available
         if ($task->relationLoaded('teamMember') && $task->teamMember) {
             $teamId = $task->teamMember->team_id;
             $userId = $task->teamMember->user_id;
         } elseif ($task->teamMember) {
-            // If relationship is not loaded but exists, load it
             $task->load('teamMember');
             if ($task->teamMember) {
                 $teamId = $task->teamMember->team_id;
@@ -76,13 +74,10 @@ class TeamTaskDTO
 
     public static function fromCollection($tasks, bool $includeRelations = true): array
     {
-        // Handle different input types
         $taskCollection = collect($tasks);
         
         return $taskCollection->map(function ($task) use ($includeRelations) {
-            // If it's already a TeamTask model
             if ($task instanceof TeamTask) {
-                // Ensure relationships are loaded if needed
                 if ($includeRelations) {
                     if (!$task->relationLoaded('teamMember')) {
                         $task->load('teamMember');
@@ -97,7 +92,6 @@ class TeamTaskDTO
                 return self::fromModel($task, $includeRelations)->toArray();
             }
             
-            // If it's an array (from toArray()), convert back to model
             if (is_array($task) && isset($task['id'])) {
                 $taskModel = TeamTask::with($includeRelations ? ['teamMember.user', 'teamMember.team'] : [])
                     ->find($task['id']);

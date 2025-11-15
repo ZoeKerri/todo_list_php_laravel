@@ -4,7 +4,6 @@
 
 @push('styles')
     <style>
-        /* ... (CSS cũ của bạn giữ nguyên) ... */
         .stat-card {
             background-color: var(--card-bg);
             border-radius: 12px;
@@ -223,14 +222,13 @@
             background-color: var(--accent-hover);
         }
         
-        /* === CSS MỚI CHO NÚT BẤM === */
         .task-type-switcher {
             display: flex;
             background-color: var(--card-bg);
             border-radius: 10px;
             padding: 5px;
             margin-bottom: 20px;
-            width: fit-content; /* Tự co giãn theo nội dung */
+            width: fit-content;
         }
         .task-type-switcher a {
             padding: 8px 16px;
@@ -240,7 +238,7 @@
             border-radius: 8px;
             transition: all 0.3s ease;
         }
-        .task-type-switcher a.active { /* Đây là nút được chọn */
+        .task-type-switcher a.active {
             background-color: var(--accent-color);
             color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -257,7 +255,6 @@
 
         <form action="{{ route('statistics') }}" method="GET" class="date-filter-form">
             
-            {{-- THÊM INPUT ẨN ĐỂ NHỚ TYPE --}}
             <input type="hidden" name="type" value="{{ $currentType }}">
 
             <label for="start_date">From:</label>
@@ -270,7 +267,6 @@
         </form>
     </div>
 
-    {{-- === HTML MỚI CHO NÚT BẤM === --}}
     <div class="task-type-switcher">
         <a href="{{ route('statistics', ['type' => 'personal', 'start_date' => $startDate, 'end_date' => $endDate]) }}"
            class="{{ $currentType == 'personal' ? 'active' : '' }}">
@@ -282,7 +278,7 @@
         </a>
     </div>
 
-    <h3>Overview - {{ ucfirst($currentType) }} Tasks</h3> {{-- Thêm tiêu đề động --}}
+    <h3>Overview - {{ ucfirst($currentType) }} Tasks</h3>
     
     <div class="summary-grid">
         <div class="summary-card">
@@ -370,14 +366,11 @@
 @endsection
 
 @push('scripts')
-    {{-- Sửa lại link CDN, link của bạn bị sai (nptm thay vì npm) --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Data from controller (đã chính xác)
         const dailyData = @json($dailyData);
         const priorityData = @json($priorityData);
 
-        // Chart colors
         const chartColors = {
             primary: { bg: '#3B82F6', hover: '#2563EB' },
             success: { bg: '#10B981', hover: '#059669' },
@@ -491,14 +484,13 @@
                                 display: false
                             },
                             ticks: {
-                                color: hasData ? '#FFFFFF' : 'transparent' // Chữ màu trắng
+                                color: hasData ? '#FFFFFF' : 'transparent'
                             }
                         }
                     }
                 }
             });
 
-            // Set legend colors
             document.getElementById('legend-dot-completed').style.backgroundColor = chartColors.success.bg;
             document.getElementById('legend-dot-pending').style.backgroundColor = chartColors.warning.bg;
 

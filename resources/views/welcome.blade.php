@@ -10,7 +10,6 @@
 
 @push('styles')
 <style>
-    /* Category Filter - Horizontal Scroll */
     .category-filter-container {
         margin-bottom: 12px;
         position: relative;
@@ -63,7 +62,6 @@
         background-color: var(--hover-bg);
     }
     
-    /* Date Picker - Horizontal Scroll với Infinite Scroll */
     .date-picker-container {
         margin-bottom: 12px;
     }
@@ -128,7 +126,6 @@
         opacity: 0.85;
     }
     
-    /* Personal Task Card Styles */
     .personal-task-card {
         background-color: var(--card-bg);
         border-radius: 14px;
@@ -286,7 +283,6 @@
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
     }
     
-    /* Modal styles */
     .modal {
         display: none;
         position: fixed;
@@ -390,7 +386,6 @@
 <script>
     const userId = {{ Auth::id() ?? 'null' }};
     
-    // Make getApiToken available globally for modal
     function getApiToken() {
         const sessionToken = '{{ session("jwt_token") }}';
         if (sessionToken && sessionToken !== '' && sessionToken !== 'null') {
@@ -403,39 +398,34 @@
         return null;
     }
     
-    // Make getApiToken available globally
     window.getApiToken = getApiToken;
     
-    // Function to close the modal
     function closePersonalTaskModal() {
         const modal = document.getElementById('createPersonalTaskModal');
         if (modal) {
             modal.classList.remove('show');
             modal.style.display = 'none';
-            document.body.style.overflow = 'auto'; // Re-enable scrolling
+            document.body.style.overflow = 'auto';
         }
     }
 
-    // Add Task button click handler
     document.addEventListener('DOMContentLoaded', function() {
         const addTaskBtn = document.getElementById('addTaskBtn');
         const modal = document.getElementById('createPersonalTaskModal');
         
-        // Open modal when clicking Add Task button
         if (addTaskBtn) {
             addTaskBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 if (modal) {
                     modal.classList.add('show');
                     modal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+                    document.body.style.overflow = 'hidden';
                 } else {
                     console.error('Create personal task modal not found');
                 }
             });
         }
         
-        // Close modal when clicking outside the modal content
         if (modal) {
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
@@ -443,14 +433,12 @@
                 }
             });
             
-            // Close modal when clicking the close button
             const closeBtn = modal.querySelector('.modal-close');
             if (closeBtn) {
                 closeBtn.addEventListener('click', closePersonalTaskModal);
             }
         }
         
-        // Close modal when pressing Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closePersonalTaskModal();
@@ -466,16 +454,14 @@
     let selectedDate = new Date();
     let dateItems = [];
     let isLoadingDates = false;
-    let minDateIndex = 0; // Track the minimum date index for infinite scroll
+    let minDateIndex = 0;
     
     const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     const months = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'];
     
-    // Initialize dates around today (e.g., 7 days before to 14 days after)
     function initializeDates() {
         const dates = [];
         const today = new Date();
-        // Start from 7 days before today
         for (let i = -7; i < 14; i++) {
             const date = new Date(today);
             date.setDate(today.getDate() + i);
@@ -511,7 +497,6 @@
         const dateList = document.getElementById('dateList');
         if (!dateList) return;
         
-        // Find today's index
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         let todayIndex = -1;
@@ -523,43 +508,35 @@
             }
         });
         
-        // Render dates
         dateList.innerHTML = dateItems.map((date, index) => {
             const isSelected = index === (todayIndex >= 0 ? todayIndex : 0);
             return renderDateItem(date, isSelected);
         }).join('');
         
-        // Select today by default
         if (todayIndex >= 0) {
             selectedDate = dateItems[todayIndex];
         } else {
             selectedDate = dateItems[0];
         }
         
-        // Add infinite scroll listener for scroll events
         dateList.addEventListener('scroll', handleDateScroll);
         
-        // Handle mouse wheel for infinite scroll
         let wheelTimeout = null;
         dateList.addEventListener('wheel', function(e) {
-            // Clear existing timeout
             if (wheelTimeout) {
                 clearTimeout(wheelTimeout);
             }
             
-            // Check after a short delay to allow scroll to happen
             wheelTimeout = setTimeout(() => {
                 const dateListEl = e.currentTarget;
                 const scrollLeft = dateListEl.scrollLeft;
                 const scrollWidth = dateListEl.scrollWidth;
                 const clientWidth = dateListEl.clientWidth;
                 
-                // Load more dates when scrolling right (future)
                 if (scrollLeft + clientWidth >= scrollWidth - 100 && !isLoadingDates) {
                     loadMoreFutureDates();
                 }
                 
-                // Load more dates when scrolling left (past)
                 if (scrollLeft <= 100 && !isLoadingDates) {
                     loadMorePastDates();
                 }
@@ -573,12 +550,10 @@
         const scrollWidth = dateList.scrollWidth;
         const clientWidth = dateList.clientWidth;
         
-        // Load more dates when scrolling right (future)
         if (scrollLeft + clientWidth >= scrollWidth - 100 && !isLoadingDates) {
             loadMoreFutureDates();
         }
         
-        // Load more dates when scrolling left (past)
         if (scrollLeft <= 100 && !isLoadingDates) {
             loadMorePastDates();
         }
@@ -591,7 +566,6 @@
         const dateList = document.getElementById('dateList');
         const lastDate = dateItems[dateItems.length - 1];
         
-        // Add 10 more days
         const newDates = [];
         for (let i = 1; i <= 10; i++) {
             const newDate = new Date(lastDate);
@@ -601,7 +575,6 @@
         
         dateItems.push(...newDates);
         
-        // Append new date items
         const fragment = document.createDocumentFragment();
         newDates.forEach(date => {
             const { dayName, dayNumber, month, dateStr } = formatDateForDisplay(date);
@@ -630,7 +603,6 @@
         const firstDate = dateItems[0];
         const scrollLeft = dateList.scrollLeft;
         
-        // Add 10 more days in the past
         const newDates = [];
         for (let i = 10; i >= 1; i--) {
             const newDate = new Date(firstDate);
@@ -641,7 +613,6 @@
         dateItems.unshift(...newDates);
         minDateIndex -= 10;
         
-        // Prepend new date items
         const fragment = document.createDocumentFragment();
         newDates.forEach(date => {
             const { dayName, dayNumber, month, dateStr } = formatDateForDisplay(date);
@@ -658,7 +629,6 @@
             fragment.appendChild(div);
         });
         
-        // Update indices for existing items
         const existingItems = dateList.querySelectorAll('.date-item');
         existingItems.forEach((item, index) => {
             if (index >= newDates.length) {
@@ -668,7 +638,6 @@
         
         dateList.insertBefore(fragment, dateList.firstChild);
         
-        // Restore scroll position
         setTimeout(() => {
             dateList.scrollLeft = scrollLeft + (newDates.length * 92); // 80px width + 12px gap
         }, 0);
@@ -679,12 +648,10 @@
     function selectDate(dateString) {
         selectedDate = new Date(dateString);
         
-        // Update UI
         document.querySelectorAll('.date-item').forEach(item => {
             item.classList.remove('selected');
             if (item.dataset.date === dateString) {
                 item.classList.add('selected');
-                // Scroll selected date into view
                 item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
         });
@@ -696,14 +663,12 @@
         const categoryList = document.getElementById('categoryList');
         if (!categoryList) return;
         
-        // Add "All" option
         categoryList.innerHTML = `
             <div class="category-chip active" data-category-id="all" onclick="toggleCategory('all')">
                 All
                     </div>
         `;
-        
-        // Add "Create Category" button
+
         const createChip = document.createElement('div');
         createChip.className = 'category-chip';
         createChip.style.cssText = 'background-color: transparent; border: 2px dashed var(--accent-color); color: var(--accent-color); cursor: pointer;';
@@ -712,12 +677,10 @@
             e.preventDefault();
             e.stopPropagation();
             
-            // Try to open modal, fallback to prompt if not available
             const openCategoryFunc = window.openCreateCategoryModal || openCreateCategoryModal;
             if (typeof openCategoryFunc === 'function') {
                 openCategoryFunc();
             } else {
-                // Try to manually open modal
                 const modal = document.getElementById('createCategoryModal');
                 if (modal) {
                     const nameInput = document.getElementById('newCategoryName');
@@ -731,7 +694,6 @@
                         }
                     }, 100);
                 } else {
-                    // Fallback to prompt
                     const categoryName = prompt('Enter new category name:');
                     if (categoryName && categoryName.trim()) {
                         if (typeof createCategoryQuick === 'function') {
@@ -745,24 +707,19 @@
         });
         categoryList.appendChild(createChip);
         
-        // Add categories
         categories.forEach(category => {
             const chip = document.createElement('div');
             chip.className = 'category-chip inactive';
             chip.dataset.categoryId = category.id;
             chip.textContent = category.name || category.title || 'Unnamed';
             
-            // Thêm style màu sắc cho chip
             if (category.color) {
-                // Lưu màu gốc vào dataset
                 chip.dataset.originalColor = category.color;
                 chip.dataset.originalBorderColor = category.color;
                 
-                // Tính toán màu chữ tương phản
                 const contrastColor = getContrastColor(category.color);
                 chip.dataset.originalTextColor = contrastColor;
                 
-                // Áp dụng màu cho chip inactive
                 chip.style.backgroundColor = category.color;
                 chip.style.color = contrastColor;
                 chip.style.borderColor = category.color;
@@ -783,7 +740,6 @@
                 chip.classList.remove('active');
                 chip.classList.add('inactive');
                 
-                // Restore màu gốc khi inactive
                 const originalColor = chip.dataset.originalColor;
                 if (originalColor) {
                     const originalTextColor = chip.dataset.originalTextColor || getContrastColor(originalColor);
@@ -804,7 +760,6 @@
                 chip.classList.remove('active');
                 chip.classList.add('inactive');
                 
-                // Restore màu gốc khi inactive
                 const originalColor = chip.dataset.originalColor;
                 if (originalColor) {
                     const originalTextColor = chip.dataset.originalTextColor || getContrastColor(originalColor);
@@ -817,13 +772,12 @@
                 chip.classList.add('active');
                 chip.classList.remove('inactive');
                 
-                // Áp dụng accent color khi active
+                    
                 chip.style.backgroundColor = 'var(--accent-color)';
                 chip.style.color = 'var(--text-primary)';
                 chip.style.borderColor = 'var(--accent-color)';
             }
             
-            // Update "All" chip
             const allChip = categoryList.querySelector('[data-category-id="all"]');
             if (selectedCategories.length === 0) {
                 allChip.classList.add('active');
@@ -915,12 +869,10 @@
     function getContrastColor(hexColor) {
         if (!hexColor) return '#000000';
         
-        // Xử lý cả CSS variable
-        if (hexColor.startsWith('var(')) {
-            return '#ffffff'; // Fallback cho CSS variable
+            if (hexColor.startsWith('var(')) {
+            return '#ffffff';
         }
         
-        // Xử lý hex color
         let hex = hexColor.replace('#', '');
         if (hex.length === 3) {
             hex = hex.split('').map(char => char + char).join('');
@@ -930,10 +882,8 @@
         const g = parseInt(hex.substr(2, 2), 16);
         const b = parseInt(hex.substr(4, 2), 16);
         
-        // Tính luminance
         const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
         
-        // Trả về màu tương phản
         return luminance > 0.5 ? '#000000' : '#ffffff';
     }
     
@@ -989,7 +939,6 @@
         `;
     }
     
-    // Get show completed tasks setting from localStorage
     function getShowCompletedTasks() {
         return localStorage.getItem('show_completed_tasks') === 'true';
     }
@@ -998,24 +947,20 @@
         const container = document.getElementById('taskListContainer');
         if (!container) return;
         
-        // Hide loading
         const loadingState = document.getElementById('loadingState');
         if (loadingState) {
             loadingState.style.display = 'none';
         }
         
-        // Filter tasks based on show_completed_tasks setting
         const showCompleted = getShowCompletedTasks();
         let tasksToDisplay = filteredTasksData;
         if (!showCompleted) {
-            // Filter out completed tasks
             tasksToDisplay = filteredTasksData.filter(task => {
                 const isCompleted = task.completed || task.isCompleted;
                 return !isCompleted;
             });
         }
         
-        // Sort tasks: incomplete first, then by priority, then by date
         const priorityOrder = { 'HIGH': 0, 'MEDIUM': 1, 'LOW': 2 };
         const sortedTasks = tasksToDisplay.slice().sort((a, b) => {
             const aCompleted = a.completed || a.isCompleted;
@@ -1054,18 +999,15 @@
     }
     
     function setupEventListeners() {
-        // FAB button click handler
         const fabBtn = document.getElementById('addTaskBtn');
         if (fabBtn) {
             fabBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                // Open create personal task modal
                 const openFunc = window.openCreatePersonalTaskModal || openCreatePersonalTaskModal;
                 if (typeof openFunc === 'function') {
                     openFunc();
                 } else {
                     console.error('openCreatePersonalTaskModal not found');
-                    // Try to manually open modal
                     const modal = document.getElementById('createPersonalTaskModal');
                     if (modal) {
                         const dueDateInput = document.getElementById('personalTaskDueDate');
@@ -1106,9 +1048,7 @@
             const result = await response.json();
             if (response.ok && (result.status === 200 || result.status === 201)) {
                 alert('Category created successfully!');
-                // Reload categories
                 await loadCategories();
-                // Select the newly created category
                 const newCategoryId = result.data?.id;
                 if (newCategoryId) {
                     setTimeout(() => {
@@ -1124,7 +1064,6 @@
         }
     }
     
-    // Make function globally available
     window.createCategoryQuick = createCategoryQuick;
     
     async function toggleTaskComplete(taskId) {
@@ -1166,13 +1105,11 @@
         }
     }
     
-    function viewTaskDetail(taskId) {
-        // Open task detail modal
+    function viewTaskDetail(taskId) {   
         if (typeof openPersonalTaskDetailModal === 'function') {
             openPersonalTaskDetailModal(taskId);
         } else {
             console.log('View task detail:', taskId);
-            // Fallback: try to open modal directly
             const modal = document.getElementById('personalTaskDetailModal');
             if (modal) {
                 modal.classList.add('show');
@@ -1190,27 +1127,22 @@
             return;
         }
         
-        // Listen for settings changes
         window.addEventListener('settingsChanged', function(e) {
             if (e.detail && 'show_completed_tasks' in e.detail) {
-                // Re-apply filters to refresh task list with new completed filter
                 if (typeof applyFilters === 'function') {
                     applyFilters();
                 } else {
-                    displayTasks(); // Fallback if applyFilters not available
+                    displayTasks();
                 }
             }
         });
         
-        // Initialize date picker
         initializeDatePicker();
         
-        // Load categories and tasks
         loadCategories().then(() => {
             loadTasks();
         });
         
-        // Setup event listeners
         setupEventListeners();
         function openCreateCategoryModalWelcome() {
             const modal = document.getElementById('createCategoryModal');
@@ -1221,7 +1153,6 @@
                 }
                 modal.classList.add('show');
             } else {
-                // Fallback to prompt if modal doesn't exist
                 const categoryName = prompt('Nhập tên thể loại mới:');
                 if (categoryName && categoryName.trim()) {
                     createCategoryQuick(categoryName.trim());
@@ -1229,7 +1160,6 @@
             }
         }
         
-        // Close modal when clicking outside
         document.addEventListener('click', function(event) {
             const modal = document.getElementById('createCategoryModal');
             if (event.target === modal) {
@@ -1239,7 +1169,6 @@
             }
         });
         
-        // Close modal with Escape key
         document.addEventListener('keydown', function(event) {
             const modal = document.getElementById('createCategoryModal');
             if (event.key === 'Escape' && modal && modal.classList.contains('show')) {
@@ -1249,7 +1178,6 @@
             }
         });
         
-        // Make loadCategories and initializeCategoryFilter globally available
         window.loadCategories = loadCategories;
         window.initializeCategoryFilter = initializeCategoryFilter;
     });

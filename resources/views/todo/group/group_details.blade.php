@@ -84,7 +84,6 @@
     .text-danger { color: #e74c3c; }
     .text-warning { color: #f39c12; }
     .text-success { color: #2ecc71; }
-    /* Note: These are semantic colors, keep as is for consistency */
     
     .section-title {
         font-size: 1.1rem;
@@ -245,9 +244,6 @@
         padding: 20px;
         border: 1px dashed var(--border-color);
     }
-    
-    
-    /* Team Task Card Styles */
     .team-task-card {
         background-color: var(--card-bg);
         border-radius: 14px;
@@ -382,7 +378,6 @@
         position: relative;
     }
     
-    /* Modal styles */
     .modal {
         display: none;
         position: fixed;
@@ -501,7 +496,7 @@
             <a href="#" id="settingsBtn"><i class="fas fa-cog"></i></a>
             <div class="dropdown-menu" id="settingsMenu">
                 <a href="#" id="shareBtn"><i class="fas fa-share-alt"></i> Share</a>
-                @if(true) {{-- Will be checked dynamically --}}
+                @if(true)
                 <a href="#" id="renameBtn"><i class="fas fa-edit"></i> Rename Team</a>
                 <a href="#" id="disbandBtn"><i class="fas fa-trash"></i> Disband</a>
                 @endif
@@ -517,39 +512,30 @@
 </div>
 
 <div id="contentArea" style="display: none;">
-    <!-- Team Summary -->
     <div class="section-title">
         <span>Team Summary</span>
         <a href="#" id="seeMoreLink">See more</a>
     </div>
     <div class="summary-card-grid" id="teamSummary">
-        <!-- Will be populated by JS -->
     </div>
     
-    <!-- Your Summary -->
     <div class="section-title" id="yourSummaryTitle" style="display: none;">
         <span>Your Summary</span>
     </div>
     <div class="summary-card-grid" id="yourSummary" style="display: none;">
-        <!-- Will be populated by JS -->
     </div>
     
-    <!-- Your Tasks -->
     <h3 class="section-title" id="yourTasksTitle" style="display: none;">Your tasks</h3>
 <div id="yourTasksList" data-component="team-task-self">
-    {{-- Task component mount point --}}
 </div>
     
-    <!-- Other Members' Tasks -->
     <h3 class="section-title" id="otherTasksTitle" style="display: none;">Other members' tasks</h3>
 <div id="otherTasksList" data-component="team-task-others">
-    {{-- Task component mount point --}}
 </div>
 </div>
 
 <a href="#" class="fab" id="fabBtn" style="display: none;">+</a>
 
-<!-- Modals -->
 @include('todo.group.modals.rename_team')
 @include('todo.group.modals.add_member')
 @include('todo.group.modals.choose_new_leader')
@@ -576,7 +562,6 @@
         return null;
     }
     
-    // Make getApiToken available globally for modals
     window.getApiToken = getApiToken;
     
     const apiToken = getApiToken();
@@ -599,14 +584,12 @@
             return;
         }
         
-        // Listen for settings changes
         window.addEventListener('settingsChanged', function(e) {
             if (e.detail && 'show_completed_tasks' in e.detail) {
-                // Reload tasks to apply filter
                 if (typeof loadTasks === 'function') {
                     loadTasks();
                 } else {
-                    displayTasks(); // Fallback if loadTasks not available
+                    displayTasks();
                 }
             }
         });
@@ -617,7 +600,6 @@
     
     async function loadTeamData() {
         try {
-            // Load team detail
             const teamResponse = await fetch(`/api/v1/team/detail/${teamId}`, {
                 headers: {
                     'Authorization': `Bearer ${apiToken}`,
@@ -636,7 +618,6 @@
                 document.getElementById('membersCount').textContent = teamData.teamMembers.length;
                 document.getElementById('membersLink').href = `/group/${teamId}/members`;
                 
-                // Show/hide leader-only options
                 const renameLink = document.getElementById('renameBtn');
                 const disbandLink = document.getElementById('disbandBtn');
                 const addMemberButton = document.getElementById('addMemberBtn');
@@ -654,10 +635,8 @@
                     if (fabButton) fabButton.style.display = 'none';
                 }
                 
-                // Load tasks
                 await loadTasks();
                 
-                // Calculate and display summaries
                 calculateSummaries();
                 
                 document.getElementById('loadingState').style.display = 'none';
@@ -705,7 +684,6 @@
         const now = new Date();
         const dataToUse = tasksData;
         
-        // Team summary
         const teamCompleted = dataToUse.filter(t => t.isCompleted).length;
         const teamPending = dataToUse.filter(t => !t.isCompleted && new Date(t.deadline) > now).length;
         const teamLate = dataToUse.filter(t => !t.isCompleted && new Date(t.deadline) <= now).length;
@@ -734,7 +712,6 @@
     </div>
         `;
         
-        // Your summary (if user is a member)
         if (currentUserMember) {
             const myTasks = dataToUse.filter(t => t.memberId === currentUserMember.id);
             const myCompleted = myTasks.filter(t => t.isCompleted).length;
@@ -812,7 +789,6 @@
         `;
     }
     
-    // Get show completed tasks setting from localStorage
     function getShowCompletedTasks() {
         return localStorage.getItem('show_completed_tasks') === 'true';
     }
@@ -834,11 +810,9 @@
             return new Date(a.deadline) - new Date(b.deadline);
         };
 
-        // Filter tasks based on show_completed_tasks setting
         const showCompleted = getShowCompletedTasks();
         let filteredTasks = tasksData;
         if (!showCompleted) {
-            // Filter out completed tasks
             filteredTasks = tasksData.filter(t => {
                 const isCompleted = t.isCompleted || t.completed;
                 return !isCompleted;
@@ -855,7 +829,6 @@
             otherTasks = filteredTasks.slice().sort(sortTasks);
         }
 
-        // Render Your Tasks
         if (yourTasksTitle) {
             const shouldShowYourTasks = currentUserMember && myTasks.length > 0;
             yourTasksTitle.style.display = shouldShowYourTasks ? 'block' : 'none';
@@ -872,7 +845,6 @@
             }
         }
 
-        // Render Other Tasks
         if (otherTasksTitle) {
             otherTasksTitle.style.display = otherTasks.length > 0 ? 'block' : 'none';
         }
@@ -884,7 +856,6 @@
                     return renderTaskCard(task, canEdit, isLeader, assignedMember);
                 }).join('');
             } else {
-                // Show empty state if no tasks at all
                 if (tasksData.length === 0) {
                     otherTasksList.innerHTML = `
                         <div class="empty-state">
@@ -934,7 +905,6 @@
     }
     
     function setupEventListeners() {
-        // Settings dropdown
         const settingsTrigger = document.getElementById('settingsBtn');
         const settingsMenu = document.getElementById('settingsMenu');
         if (settingsTrigger && settingsMenu) {
@@ -944,14 +914,12 @@
             });
         }
         
-        // Close dropdown when clicking outside
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.settings-btn') && settingsMenu) {
                 settingsMenu.classList.remove('show');
             }
         });
         
-        // Menu actions
         const shareLink = document.getElementById('shareBtn');
         if (shareLink) {
             shareLink.addEventListener('click', function(e) {
@@ -1005,7 +973,6 @@
         if (fabButton) {
             fabButton.addEventListener('click', function(e) {
                 e.preventDefault();
-                // Open create team task modal
                 if (typeof openCreateTeamTaskModal === 'function') {
                     openCreateTeamTaskModal(teamId);
                 } else {
@@ -1066,7 +1033,6 @@
             
             const result = await response.json();
             if (response.ok && result.status === 200) {
-                // Update local data
                 const task = tasksData.find(t => t.id === taskId);
                 if (task) {
                     task.isCompleted = isCompleted;
@@ -1083,16 +1049,13 @@
     }
     
     function editTask(taskId) {
-        // TODO: Navigate to edit task page
         window.location.href = `/group/${teamId}/task/${taskId}/edit`;
     }
     
     function viewTaskDetail(taskId) {
-        // Always open task detail modal
         if (typeof openTeamTaskDetailModal === 'function') {
             openTeamTaskDetailModal(taskId, teamId);
         } else {
-            // If modal function not available, wait a bit and try again
             setTimeout(() => {
                 if (typeof openTeamTaskDetailModal === 'function') {
                     openTeamTaskDetailModal(taskId, teamId);
@@ -1128,7 +1091,6 @@
             document.getElementById('newTeamName').value = teamData.name;
             modal.classList.add('show');
         } else {
-            // Fallback to prompt
             const newName = prompt('Enter new team name:', teamData.name);
             if (newName && newName.trim()) {
                 renameTeam(newName.trim());
@@ -1208,7 +1170,6 @@
     
     async function leaveTeam() {
         if (isLeader) {
-            // If leader, need to choose new leader first
             showChooseNewLeaderModal();
         } else {
             const confirmAction = () => deleteMember(currentUserMember.id);
@@ -1223,8 +1184,6 @@
             }
         }
     }
-    
-    // showChooseNewLeaderModal is defined in global scope above
     
     async function deleteMember(memberId) {
         try {

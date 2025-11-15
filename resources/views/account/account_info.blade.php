@@ -2,18 +2,12 @@
 
 @section('content')
 
-    {{-- 
-        SCRIPTS AND STYLES
-        - ADDED FONT AWESOME
-    --}}
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     
-    {{-- [QUAN TRỌNG] Link này để icon 'fas fa-camera' hoạt động --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
     <style>
-        /* Ẩn thanh cuộn */
         ::-webkit-scrollbar {
             display: none;
         }
@@ -150,20 +144,16 @@
         }
     </style>
 
-    {{-- Nền chính (Đã đổi sang dark mode) --}}
     <div class="account-page font-sans h-[calc(83vh)] overflow-hidden flex flex-col">
 
         <main class="max-w-screen-xl mx-auto p-6 md:p-8 w-full flex-1 flex flex-col min-h-0">
 
-            {{-- Card Header containing Profile information --}}
             <section class="flex-shrink-0 relative account-card rounded-lg p-8 shadow-sm overflow-hidden">
                 <div class="relative z-10">
                     <div class="flex flex-col md:flex-row md:items-center justify-between">
 
-                            {{-- AVATAR AND INFO WRAPPER --}}
                         <div class="flex items-center space-x-6">
 
-                            {{-- (1) AVATAR WRAPPER (with icon) --}}
                             <div class="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0">
                                 
                                 <a href="#" onclick="event.preventDefault(); document.getElementById('avatar-input').click()" class="cursor-pointer">
@@ -180,13 +170,11 @@
     </a>
     </div>
 
-                            {{-- (2) INFO WRAPPER (Name, Email, Buttons) --}}
                             <div>
                                 <h1 id="profile-name-display" class="text-3xl font-bold text-primary-color">{{ $user->full_name ?? 'N/A' }}
                                 </h1>
                                 <p class="text-secondary-color mt-1">{{ $user->email }}</p>
 
-                                {{-- Action buttons --}}
                                 <div class="mt-4 flex flex-wrap gap-3">
                                     <button id="open-edit-modal-button"
                                         class="btn-accent px-5 py-2 rounded-lg font-semibold text-sm cursor-pointer">Update</button>
@@ -203,10 +191,9 @@
     </div>
     </div>
     
-                        </div> {{-- End wrapper --}}
+                        </div>
 
 
-                        {{-- STATS (Phone, Member Since) --}}
                         <div class="mt-6 md:mt-0 flex space-x-8 text-center md:text-right">
                             <div>
                                 <span id="profile-phone-display" class="text-2xl font-bold text-primary-color">{{ $user->phone ?? 'N/A' }}</span>
@@ -222,12 +209,10 @@
                 </div>
             </section>
 
-            {{-- Hidden logout form --}}
             <form id="account-logout-form" action="{{ url('/logout') }}" method="POST" class="hidden">
                 @csrf
             </form>
 
-            {{-- Navigation Tabs --}}
             <nav class="mt-8 border-b account-tab-nav flex-shrink-0">
                 <div class="flex space-x-8">
                     <a href="#" class="tab-link active-tab py-3 px-1" data-tab="work">All</a>
@@ -236,7 +221,6 @@
                 </div>
             </nav>
 
-            {{-- Tab Content (HTML remains the same, `absolute` is OK) --}}
             <section id="tab-content-container" class="flex-1 min-h-0 relative py-8">
                 
                 <div id="work" class="tab-panel h-full w-full absolute top-8 left-0 chart-container">
@@ -255,9 +239,6 @@
         </main>
     </div>
     
-    {{-- =============================================== --}}
-    {{--     EDIT PROFILE POPUP HTML       --}}
-    {{-- =============================================== --}}
     <div id="edit-profile-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div id="modal-overlay" class="absolute inset-0 modal-overlay"></div>
         <div class="relative w-full max-w-lg p-6 modal-surface rounded-lg shadow-xl">
@@ -288,67 +269,41 @@
             </form>
         </div>
     </div>
-    {{-- =============================================== --}}
-    {{--           END: EDIT PROFILE POPUP        --}}
-    {{-- =============================================== --}}
 
 
-    {{-- =============================================== --}}
-    {{--     [NEW] CHANGE PASSWORD POPUP HTML       --}}
-    {{-- =============================================== --}}
     <div id="change-password-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        
-        {{-- Overlay --}}
         <div id="change-password-modal-overlay" class="absolute inset-0 modal-overlay"></div>
-
-        {{-- Modal Content (Form) --}}
         <div class="relative w-full max-w-lg p-6 modal-surface rounded-lg shadow-xl">
-            
-            {{-- Modal Header --}}
             <div class="flex items-center justify-between pb-4 border-b" style="border-color: var(--border-color);">
                 <h3 class="text-xl font-semibold text-primary-color">Change Password</h3>
                 <button id="close-change-password-modal-button" class="icon-button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
-
-            {{-- Validation Error Area --}}
             <div id="change-password-errors-container" class="hidden mt-4 p-3 rounded-lg" style="background-color: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4);">
                 <ul id="change-password-errors-list" class="list-disc pl-5 text-sm" style="color: #fecaca;">
                 </ul>
             </div>
-
-            {{-- Success Message Area --}}
             <div id="change-password-success-container" class="hidden mt-4 p-3 rounded-lg" style="background-color: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.4);">
                  <p class="text-sm" style="color: #a7f3d0;">Password changed successfully!</p>
             </div>
-
-            {{-- Change Password Form --}}
             <form id="change-password-form" action="{{ url('/account-info/change-password') }}" method="POST" class="mt-6 space-y-4" novalidate>
     @csrf
-                
-                {{-- Old Password --}}
                 <div>
                     <label for="old_password" class="block text-sm font-medium text-secondary-color">Old Password</label>
                     <input type="password" id="old_password" name="old_password" 
                            class="mt-1 block w-full input-surface rounded-lg py-2 px-3">
                 </div>
-                
-                {{-- New Password --}}
                 <div>
                     <label for="new_password" class="block text-sm font-medium text-secondary-color">New Password</label>
                     <input type="password" id="new_password" name="new_password" 
                            class="mt-1 block w-full input-surface rounded-lg py-2 px-3">
 </div>
-
-                {{-- Confirm New Password --}}
                 <div>
                     <label for="new_password_confirmation" class="block text-sm font-medium text-secondary-color">Confirm New Password</label>
                     <input type="password" id="new_password_confirmation" name="new_password_confirmation" 
                            class="mt-1 block w-full input-surface rounded-lg py-2 px-3">
                 </div>
-
-                {{-- Action Buttons --}}
                 <div class="pt-4 flex justify-end">
                     <button type="submit" 
                             class="btn-accent px-5 py-2 rounded-lg font-semibold text-sm">
@@ -365,44 +320,27 @@
 
 @endsection
 
-{{-- =============================================== --}}
-{{--           [MAJOR UPDATE] SCRIPT BLOCK          --}}
-{{-- =============================================== --}}
 @push('scripts')
 <script>
-// Global variable to store chart objects
 window.accountCharts = {
     work: null,
     moodboards: null,
     likes: null
 };
-// Global variable to store options (contains data from fetch)
 window.chartOptionsStore = {
     work: null,
     moodboards: null,
     likes: null
 };
 
-// Initialize charts when document is ready
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. [NEW] Only fetch data and prepare options
     prepareChartData();
-
-    // 2. Initialize Tab Switching (will be updated to render chart)
     initTabs();
-
-    // 3. Initialize Avatar Upload
     initAvatarUpload();
-
-    // 4. Initialize Edit Profile Modal
     initEditProfileModal();
-
-    // 5. Initialize Change Password Modal
     initChangePasswordModal();
 });
 
-// 1. [MAJOR UPDATE] Renamed from initCharts -> prepareChartData
-// This function only fetches data and creates options, does NOT render
 function prepareChartData() {
     fetch('/statistics/monthly-json', {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -411,7 +349,6 @@ function prepareChartData() {
     .then(stats => {
         const categories = stats.labels || [];
 
-        // Chart "All"
         window.chartOptionsStore.work = {
             series: [
                 { name: 'Completed', data: (stats.all?.completed || []) },
@@ -424,12 +361,11 @@ function prepareChartData() {
                 labels: {
                     formatter: function (val) { return val.toFixed(0); }
                 },
-                tickAmount: 5 // Ensure Y-axis has tick marks
+                tickAmount: 5
             },
             colors: ['#10B981', '#F59E0B']
         };
 
-        // Chart "Personal"
         window.chartOptionsStore.moodboards = {
             series: [
                 { name: 'Completed', data: (stats.personal?.completed || []) },
@@ -447,7 +383,6 @@ function prepareChartData() {
             colors: ['#3B82F6', '#F59E0B']
         };
 
-        // Chart "Team"
         window.chartOptionsStore.likes = {
             series: [
                 { name: 'Completed', data: (stats.team?.completed || []) },
@@ -465,47 +400,39 @@ function prepareChartData() {
             colors: ['#8B5CF6', '#F59E0B']
         };
 
-        // [IMPORTANT] After fetching, render chart for the active tab
-        // Reactivate the initially active tab to trigger render
         const activeTab = document.querySelector('.tab-link.active-tab');
         if (activeTab) {
-            activateTab(activeTab, activeTab.dataset.tab, true); // true = force render
+            activateTab(activeTab, activeTab.dataset.tab, true);
         }
 
     })
     .catch(() => {});
 }
 
-// 2. [MAJOR UPDATE] The initTabs function will contain the render logic
 function initTabs() {
     const tabs = document.querySelectorAll('.tab-link');
     
-    // Set up click handlers for all tabs
     tabs.forEach(tab => {
         tab.addEventListener('click', (e) => {
             e.preventDefault();
             const targetTab = e.currentTarget;
             const targetPanelId = targetTab.dataset.tab;
-            activateTab(targetTab, targetPanelId, false); // false = don't force
+            activateTab(targetTab, targetPanelId, false);
         });
     });
 
-    // Activate the first tab (if data hasn't loaded yet, it will be called again in prepareChartData)
     const activeTab = document.querySelector('.tab-link.active-tab');
     if (activeTab) {
          activateTab(activeTab, activeTab.dataset.tab, false);
     }
 }
 
-// [MAJOR UPDATE] The activateTab function is now the central processing unit
-// forceRender = true means re-render even if chart already exists
 function activateTab(tab, targetPanelId, forceRender = false) {
     const activeClasses = ['active-tab'];
     const inactiveClasses = ['inactive-tab'];
     const allTabs = document.querySelectorAll('.tab-link');
     const allPanels = document.querySelectorAll('.tab-panel');
 
-    // 1. Update active tab
     allTabs.forEach(t => {
         t.classList.remove(...activeClasses);
         t.classList.add(...inactiveClasses);
@@ -513,7 +440,6 @@ function activateTab(tab, targetPanelId, forceRender = false) {
     tab.classList.add(...activeClasses);
     tab.classList.remove(...inactiveClasses);
 
-    // 2. Show target panel
     allPanels.forEach(panel => {
         if (panel.id === targetPanelId) {
             panel.classList.remove('hidden');
@@ -522,9 +448,6 @@ function activateTab(tab, targetPanelId, forceRender = false) {
         }
     });
 
-    // 3. [UPDATED] Chart rendering logic
-    // targetPanelId is 'work', 'moodboards', 'likes'
-    // chartId is 'accountWorkChart', 'accountMoodboardsChart', 'accountLikesChart'
     const chartMapping = {
         work: { id: 'accountWorkChart', options: window.chartOptionsStore.work, chart: window.accountCharts.work },
         moodboards: { id: 'accountMoodboardsChart', options: window.chartOptionsStore.moodboards, chart: window.accountCharts.moodboards },
@@ -534,32 +457,21 @@ function activateTab(tab, targetPanelId, forceRender = false) {
     const targetChart = chartMapping[targetPanelId];
 
     if (targetChart) {
-        // Only render IF:
-        // 1. Data has been loaded (options exist)
-        // 2. Chart has not been initialized (chart === null) OR forced to render (forceRender)
         if (targetChart.options && (!targetChart.chart || forceRender)) {
-            
-            // If chart already exists (forceRender), destroy it first
             if (targetChart.chart) {
                 targetChart.chart.destroy();
             }
 
-            // Get the div
             const chartEl = document.querySelector("#" + targetChart.id);
             if (chartEl) {
-                // Create new chart
                 const newChart = new ApexCharts(chartEl, targetChart.options);
                 newChart.render();
-                
-                // Save it
                 window.accountCharts[targetPanelId] = newChart;
             }
         }
     }
 }
 
-
-// 3. Initialize Avatar Upload (This function remains unchanged)
 function initAvatarUpload() {
     const avatarInput = document.getElementById('avatar-input');
     const avatarImage = document.getElementById('avatar-image');
@@ -615,7 +527,6 @@ function initAvatarUpload() {
     }
 }
 
-// 4. Initialize Edit Profile Modal (This function remains unchanged)
 function initEditProfileModal() {
     const modal = document.getElementById('edit-profile-modal');
     const openModalButton = document.getElementById('open-edit-modal-button');
@@ -725,7 +636,6 @@ function initEditProfileModal() {
     }
 }
 
-// 5. Initialize Change Password Modal (This function remains unchanged)
 function initChangePasswordModal() {
     const pwModal = document.getElementById('change-password-modal');
     const openPwModalButton = document.getElementById('open-change-password-modal-button');
@@ -765,18 +675,15 @@ function initChangePasswordModal() {
         pwForm.addEventListener('submit', async function (e) {
             e.preventDefault();
             
-            // Clear previous messages
             pwErrorsContainer.classList.add('hidden');
             pwSuccessContainer.classList.add('hidden');
             pwErrorsList.innerHTML = '';
             
-            // Get form data
             const formData = new FormData(pwForm);
             const oldPassword = formData.get('old_password');
             const newPassword = formData.get('new_password');
             const confirmPassword = formData.get('new_password_confirmation');
             
-            // Client-side validation
             let hasErrors = false;
             
             if (!oldPassword || !newPassword || !confirmPassword) {
@@ -838,18 +745,15 @@ function initChangePasswordModal() {
 
                 } else {
                     pwErrorsContainer.classList.remove('hidden');
-                    pwErrorsList.innerHTML = ''; // Clear any existing errors
+                    pwErrorsList.innerHTML = '';
                     
-                    // Show either the message or the first error, but not both
                     let errorMessage = data.message || '';
                     
-                    // If no message but we have errors, use the first error
                     if (!errorMessage && data.errors) {
                         const firstError = Object.values(data.errors)[0];
                         errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
                     }
                     
-                    // Only add the error if we have one
                     if (errorMessage) {
                         const li = document.createElement('li');
                         li.textContent = errorMessage;

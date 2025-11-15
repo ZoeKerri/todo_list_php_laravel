@@ -13,17 +13,11 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    /**
-     * Create a new UserController instance.
-     */
     public function __construct()
     {
         $this->middleware('auth:api');
     }
 
-    /**
-     * Get user profile.
-     */
     public function profile(): JsonResponse
     {
         $user = Auth::user();
@@ -32,9 +26,6 @@ class UserController extends Controller
         return ApiResponse::success($userDTO->toArray(), 'Get profile successful');
     }
 
-    /**
-     * Update user profile.
-     */
     public function updateProfile(Request $request): JsonResponse
     {
         $user = Auth::user();
@@ -81,9 +72,6 @@ class UserController extends Controller
         return ApiResponse::success($userDTO->toArray(), 'Profile updated successfully');
     }
 
-    /**
-     * Upload user avatar.
-     */
     public function uploadAvatar(Request $request): JsonResponse
     {
         $user = Auth::user();
@@ -93,12 +81,10 @@ class UserController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            // Delete old avatar if exists
             if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
                 Storage::disk('public')->delete($user->avatar);
             }
 
-            // Store new avatar
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
             
             $user->update([

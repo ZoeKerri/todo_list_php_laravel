@@ -13,7 +13,6 @@ class AccountController extends Controller
 {
     public function index()
     {
-        // For testing, create a mock user if not authenticated
         $user = Auth::user();
         if (!$user) {
             $user = new \App\Models\User([
@@ -29,7 +28,6 @@ class AccountController extends Controller
 
     public function edit()
     {
-        // For testing, create a mock user if not authenticated
         $user = Auth::user();
         if (!$user) {
             $user = new \App\Models\User([
@@ -108,12 +106,10 @@ class AccountController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            // Delete old avatar
             if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
                 Storage::disk('public')->delete($user->avatar);
             }
 
-            // Store new avatar
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
 
             $user->update([
