@@ -14,37 +14,28 @@ use Illuminate\Support\Str;
 
 class FileController extends Controller
 {
-    /**
-     * Create a new FileController instance.
-     */
     public function __construct()
     {
         $this->middleware('auth:api');
     }
 
-    /**
-     * Upload a file.
-     */
     public function upload(Request $request): JsonResponse
     {
         $user = Auth::user();
         
         $request->validate([
-            'file' => 'required|file|max:10240', // Max 10MB
+            'file' => 'required|file|max:10240',
         ]);
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             
-            // Generate unique filename
             $originalName = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
             $fileName = Str::uuid() . '.' . $extension;
             
-            // Store file
             $filePath = $file->storeAs('uploads', $fileName, 'public');
             
-            // Save file info to database
             $fileUpload = FileUpload::create([
                 'file_name' => $fileName,
                 'original_name' => $originalName,
@@ -64,9 +55,6 @@ class FileController extends Controller
         return ApiResponse::error('File upload failed');
     }
 
-    /**
-     * Get user's uploaded files.
-     */
     public function index(): JsonResponse
     {
         $user = Auth::user();
@@ -79,9 +67,6 @@ class FileController extends Controller
         return ApiResponse::success($fileDTOs->map(fn($dto) => $dto->toArray()), 'Get user files successful');
     }
 
-    /**
-     * Delete a file.
-     */
     public function destroy(FileUpload $fileUpload): JsonResponse
     {
         $user = Auth::user();
@@ -90,12 +75,10 @@ class FileController extends Controller
             return ApiResponse::forbidden('You are not authorized to delete this file');
         }
 
-        // Delete file from storage
         if (Storage::disk('public')->exists($fileUpload->file_path)) {
             Storage::disk('public')->delete($fileUpload->file_path);
         }
 
-        // Delete record from database
         $fileUpload->delete();
 
         return ApiResponse::success(null, 'File deleted successfully');

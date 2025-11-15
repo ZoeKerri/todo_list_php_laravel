@@ -1,7 +1,5 @@
 <script>
-// Theme management helper
 window.ThemeHelper = {
-    // Dark theme colors
     darkTheme: {
         '--bg-primary': '#121212',
         '--bg-secondary': '#1e1e1e',
@@ -16,7 +14,6 @@ window.ThemeHelper = {
         '--input-bg': '#1e1e1e'
     },
     
-    // Light theme colors
     lightTheme: {
         '--bg-primary': '#ffffff',
         '--bg-secondary': '#f8f9fa',
@@ -31,7 +28,6 @@ window.ThemeHelper = {
         '--input-bg': '#ffffff'
     },
     
-    // Auth dark theme colors
     authDarkTheme: {
         '--auth-bg': '#000',
         '--auth-text': '#fff',
@@ -42,7 +38,6 @@ window.ThemeHelper = {
         '--auth-secondary': '#fff'
     },
     
-    // Auth light theme colors
     authLightTheme: {
         '--auth-bg': '#ffffff',
         '--auth-text': '#212529',
@@ -53,10 +48,6 @@ window.ThemeHelper = {
         '--auth-secondary': '#000'
     },
     
-    /**
-     * Apply theme to the page
-     * @param {boolean} isDark - true for dark theme, false for light theme
-     */
     applyTheme: function(isDark) {
         const root = document.documentElement;
         const colors = isDark ? this.darkTheme : this.lightTheme;
@@ -66,10 +57,6 @@ window.ThemeHelper = {
         });
     },
     
-    /**
-     * Apply auth theme to the page
-     * @param {boolean} isDark - true for dark theme, false for light theme
-     */
     applyAuthTheme: function(isDark) {
         const root = document.documentElement;
         const colors = isDark ? this.authDarkTheme : this.authLightTheme;
@@ -79,20 +66,12 @@ window.ThemeHelper = {
         });
     },
     
-    /**
-     * Load and apply theme from localStorage
-     */
     loadTheme: function() {
-        // Load from localStorage (default to true/dark mode)
         const darkMode = localStorage.getItem('dark_mode') !== 'false';
         this.applyTheme(darkMode);
     },
     
-    /**
-     * Load and apply auth theme from localStorage
-     */
     loadAuthTheme: function() {
-        // Load from localStorage (default to true/dark mode)
         const darkMode = localStorage.getItem('dark_mode') !== 'false';
         this.applyAuthTheme(darkMode);
     }

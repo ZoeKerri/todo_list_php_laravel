@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class TeamService
 {
-    /**
-     * Get teams by user ID (where user is a member or leader).
-     */
     public function getTeamsByUserId(int $userId): array
     {
         $teams = Team::whereHas('teamMembers', function ($query) use ($userId) {
@@ -23,33 +20,24 @@ class TeamService
         return $teams->toArray();
     }
 
-    /**
-     * Get team detail by ID.
-     */
     public function getTeamDetail(int $teamId): ?Team
     {
         return Team::with(['teamMembers.user'])->find($teamId);
     }
 
-    /**
-     * Create a new team with members.
-     */
     public function createTeam(array $data, int $userId, string $createdBy): Team
     {
         return DB::transaction(function () use ($data, $userId, $createdBy) {
-            // Create team (code will be set after getting ID)
             $team = Team::create([
                 'name' => $data['name'],
-                'code' => null, // Will be set after getting ID
+                'code' => null,
                 'created_by' => $createdBy,
                 'updated_by' => $createdBy,
             ]);
 
-            // Generate and save the unique code
             $team->code = "TODOLIST-{$team->id}";
             $team->save();
 
-            // Add creator as leader
             TeamMember::create([
                 'team_id' => $team->id,
                 'user_id' => $userId,
@@ -58,7 +46,6 @@ class TeamService
                 'updated_by' => $createdBy,
             ]);
 
-            // Add other members if provided
             if (isset($data['teamMembers']) && is_array($data['teamMembers'])) {
                 foreach ($data['teamMembers'] as $memberData) {
                     if (isset($memberData['userId']) && $memberData['userId'] != $userId) {
@@ -77,9 +64,6 @@ class TeamService
         });
     }
 
-    /**
-     * Update team name.
-     */
     public function updateTeam(int $teamId, array $data, string $updatedBy): Team
     {
         $team = Team::findOrFail($teamId);
@@ -91,37 +75,25 @@ class TeamService
         return $team->load('teamMembers.user');
     }
 
-    /**
-     * Delete team (disband).
-     */
     public function deleteTeam(int $teamId): bool
     {
         return DB::transaction(function () use ($teamId) {
             $team = Team::findOrFail($teamId);
             
-            // Delete all team tasks first
             $teamMemberIds = $team->teamMembers->pluck('id');
             \App\Models\TeamTask::whereIn('member_id', $teamMemberIds)->delete();
             
-            // Delete team (cascade will delete team members)
             $team->delete();
             
             return true;
         });
     }
 
-    /**
-     * Get user by email (for adding members) - exact match.
-     */
     public function getUserByEmail(string $email): ?User
     {
         return User::where('email', $email)->first();
     }
-
-    /**
-     * Search users by email prefix (for adding members).
-     * Returns list of users matching the prefix.
-     */
+    
     public function searchUsersByEmailPrefix(string $prefix, int $limit = 10): array
     {
         return User::where('email', 'like', $prefix . '%')

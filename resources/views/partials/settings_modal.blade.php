@@ -52,17 +52,13 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Load settings from localStorage
     function loadSettings() {
-        // Load show_completed_tasks from localStorage
         const showCompleted = localStorage.getItem('show_completed_tasks') === 'true';
         document.getElementById('show-completed-tasks').checked = showCompleted;
         
-        // Load notifications from localStorage
         const notifications = localStorage.getItem('notifications') !== 'false'; // default true
         document.getElementById('notifications').checked = notifications;
         
-        // Load dark_mode from localStorage
         const darkMode = localStorage.getItem('dark_mode') !== 'false'; // default true
         document.getElementById('dark-mode').checked = darkMode;
     }
@@ -73,17 +69,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const notifications = document.getElementById('notifications').checked;
         const darkMode = document.getElementById('dark-mode').checked;
         
-        // Save to localStorage
         localStorage.setItem('show_completed_tasks', showCompleted);
         localStorage.setItem('notifications', notifications);
         localStorage.setItem('dark_mode', darkMode);
         
-        // Apply theme change immediately using ThemeHelper
         if (window.ThemeHelper) {
             window.ThemeHelper.applyTheme(darkMode);
         }
         
-        // Trigger custom event to notify other pages
         window.dispatchEvent(new CustomEvent('settingsChanged', {
             detail: {
                 show_completed_tasks: showCompleted,
@@ -95,15 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Settings saved to localStorage');
     }
 
-    // Add event listeners
     document.getElementById('show-completed-tasks').addEventListener('change', saveSettings);
     document.getElementById('notifications').addEventListener('change', saveSettings);
     document.getElementById('dark-mode').addEventListener('change', saveSettings);
 
-    // Load settings when modal is opened
     const settingsModal = document.getElementById('settingsModal');
     
-    // Override the showSettings function if it exists
     if (typeof window.showSettings === 'function') {
         const originalShowSettings = window.showSettings;
         window.showSettings = function() {
@@ -111,14 +101,12 @@ document.addEventListener('DOMContentLoaded', function() {
             loadSettings();
         };
     } else {
-        // Define showSettings if it doesn't exist
         window.showSettings = function() {
             settingsModal.style.display = 'block';
             loadSettings();
         };
     }
 
-    // Load settings on page load
     loadSettings();
 });
 </script>

@@ -24,17 +24,11 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-    /**
-     * Create a new AuthController instance.
-     */
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login', 'register', 'forgotPassword', 'verifyOtp', 'resetPassword', 'resendCode', 'loginGoogle']]);
     }
 
-    /**
-     * Get a JWT via given credentials.
-     */
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->only('email', 'password');
@@ -50,9 +44,6 @@ class AuthController extends Controller
         return ApiResponse::success($loginResponse->toArray(), 'Login successful');
     }
 
-    /**
-     * Register a new user.
-     */
     public function register(RegisterRequest $request): JsonResponse
     {
         $user = User::create([
@@ -68,9 +59,6 @@ class AuthController extends Controller
         return ApiResponse::success($userDTO->toArray(), 'Register successful');
     }
 
-    /**
-     * Get the authenticated User.
-     */
     public function profile(): JsonResponse
     {
         $user = Auth::user();
@@ -79,9 +67,6 @@ class AuthController extends Controller
         return ApiResponse::success($userDTO->toArray(), 'Get profile successful');
     }
 
-    /**
-     * Log the user out (Invalidate the token).
-     */
     public function logout(): JsonResponse
     {
         JWTAuth::invalidate(JWTAuth::getToken());
@@ -89,9 +74,6 @@ class AuthController extends Controller
         return ApiResponse::success(null, 'Successfully logged out');
     }
 
-    /**
-     * Refresh a token.
-     */
     public function refresh(): JsonResponse
     {
         $newToken = JWTAuth::refresh(JWTAuth::getToken());
@@ -175,9 +157,6 @@ class AuthController extends Controller
         return ApiResponse::success(null, 'OTP resent successfully');
     }
 
-    /**
-     * Login with Google (Firebase authentication).
-     */
     public function loginGoogle(Request $request): JsonResponse
     {
         $request->validate([
@@ -189,17 +168,15 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
-            // Tạo user mới nếu chưa tồn tại
             $user = User::create([
                 'email' => $request->email,
                 'full_name' => $request->displayName ?? explode('@', $request->email)[0],
                 'avatar' => $request->photoURL,
-                'password' => Hash::make(Str::random(32)), // Random password vì dùng Google login
+                'password' => Hash::make(Str::random(32)),
                 'created_by' => $request->email,
                 'updated_by' => $request->email,
             ]);
         } else {
-            // Update thông tin nếu có thay đổi
             $updateData = [
                 'updated_by' => $user->email,
             ];
@@ -215,7 +192,6 @@ class AuthController extends Controller
             $user->update($updateData);
         }
 
-        // Tạo JWT token
         $token = JWTAuth::fromUser($user);
         $userDTO = UserDTO::fromModel($user);
         $loginResponse = new LoginResponseDTO($token, $userDTO);

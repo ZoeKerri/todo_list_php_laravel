@@ -43,94 +43,76 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Lấy các phần tử HTML
             const timerElement = document.getElementById('timer');
             const countdownContainer = document.getElementById('countdown-timer');
             const resendContainer = document.getElementById('resend-container');
             const resendLink = document.getElementById('resend-link');
             
-            // Lấy tất cả các input OTP
             const otpInputs = document.querySelectorAll('.otp-input');
 
             let seconds = 30;
-            let timerInterval = null; // Biến để giữ tham chiếu đến bộ đếm
+            let timerInterval = null;
 
-            // Hàm để bắt đầu hoặc reset bộ đếm
             function startTimer() {
-                // Reset giây về 30
                 seconds = 30;
                 
-                // Cập nhật giao diện
                 timerElement.textContent = seconds;
-                countdownContainer.style.display = 'block'; // Hiển thị đếm ngược
-                resendContainer.style.display = 'none';   // Ẩn link "Gửi lại"
+                countdownContainer.style.display = 'block';
+                resendContainer.style.display = 'none';
 
-                // Xóa bộ đếm cũ nếu đang chạy
                 if (timerInterval) {
                     clearInterval(timerInterval);
                 }
 
-                // Bắt đầu bộ đếm mới
                 timerInterval = setInterval(() => {
-                    seconds--; // Giảm 1 giây
+                    seconds--;
                     timerElement.textContent = seconds;
 
-                    // Khi hết giờ
                     if (seconds <= 0) {
-                        clearInterval(timerInterval); // Dừng đếm
-                        countdownContainer.style.display = 'none'; // Ẩn văn bản đếm
-                        resendContainer.style.display = 'block';  // Hiển thị link "Gửi lại"
+                        clearInterval(timerInterval);
+                        countdownContainer.style.display = 'none';
+                        resendContainer.style.display = 'block';
                     }
-                }, 1000); // Lặp lại mỗi 1 giây
+                }, 1000);
             }
 
-            // Xử lý nhập OTP và tự động chuyển sang ô tiếp theo
             otpInputs.forEach((input, index) => {
                 input.addEventListener('input', function(e) {
-                    // Chỉ cho phép số
                     if (!/^\d$/.test(e.target.value)) {
                         e.target.value = '';
                         return;
                     }
                     
-                    // Tự động chuyển sang ô tiếp theo nếu có giá trị và không phải ô cuối
                     if (e.target.value && index < otpInputs.length - 1) {
                         otpInputs[index + 1].focus();
                     }
                 });
                 
-                // Xử lý sự kiện khi nhấn phím
                 input.addEventListener('keydown', function(e) {
-                    // Nếu nhấn Backspace và ô hiện tại trống, chuyển về ô trước
                     if (e.key === 'Backspace' && !e.target.value && index > 0) {
                         otpInputs[index - 1].focus();
                     }
-                    // Nếu nhấn Delete, xóa giá trị hiện tại
                     if (e.key === 'Delete') {
                         e.target.value = '';
                     }
                 });
                 
-                // Xử lý sự kiện paste
                 input.addEventListener('paste', function(e) {
                     e.preventDefault();
                     const pasteData = e.clipboardData.getData('text').slice(0, 6);
                     
-                    // Điền vào các input theo thứ tự
                     pasteData.split('').forEach((char, i) => {
                         if (index + i < otpInputs.length && /^\d$/.test(char)) {
                             otpInputs[index + i].value = char;
                         }
                     });
                     
-                    // Focus vào ô cuối cùng có giá trị
                     if (index + pasteData.length < otpInputs.length) {
                         otpInputs[Math.min(index + pasteData.length, otpInputs.length - 1)].focus();
                     }
                 });
             });
 
-            // Bắt đầu bộ đếm lần đầu tiên khi trang tải
             startTimer();
         });
     </script>

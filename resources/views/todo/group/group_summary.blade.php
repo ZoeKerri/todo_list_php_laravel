@@ -135,7 +135,6 @@
         Overall Team Summary
     </h3>
     <div class="summary-card-grid" id="teamSummary">
-        <!-- Will be populated by JS -->
     </div>
     
     <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 25px 0 15px 0;">
@@ -157,7 +156,6 @@
             </tr>
         </thead>
         <tbody id="memberTableBody">
-            <!-- Will be populated by JS -->
         </tbody>
     </table>
 </div>
@@ -198,7 +196,6 @@
     
     async function loadData() {
         try {
-            // Load team
             const teamResponse = await fetch(`/api/v1/team/detail/${teamId}`, {
                 headers: {
                     'Authorization': `Bearer ${apiToken}`,
@@ -212,7 +209,6 @@
                 allMembers = teamData.teamMembers || [];
             }
             
-            // Load tasks
             const tasksResponse = await fetch(`/api/v1/team-task/by-team/${teamId}`, {
                 headers: {
                     'Authorization': `Bearer ${apiToken}`,

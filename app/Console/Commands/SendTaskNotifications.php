@@ -9,29 +9,15 @@ use Illuminate\Console\Command;
 
 class SendTaskNotifications extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'tasks:send-notifications';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Send email notifications for tasks due soon';
 
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
         $now = Carbon::now();
         $oneHourFromNow = $now->copy()->addHour();
 
-        // Find tasks that are due within the next hour and have notification time set
         $tasks = PersonalTask::where('completed', false)
             ->whereNotNull('notification_time')
             ->whereBetween('due_date', [$now, $oneHourFromNow])
@@ -39,7 +25,6 @@ class SendTaskNotifications extends Command
             ->get();
 
         foreach ($tasks as $task) {
-            // Check if notification time matches current time (within 5 minutes)
             $notificationTime = Carbon::parse($task->notification_time);
             $currentTime = Carbon::now();
             

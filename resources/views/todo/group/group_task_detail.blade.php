@@ -236,7 +236,6 @@
         <div id="successMessage" class="success-message" style="display: none;"></div>
         
         <form id="taskForm">
-            <!-- Title -->
             <div class="form-group">
                 <label class="form-label" for="taskTitle">Title</label>
                 <input 
@@ -248,7 +247,6 @@
                 />
             </div>
             
-            <!-- Completed Checkbox -->
             <div class="form-group">
                 <div class="checkbox-container" id="completedContainer">
                     <input 
@@ -260,7 +258,6 @@
                 </div>
             </div>
             
-            <!-- Priority -->
             <div class="form-group">
                 <label class="form-label" for="taskPriority">Priority</label>
                 <div class="select-wrapper">
@@ -272,7 +269,6 @@
                 </div>
             </div>
             
-            <!-- Deadline -->
             <div class="form-group">
                 <label class="form-label" for="taskDeadline">Deadline</label>
                 <div class="date-input-wrapper">
@@ -286,7 +282,6 @@
                 </div>
             </div>
             
-            <!-- Description -->
             <div class="form-group">
                 <label class="form-label" for="taskDescription">Description</label>
                 <textarea 
@@ -297,7 +292,6 @@
                 ></textarea>
             </div>
             
-            <!-- Action Buttons -->
             <div class="button-group">
                 <button type="button" id="updateBtn" class="btn btn-primary" style="display: none;">
                     <i class="fas fa-save"></i>
@@ -337,7 +331,6 @@
     let canEdit = false;
     let currentUserMember = null;
     
-    // Priority labels
     const priorityLabels = {
         'LOW': 'Thấp',
         'MEDIUM': 'Trung bình',
@@ -357,7 +350,6 @@
     
     async function loadTaskDetail() {
         try {
-            // Load team detail to check permissions
             const teamResponse = await fetch(`/api/v1/team/detail/${teamId}`, {
                 headers: {
                     'Authorization': `Bearer ${apiToken}`,
@@ -374,8 +366,6 @@
             isLeader = teamData.teamMembers.some(m => m.userId === userId && m.role === 'LEADER');
             currentUserMember = teamData.teamMembers.find(m => m.userId === userId);
             
-            // Load task detail
-            // Note: We need to get task from tasks list or create a show endpoint
             const tasksResponse = await fetch(`/api/v1/team-task/by-team/${teamId}`, {
                 headers: {
                     'Authorization': `Bearer ${apiToken}`,
@@ -395,13 +385,10 @@
                 throw new Error('Task not found');
             }
             
-            // Check if user can edit this task
             canEdit = isLeader || (currentUserMember && taskData.memberId === currentUserMember.id);
             
-            // Populate form
             populateForm();
             
-            // Set permissions
             setPermissions();
             
             document.getElementById('loadingState').style.display = 'none';
@@ -424,7 +411,6 @@
         document.getElementById('taskPriority').value = taskData.priority || 'MEDIUM';
         document.getElementById('taskDescription').value = taskData.description || '';
         
-        // Format deadline for date input (YYYY-MM-DD)
         if (taskData.deadline) {
             const deadlineDate = new Date(taskData.deadline);
             const formattedDate = deadlineDate.toISOString().split('T')[0];
@@ -444,7 +430,6 @@
         document.getElementById('taskDescription').readOnly = !canEditDescription;
         document.getElementById('taskCompleted').disabled = !canEdit;
         
-        // Show/hide buttons
         if (canEdit) {
             document.getElementById('updateBtn').style.display = 'inline-flex';
         }
@@ -454,10 +439,8 @@
     }
     
     function setupEventListeners() {
-        // Update button
         document.getElementById('updateBtn').addEventListener('click', handleUpdateTask);
         
-        // Delete button
         document.getElementById('deleteBtn').addEventListener('click', handleDeleteTask);
     }
     
@@ -503,7 +486,6 @@
                 showSuccess('Task updated successfully!');
                 taskData = result.data;
                 populateForm();
-                // Reload after 1 second
                 setTimeout(() => {
                     window.location.href = `/group/${teamId}`;
                 }, 1000);

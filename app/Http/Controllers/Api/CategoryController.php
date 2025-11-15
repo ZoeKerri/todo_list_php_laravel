@@ -43,7 +43,7 @@ class CategoryController extends Controller
         try {
             $category = Category::create([
                 'name' => $validated['name'],
-                'color' => $validated['color'] ?? '#FF5733', // Default color if not provided
+                'color' => $validated['color'] ?? '#FF5733',
                 'created_by' => $userId,
                 'updated_by' => $userId,
             ]);

@@ -407,7 +407,6 @@
         updateMembersToAddList();
     }
     
-    // Helper functions from group.blade.php
     function getApiToken() {
         const sessionToken = '{{ session("jwt_token") }}';
         if (sessionToken && sessionToken !== '' && sessionToken !== 'null') {

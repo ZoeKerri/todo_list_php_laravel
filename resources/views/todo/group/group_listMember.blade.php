@@ -226,7 +226,6 @@
 @include('todo.group.modals.confirm_dialog')
 
 <style>
-    /* Modal styles - same as group_details */
     .modal {
         display: none;
         position: fixed;
@@ -466,7 +465,6 @@
         const leader = list.find(m => m.role === 'LEADER');
         const members = list.filter(m => m.role !== 'LEADER');
         
-        // Display leader
         if (leader) {
             document.getElementById('leaderTitle').style.display = 'block';
             document.getElementById('leaderList').innerHTML = createMemberHTML(leader, true);
@@ -475,7 +473,6 @@
             document.getElementById('leaderList').innerHTML = '';
         }
         
-        // Display members
         if (members.length > 0) {
             document.getElementById('membersTitle').style.display = 'block';
             document.getElementById('membersList').innerHTML = members.map(m => createMemberHTML(m, false)).join('');

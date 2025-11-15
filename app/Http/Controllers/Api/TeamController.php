@@ -24,28 +24,22 @@ class TeamController extends Controller
         $this->teamMemberService = $teamMemberService;
     }
 
-    /**
-     * Get teams by user ID.
-     * GET /api/v1/team/{userId}
-     */
     public function getTeamsByUserId(int $userId): JsonResponse
     {
         $currentUser = Auth::user();
         
-        // Users can only view their own teams
         if ($currentUser->id != $userId) {
             return ApiResponse::forbidden('You can only view your own teams');
         }
 
         try {
             $teams = $this->teamService->getTeamsByUserId($userId);
-            // Convert array back to Team models with relationships loaded
             $teamModels = collect($teams)->map(function ($teamData) {
                 return Team::with(['teamMembers.user'])->find($teamData['id']);
             })->filter();
             
             $teamDTOs = $teamModels->map(function ($team) {
-                return TeamDTO::fromModel($team, true); // Include user data
+                return TeamDTO::fromModel($team, true);
             })->toArray();
 
             return ApiResponse::success($teamDTOs, 'Get teams successful');
@@ -54,15 +48,10 @@ class TeamController extends Controller
         }
     }
 
-    /**
-     * Get team detail by ID.
-     * GET /api/v1/team/detail/{teamId}
-     */
     public function show(int $teamId): JsonResponse
     {
         $currentUser = Auth::user();
         
-        // Check if user is a member of this team
         $member = $this->teamMemberService->getMemberByTeamIdAndUserId($teamId, $currentUser->id);
         if (!$member) {
             return ApiResponse::forbidden('You are not a member of this team');
@@ -74,22 +63,17 @@ class TeamController extends Controller
                 return ApiResponse::notFound('Team not found');
             }
 
-            $teamDTO = TeamDTO::fromModel($team, true); // Include user data
+            $teamDTO = TeamDTO::fromModel($team, true);
             return ApiResponse::success($teamDTO->toArray(), 'Get team detail successful');
         } catch (\Exception $e) {
             return ApiResponse::error('Failed to get team detail: ' . $e->getMessage(), null, 500);
         }
     }
 
-    /**
-     * Create a new team.
-     * POST /api/v1/team/{userId}
-     */
     public function store(Request $request, int $userId): JsonResponse
     {
         $currentUser = Auth::user();
         
-        // Users can only create teams for themselves
         if ($currentUser->id != $userId) {
             return ApiResponse::forbidden('You can only create teams for yourself');
         }
@@ -115,10 +99,6 @@ class TeamController extends Controller
         }
     }
 
-    /**
-     * Update team.
-     * PUT /api/v1/team
-     */
     public function update(Request $request): JsonResponse
     {
         $currentUser = Auth::user();
@@ -130,7 +110,6 @@ class TeamController extends Controller
 
         $teamId = $request->input('id');
         
-        // Check if user is leader of this team
         $leader = $this->teamMemberService->getLeader($teamId);
         if (!$leader || $leader->user_id != $currentUser->id) {
             return ApiResponse::forbidden('Only team leader can update the team');
@@ -150,15 +129,10 @@ class TeamController extends Controller
         }
     }
 
-    /**
-     * Delete team (disband).
-     * DELETE /api/v1/team/{id}
-     */
     public function destroy(int $id): JsonResponse
     {
         $currentUser = Auth::user();
         
-        // Check if user is leader of this team
         $leader = $this->teamMemberService->getLeader($id);
         if (!$leader || $leader->user_id != $currentUser->id) {
             return ApiResponse::forbidden('Only team leader can delete the team');
@@ -172,15 +146,6 @@ class TeamController extends Controller
         }
     }
 
-    /**
-     * Delete team with all tasks.
-     * DELETE /api/v1/team/task/{id}
-     */
-
-    /**
-     * Get user by email (for adding members) - exact match.
-     * GET /api/v1/user/by-email/{email}
-     */
     public function getUserByEmail(string $email): JsonResponse
     {
         $currentUser = Auth::user();
@@ -203,10 +168,6 @@ class TeamController extends Controller
         }
     }
 
-    /**
-     * Search users by email prefix (for adding members).
-     * GET /api/v1/user/search?prefix={prefix}
-     */
     public function searchUsersByEmailPrefix(Request $request): JsonResponse
     {
         $currentUser = Auth::user();

@@ -56,20 +56,16 @@ class TeamMemberDTO
 
     public static function fromCollection($members, bool $includeUser = false): array
     {
-        // Handle different input types
         $memberCollection = collect($members);
         
         return $memberCollection->map(function ($member) use ($includeUser) {
-            // If it's already a TeamMember model
             if ($member instanceof TeamMember) {
-                // Ensure user relationship is loaded if needed
                 if ($includeUser && !$member->relationLoaded('user')) {
                     $member->load('user');
                 }
                 return self::fromModel($member, $includeUser)->toArray();
             }
             
-            // If it's an array (from toArray()), convert back to model
             if (is_array($member) && isset($member['id'])) {
                 $memberModel = TeamMember::with($includeUser ? ['user'] : [])->find($member['id']);
                 return $memberModel ? self::fromModel($memberModel, $includeUser)->toArray() : null;

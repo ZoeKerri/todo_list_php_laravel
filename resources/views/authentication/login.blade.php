@@ -20,15 +20,6 @@
             <i class="fas fa-eye icon-right"></i>
         </div>
 
-        <!-- @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul style="margin: 0; padding: 0; list-style: none;">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif -->
 
         <button type="submit" class="btn-primary">Login</button>
     </form>

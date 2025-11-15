@@ -14,39 +14,29 @@ use Illuminate\Support\Facades\Auth;
 
 class PersonalTaskController extends Controller
 {
-    /**
-     * Create a new PersonalTaskController instance.
-     */
     public function __construct()
     {
         $this->middleware('auth:api');
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request): JsonResponse
     {
         $user = Auth::user();
         $query = PersonalTask::where('user_id', $user->id);
 
-        // Filter by date if provided
         if ($request->has('date')) {
             $date = Carbon::parse($request->date);
             $query->whereDate('due_date', $date);
         }
 
-        // Filter by completed status if provided
         if ($request->has('completed')) {
             $query->where('completed', $request->boolean('completed'));
         }
 
-        // Check cookie for show_completed_tasks setting
         $showCompletedTasks = $request->cookie('user_settings');
         if ($showCompletedTasks) {
             $settings = json_decode($showCompletedTasks, true);
             if (isset($settings['show_completed_tasks']) && !$settings['show_completed_tasks']) {
-                // If show_completed_tasks is false, exclude completed tasks
                 $query->where('completed', false);
             }
         }
@@ -57,9 +47,6 @@ class PersonalTaskController extends Controller
         return ApiResponse::success($taskDTOs->map(fn($dto) => $dto->toArray()), 'Get personal tasks successful');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(PersonalTaskRequest $request): JsonResponse
     {
         $user = Auth::user();
@@ -82,9 +69,6 @@ class PersonalTaskController extends Controller
         return ApiResponse::success($taskDTO->toArray(), 'Personal task created successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(PersonalTask $personalTask): JsonResponse
     {
         $user = Auth::user();
@@ -98,9 +82,6 @@ class PersonalTaskController extends Controller
         return ApiResponse::success($taskDTO->toArray(), 'Get personal task successful');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(PersonalTaskRequest $request, PersonalTask $personalTask): JsonResponse
     {
         $user = Auth::user();
@@ -125,9 +106,6 @@ class PersonalTaskController extends Controller
         return ApiResponse::success($taskDTO->toArray(), 'Personal task updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(PersonalTask $personalTask): JsonResponse
     {
         $user = Auth::user();
@@ -141,9 +119,6 @@ class PersonalTaskController extends Controller
         return ApiResponse::success(null, 'Personal task deleted successfully');
     }
 
-    /**
-     * Get tasks count for a specific day.
-     */
     public function getTasksCountForDay(Request $request): JsonResponse
     {
         $request->validate([
@@ -159,9 +134,6 @@ class PersonalTaskController extends Controller
         return ApiResponse::success($count, 'Total tasks in day');
     }
 
-    /**
-     * Get completed tasks count for a specific day.
-     */
     public function getCompletedTasksCountForDay(Request $request): JsonResponse
     {
         $request->validate([

@@ -103,8 +103,6 @@ class TeamMemberController extends Controller
 
     public function deleteMemberAndTasks(int $teamId, int $userId)
     {
-        // This logic can be complex. For now, just remove the member.
-        // The service layer should handle cascading deletes of tasks.
         return $this->destroy($this->teamMemberService->getMemberByTeamIdAndUserId($teamId, $userId)->id);
     }
 }

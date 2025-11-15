@@ -10,29 +10,20 @@ use Illuminate\Support\Facades\DB;
 
 class TeamMemberService
 {
-    /**
-     * Get team members by team ID.
-     */
     public function getMembersByTeamId(int $teamId): array
     {
         $members = TeamMember::where('team_id', $teamId)
             ->with('user')
             ->get();
 
-        return $members->all(); // Return collection of models, not array
+        return $members->all();
     }
 
-    /**
-     * Get a member by member ID.
-     */
     public function getMemberById(int $memberId): ?TeamMember
     {
         return TeamMember::with(['user', 'team'])->find($memberId);
     }
 
-    /**
-     * Get team members by user ID (all teams user is a member of).
-     */
     public function getMembersByUserId(int $userId): array
     {
         $members = TeamMember::where('user_id', $userId)
@@ -42,9 +33,6 @@ class TeamMemberService
         return $members->toArray();
     }
 
-    /**
-     * Get specific team member by team ID and user ID.
-     */
     public function getMemberByTeamIdAndUserId(int $teamId, int $userId): ?TeamMember
     {
         return TeamMember::where('team_id', $teamId)
@@ -53,9 +41,6 @@ class TeamMemberService
             ->first();
     }
 
-    /**
-     * Check if a user is a member of a team.
-     */
     public function isUserMemberOfTeam(int $userId, int $teamId): bool
     {
         return TeamMember::where('user_id', $userId)
@@ -63,9 +48,6 @@ class TeamMemberService
             ->exists();
     }
 
-    /**
-     * Check if a user is the leader of a team.
-     */
     public function isUserLeaderOfTeam(int $userId, int $teamId): bool
     {
         return TeamMember::where('user_id', $userId)
@@ -74,12 +56,8 @@ class TeamMemberService
             ->exists();
     }
 
-    /**
-     * Add member to team.
-     */
     public function addTeamMember(int $teamId, int $userId, string $createdBy, string $role = 'MEMBER'): TeamMember
     {
-        // Check if member already exists
         $existingMember = TeamMember::where('team_id', $teamId)
             ->where('user_id', $userId)
             ->first();
@@ -97,9 +75,6 @@ class TeamMemberService
         ]);
     }
 
-    /**
-     * Update member role.
-     */
     public function updateMemberRole(int $memberId, string $role, string $updatedBy): TeamMember
     {
         if (!in_array($role, ['LEADER', 'MEMBER'])) {
@@ -115,9 +90,6 @@ class TeamMemberService
         return $member;
     }
 
-    /**
-     * Delete member from team.
-     */
     public function deleteMember(int $teamId, int $userId): bool
     {
         return DB::transaction(function () use ($teamId, $userId) {
@@ -125,41 +97,30 @@ class TeamMemberService
                 ->where('user_id', $userId)
                 ->firstOrFail();
 
-            // Delete all tasks assigned to this member
             TeamTask::where('member_id', $member->id)->delete();
 
-            // Delete member
             $member->delete();
 
             return true;
         });
     }
 
-    /**
-     * Delete member by member ID (with all tasks).
-     */
     public function deleteMemberById(int $memberId): bool
     {
         return DB::transaction(function () use ($memberId) {
             $member = TeamMember::findOrFail($memberId);
 
-            // Delete all tasks assigned to this member
             TeamTask::where('member_id', $member->id)->delete();
 
-            // Delete member
             $member->delete();
 
             return true;
         });
     }
 
-    /**
-     * Change leader of a team.
-     */
     public function changeLeader(int $teamId, int $newLeaderUserId, string $updatedBy): bool
     {
         return DB::transaction(function () use ($teamId, $newLeaderUserId, $updatedBy) {
-            // Set old leader to MEMBER
             TeamMember::where('team_id', $teamId)
                 ->where('role', 'LEADER')
                 ->update([
@@ -167,7 +128,6 @@ class TeamMemberService
                     'updated_by' => $updatedBy,
                 ]);
 
-            // Set new leader
             TeamMember::where('team_id', $teamId)
                 ->where('user_id', $newLeaderUserId)
                 ->update([
@@ -179,9 +139,6 @@ class TeamMemberService
         });
     }
 
-    /**
-     * Get leader of a team.
-     */
     public function getLeader(int $teamId): ?TeamMember
     {
         return TeamMember::where('team_id', $teamId)
