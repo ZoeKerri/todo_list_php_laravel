@@ -16,7 +16,6 @@
                 <div class="search-meta" id="leaderSearchMeta"></div>
             </div>
             <div class="candidate-list" id="leaderCandidateList">
-                <!-- Candidate cards rendered here -->
             </div>
         </div>
         <div class="modal-footer">
@@ -269,7 +268,6 @@
                 const email = escapeHtml(member.user?.email || 'No email');
                 const avatar = renderAvatarHTML(member.user);
                 const isSelected = selectedId && selectedId === member.id;
-                // Display name + email like Flutter
                 const displayName = email && email !== 'No email' 
                     ? `${name} (${email})` 
                     : name;
@@ -332,7 +330,6 @@
         confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
         
         try {
-            // Change member role to LEADER
             const response = await fetch(`/api/v1/member/`, {
                 method: 'PUT',
                 headers: {
@@ -348,7 +345,6 @@
             
             const result = await response.json();
             if (response.ok && result.status === 200) {
-                // Now delete current user's membership
                 await deleteMember(currentUserMember.id);
                 alert('New leader assigned. You have left the team.');
                 window.location.href = '/group';
