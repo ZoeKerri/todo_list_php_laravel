@@ -1,17 +1,17 @@
 <div class="modal" id="chooseNewLeaderModal">
     <div class="modal-content choose-leader-modal">
         <div class="modal-header">
-            <h3>Chọn trưởng nhóm mới</h3>
+            <h3>Select New Team Leader</h3>
             <button class="modal-close" onclick="closeChooseNewLeaderModal()">&times;</button>
         </div>
         <div class="modal-body">
             <p class="helper-text">
-                Hãy chọn một thành viên khác để chuyển quyền trưởng nhóm trước khi bạn rời đi.
+                Please select another member to transfer leadership to before you leave.
             </p>
             <div class="leader-search">
                 <div class="search-input-wrapper">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="newLeaderSearch" placeholder="Tìm theo tên hoặc email thành viên">
+                    <input type="text" id="newLeaderSearch" placeholder="Search by name or email">
                 </div>
                 <div class="search-meta" id="leaderSearchMeta"></div>
             </div>
@@ -20,9 +20,9 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn-secondary" onclick="closeChooseNewLeaderModal()">Đóng</button>
+            <button class="btn-secondary" onclick="closeChooseNewLeaderModal()">Close</button>
             <button class="btn-primary" id="confirmNewLeaderBtn" onclick="confirmNewLeader()" disabled>
-                <i class="fas fa-check"></i> Xác nhận chuyển quyền
+                <i class="fas fa-check"></i> Confirm Transfer
             </button>
         </div>
     </div>
@@ -257,20 +257,20 @@
             listContainer.innerHTML = `
                 <div class="no-candidate">
                     <i class="fas fa-user-slash"></i>
-                    <p>${query ? 'Không tìm thấy thành viên phù hợp.' : 'Không có thành viên phù hợp để chuyển quyền.'}</p>
-                    <span>${query ? 'Thử tìm với từ khoá khác.' : 'Bạn có thể giải tán nhóm thay vì chuyển quyền.'}</span>
+                    <p>${query ? 'No matching members found.' : 'No eligible members to transfer leadership to.'}</p>
+                    <span>${query ? 'Try a different search term.' : 'You can choose to disband the team instead.'}</span>
                 </div>
             `;
             confirmBtn.disabled = true;
             confirmBtn.dataset.memberId = '';
         } else {
             listContainer.innerHTML = candidates.map(member => {
-                const name = escapeHtml(member.user?.name || 'Không tên');
-                const email = escapeHtml(member.user?.email || 'Không có email');
+                const name = escapeHtml(member.user?.name || 'No name');
+                const email = escapeHtml(member.user?.email || 'No email');
                 const avatar = renderAvatarHTML(member.user);
                 const isSelected = selectedId && selectedId === member.id;
                 // Display name + email like Flutter
-                const displayName = email && email !== 'Không có email' 
+                const displayName = email && email !== 'No email' 
                     ? `${name} (${email})` 
                     : name;
                 return `
@@ -278,7 +278,7 @@
                         <div class="leader-avatar">${avatar}</div>
                         <div class="leader-info">
                             <span class="leader-name">${displayName}</span>
-                            <span class="leader-role">Thành viên</span>
+                            <span class="leader-role">Member</span>
                         </div>
                         <i class="fas fa-check checkmark"></i>
                     </div>
@@ -296,8 +296,8 @@
                 meta.textContent = '';
             } else {
                 meta.textContent = candidates.length === 0
-                    ? 'Không tìm thấy thành viên phù hợp'
-                    : `Tìm thấy ${candidates.length} thành viên`;
+                    ? 'No matching members found'
+                    : `Found ${candidates.length} members`;
             }
         }
     }
@@ -329,7 +329,7 @@
         
         const apiToken = getApiToken();
         confirmBtn.disabled = true;
-        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang cập nhật...';
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
         
         try {
             // Change member role to LEADER
@@ -361,7 +361,7 @@
         } finally {
             if (confirmBtn) {
                 confirmBtn.disabled = false;
-                confirmBtn.innerHTML = '<i class="fas fa-check"></i> Xác nhận chuyển quyền';
+                confirmBtn.innerHTML = '<i class="fas fa-check"></i> Confirm Transfer';
             }
         }
     }

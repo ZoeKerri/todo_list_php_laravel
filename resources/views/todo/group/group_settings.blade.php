@@ -39,7 +39,7 @@
         background-color: var(--card-bg);
         border-radius: 12px;
         padding: 15px;
-        /* Sửa từ 'text-align: center' thành flexbox */
+        /* Changed from 'text-align: center' to flexbox */
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -63,9 +63,9 @@
         font-size: 2.5rem; 
     }
     
-    /* Xóa .icon-box vì không dùng nữa */
+    /* Removed .icon-box as it's no longer used */
     
-    /* Thêm các lớp màu chữ (vì icon-box đã bị xóa) */
+    /* Added text color classes (since icon-box was removed) */
     .text-danger { color: #e74c3c; }
     .text-warning { color: #f39c12; }
     .text-success { color: #2ecc71; }
@@ -202,35 +202,35 @@
 
 @push('scripts')
 <script>
-// Đợi cho toàn bộ trang tải xong
+// Wait for the page to fully load
 document.addEventListener('DOMContentLoaded', function() {
     
-    // 1. Lấy các phần tử cần thiết
+    // 1. Get necessary elements
     const searchInput = document.getElementById('memberSearchInput');
     const tableBody = document.getElementById('memberTableBody');
-    const allRows = tableBody.querySelectorAll('tr'); // Lấy tất cả các hàng
+    const allRows = tableBody.querySelectorAll('tr'); // Get all rows
 
-    // 2. Thêm sự kiện 'keyup' (khi gõ phím) vào ô tìm kiếm
+    // 2. Add 'keyup' event (when typing) to the search input
     searchInput.addEventListener('keyup', function() {
-        // Lấy nội dung gõ vào, chuyển thành chữ thường, bỏ dấu cách thừa
+        // Get the input value, convert to lowercase, and trim whitespace
         const filterText = searchInput.value.toLowerCase().trim();
 
-        // 3. Lặp qua từng hàng (tr) trong bảng
+        // 3. Loop through each row (tr) in the table
         allRows.forEach(function(row) {
             
-            // Lấy nội dung của ô đầu tiên (ô Tên)
+            // Get the content of the first cell (Name column)
             const memberNameCell = row.querySelector('td:first-child');
             
             if (memberNameCell) {
                 const memberName = memberNameCell.textContent.toLowerCase();
 
-                // 4. So sánh tên thành viên với nội dung tìm kiếm
+                // 4. Compare member name with search input
                 if (memberName.includes(filterText)) {
-                    // Nếu khớp -> hiển thị hàng đó
-                    row.style.display = ""; // Hiển thị
+                    // If matched -> show the row
+                    row.style.display = ""; // Show
                 } else {
-                    // Nếu không khớp -> ẩn hàng đó
-                    row.style.display = "none"; // Ẩn
+                    // If not matched -> hide the row
+                    row.style.display = "none"; // Hide
                 }
             }
         });

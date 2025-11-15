@@ -204,7 +204,7 @@
 <div class="search-wrapper">
     <div class="search-input">
         <i class="fas fa-search"></i>
-        <input type="text" id="memberSearchInput" placeholder="Tìm kiếm theo tên hoặc email thành viên">
+        <input type="text" id="memberSearchInput" placeholder="Search by name or email">
     </div>
     <div class="search-meta" id="searchMeta" style="display: none;"></div>
 </div>
@@ -457,7 +457,7 @@
             document.getElementById('membersList').innerHTML = `
                 <div class="empty-state" style="padding: 30px 20px;">
                     <i class="fas fa-user-slash"></i>
-                    <p>${query ? 'Không tìm thấy thành viên phù hợp' : 'Nhóm chưa có thành viên nào'}</p>
+                    <p>${query ? 'No matching members found' : 'No members in the group yet'}</p>
                 </div>
             `;
             return;
@@ -513,8 +513,8 @@
         const count = filteredMembers.length;
         meta.style.display = 'block';
         meta.textContent = count === 0
-            ? 'Không tìm thấy thành viên phù hợp'
-            : `Tìm thấy ${count} thành viên`;
+            ? 'No matching members found'
+            : `Found ${count} member${count !== 1 ? 's' : ''}`;
     }
     
     function createMemberHTML(member, isLeaderRole) {
@@ -606,8 +606,8 @@
 
         if (typeof window.showConfirmDialog === 'function') {
             window.showConfirmDialog(
-                'Loại bỏ thành viên',
-                `Bạn có chắc chắn muốn xoá ${memberName} khỏi nhóm?`,
+                'Remove member',
+                `Do you want to remove ${memberName}?`,
                 confirmAction
             );
         } else if (confirm(`Are you sure you want to remove ${memberName} from the team?`)) {

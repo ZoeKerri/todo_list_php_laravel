@@ -2,33 +2,33 @@
     <div class="modal-content add-member-modal">
         <div class="modal-header add-member-header">
             <div>
-                <h3>Thêm thành viên</h3>
-                <p class="modal-subtitle">Mời đồng đội vào nhóm để cùng cộng tác</p>
+                <h3>Add Member</h3>
+                <p class="modal-subtitle">Invite team members to collaborate</p>
             </div>
             <button class="modal-close" onclick="closeAddMemberModal()">&times;</button>
         </div>
         <div class="modal-body add-member-body">
             <div class="form-group">
-                <label for="searchMemberEmail">Tìm qua email</label>
+                <label for="searchMemberEmail">Search by email</label>
                 <div class="input-with-icon">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchMemberEmail" placeholder="Nhập email hoặc tên...">
+                    <input type="text" id="searchMemberEmail" placeholder="Enter email or name...">
                 </div>
-                <p class="helper-text">Hệ thống sẽ tự động loại trừ thành viên đã có trong nhóm.</p>
+                <p class="helper-text">The system will automatically exclude existing team members.</p>
                 <div id="searchResults" class="search-results card"></div>
             </div>
             <div class="members-list card" id="membersToAddList">
                 <div class="empty-state compact">
                     <i class="fas fa-user-plus"></i>
-                    <p>Chưa có ai trong danh sách mời</p>
-                    <span>Nhập email để thêm thành viên</span>
+                    <p>No one in the invitation list yet</p>
+                    <span>Enter email to add members</span>
                 </div>
             </div>
         </div>
         <div class="modal-footer add-member-footer">
-            <button class="btn-secondary ghost" onclick="closeAddMemberModal()">Huỷ</button>
+            <button class="btn-secondary ghost" onclick="closeAddMemberModal()">Cancel</button>
             <button class="btn-primary" id="addMembersBtn" onclick="addMembers()">
-                <i class="fas fa-paper-plane"></i> Gửi lời mời
+                <i class="fas fa-paper-plane"></i> Send Invitation
             </button>
         </div>
     </div>
@@ -264,7 +264,7 @@
     async function searchUsersByEmailPrefix(prefix) {
         const apiToken = getApiToken();
         const resultsDiv = document.getElementById('searchResults');
-        resultsDiv.innerHTML = '<div class="search-loading">Đang tìm kiếm...</div>';
+        resultsDiv.innerHTML = '<div class="search-loading">Searching...</div>';
         resultsDiv.style.display = 'block';
         
         try {
@@ -286,7 +286,7 @@
                 );
                 
                 if (filteredUsers.length === 0) {
-                    resultsDiv.innerHTML = '<div class="search-loading">Không tìm thấy người phù hợp</div>';
+                    resultsDiv.innerHTML = '<div class="search-loading">No matching users found</div>';
                     return;
                 }
                 
@@ -304,7 +304,7 @@
             }
         } catch (error) {
             console.error('Error searching users:', error);
-            resultsDiv.innerHTML = '<div class="search-loading">Tìm kiếm thất bại</div>';
+            resultsDiv.innerHTML = '<div class="search-loading">Search failed</div>';
         }
     }
     
@@ -329,8 +329,8 @@
             listDiv.innerHTML = `
                 <div class="empty-state compact">
                     <i class="fas fa-user-plus"></i>
-                    <p>Chưa có ai trong danh sách mời</p>
-                    <span>Nhập email để thêm thành viên</span>
+                    <p>No one in the invitation list yet</p>
+                    <span>Enter email to add members</span>
                 </div>
             `;
             return;
@@ -352,14 +352,14 @@
     
     async function addMembers() {
         if (membersToAdd.length === 0) {
-            alert('Vui lòng chọn ít nhất một thành viên');
+            alert('Please select at least one member');
             return;
         }
         
         const apiToken = getApiToken();
         const btn = document.getElementById('addMembersBtn');
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
         
         try {
             for (const member of membersToAdd) {
@@ -379,11 +379,11 @@
                 
                 const result = await response.json();
                 if (!response.ok || result.status !== 201) {
-                    throw new Error(result.message || 'Không thể thêm thành viên');
+                    throw new Error(result.message || 'Failed to add member');
                 }
             }
             
-            alert('Đã gửi lời mời thành công');
+            alert('Invitation sent successfully');
             closeAddMemberModal();
             if (typeof loadMembers === 'function') {
                 loadMembers();
@@ -392,10 +392,10 @@
             }
         } catch (error) {
             console.error('Error adding members:', error);
-            alert('Thêm thành viên thất bại: ' + error.message);
+            alert('Failed to add member: ' + error.message);
         } finally {
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi lời mời';
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Invitation';
         }
     }
     

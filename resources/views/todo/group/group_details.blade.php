@@ -491,7 +491,7 @@
     <div class="header-actions">
         <a href="#" id="addMemberBtn" class="primary-action" style="display: none;">
             <i class="fas fa-user-plus"></i>
-            <span>Thêm thành viên</span>
+            <span>Add new member</span>
         </a>
         <a href="#" id="membersLink">
             <i class="fas fa-users"></i>
@@ -1108,12 +1108,12 @@
         const task = tasksData.find(t => t.id === taskId);
         if (!task) return;
         
-        const action = newStatus ? 'hoàn thành' : 'chưa hoàn thành';
-        const message = `Bạn có chắc chắn muốn đánh dấu task "${task.title}" là ${action}?`;
+        const action = newStatus ? 'completed' : 'not completed';
+        const message = `Are you sure you want to mark task "${task.title}" as ${action}?`;
         
         if (window.showConfirmDialog) {
             window.showConfirmDialog(
-                'Xác nhận',
+                'Confirm',
                 message,
                 () => toggleTask(taskId, newStatus)
             );

@@ -73,13 +73,15 @@ class AccountController extends Controller
         ]);
 
         if (!Hash::check($request->old_password, $user->password)) {
+            $errorMessage = 'Wrong old password';
+            
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'errors' => ['old_password' => ['Mật khẩu cũ không chính xác']]
+                    'message' => $errorMessage
                 ], 422);
             }
-            return back()->withErrors(['old_password' => 'Mật khẩu cũ không chính xác']);
+            return back()->withErrors(['old_password' => $errorMessage]);
         }
 
         $user->update([
@@ -90,11 +92,11 @@ class AccountController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Cập nhật mật khẩu thành công!'
+                'message' => 'Password updated successfully!'
             ]);
         }
 
-        return redirect('/account-info')->with('success', 'Cập nhật mật khẩu thành công!');
+        return redirect('/account-info')->with('success', 'Password updated successfully!');
     }
 
     public function uploadAvatar(Request $request)

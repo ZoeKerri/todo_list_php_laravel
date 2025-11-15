@@ -238,12 +238,12 @@
         <form id="taskForm">
             <!-- Title -->
             <div class="form-group">
-                <label class="form-label" for="taskTitle">Tiêu đề</label>
+                <label class="form-label" for="taskTitle">Title</label>
                 <input 
                     type="text" 
                     id="taskTitle" 
                     class="form-input" 
-                    placeholder="Nhập tiêu đề task"
+                    placeholder="Enter task title"
                     readonly
                 />
             </div>
@@ -256,25 +256,25 @@
                         id="taskCompleted" 
                         disabled
                     />
-                    <label for="taskCompleted" class="checkbox-label">Đã hoàn thành</label>
+                    <label for="taskCompleted" class="checkbox-label">Completed</label>
                 </div>
             </div>
             
             <!-- Priority -->
             <div class="form-group">
-                <label class="form-label" for="taskPriority">Độ ưu tiên</label>
+                <label class="form-label" for="taskPriority">Priority</label>
                 <div class="select-wrapper">
                     <select id="taskPriority" class="form-select" disabled>
-                        <option value="LOW">Thấp</option>
-                        <option value="MEDIUM">Trung bình</option>
-                        <option value="HIGH">Cao</option>
+                        <option value="LOW">Low</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="HIGH">High</option>
                     </select>
                 </div>
             </div>
             
             <!-- Deadline -->
             <div class="form-group">
-                <label class="form-label" for="taskDeadline">Ngày hết hạn</label>
+                <label class="form-label" for="taskDeadline">Deadline</label>
                 <div class="date-input-wrapper">
                     <input 
                         type="date" 
@@ -288,11 +288,11 @@
             
             <!-- Description -->
             <div class="form-group">
-                <label class="form-label" for="taskDescription">Mô tả</label>
+                <label class="form-label" for="taskDescription">Description</label>
                 <textarea 
                     id="taskDescription" 
                     class="form-input form-textarea" 
-                    placeholder="Nhập mô tả task"
+                    placeholder="Enter task description"
                     readonly
                 ></textarea>
             </div>
@@ -301,11 +301,11 @@
             <div class="button-group">
                 <button type="button" id="updateBtn" class="btn btn-primary" style="display: none;">
                     <i class="fas fa-save"></i>
-                    <span>Cập nhật</span>
+                    <span>Update</span>
                 </button>
                 <button type="button" id="deleteBtn" class="btn btn-danger" style="display: none;">
                     <i class="fas fa-trash"></i>
-                    <span>Xóa</span>
+                    <span>Delete</span>
                 </button>
             </div>
         </form>
@@ -470,12 +470,12 @@
             const description = document.getElementById('taskDescription').value.trim();
             
             if (!title) {
-                showError('Vui lòng nhập tiêu đề task');
+                showError('Please enter a task title');
                 return;
             }
             
             if (!deadline) {
-                showError('Vui lòng chọn ngày hết hạn');
+                showError('Please select a deadline');
                 return;
             }
             
@@ -500,7 +500,7 @@
             
             const result = await response.json();
             if (response.ok && result.status === 200) {
-                showSuccess('Cập nhật task thành công!');
+                showSuccess('Task updated successfully!');
                 taskData = result.data;
                 populateForm();
                 // Reload after 1 second
@@ -508,16 +508,16 @@
                     window.location.href = `/group/${teamId}`;
                 }, 1000);
             } else {
-                showError(result.message || 'Có lỗi xảy ra khi cập nhật task');
+                showError(result.message || 'An error occurred while updating the task');
             }
         } catch (error) {
             console.error('Error updating task:', error);
-            showError('Có lỗi xảy ra khi cập nhật task: ' + error.message);
+            showError('An error occurred while updating the task: ' + error.message);
         }
     }
     
     async function handleDeleteTask() {
-        if (!confirm('Bạn có chắc chắn muốn xóa task này?')) {
+        if (!confirm('Are you sure you want to delete this task?')) {
             return;
         }
         
@@ -532,16 +532,16 @@
             
             const result = await response.json();
             if (response.ok && result.status === 200) {
-                showSuccess('Xóa task thành công!');
+                showSuccess('Task deleted successfully!');
                 setTimeout(() => {
                     window.location.href = `/group/${teamId}`;
                 }, 1000);
             } else {
-                showError(result.message || 'Có lỗi xảy ra khi xóa task');
+                showError(result.message || 'An error occurred while deleting the task');
             }
         } catch (error) {
             console.error('Error deleting task:', error);
-            showError('Có lỗi xảy ra khi xóa task: ' + error.message);
+            showError('An error occurred while deleting the task: ' + error.message);
         }
     }
     

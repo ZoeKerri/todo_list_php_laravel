@@ -3,8 +3,8 @@
 @section('content')
 
     {{-- 
-        CÁC SCRIPT VÀ STYLE
-        - ĐÃ THÊM FONT AWESOME
+        SCRIPTS AND STYLES
+        - ADDED FONT AWESOME
     --}}
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -155,15 +155,15 @@
 
         <main class="max-w-screen-xl mx-auto p-6 md:p-8 w-full flex-1 flex flex-col min-h-0">
 
-            {{-- Card Header chứa thông tin Profile --}}
+            {{-- Card Header containing Profile information --}}
             <section class="flex-shrink-0 relative account-card rounded-lg p-8 shadow-sm overflow-hidden">
                 <div class="relative z-10">
                     <div class="flex flex-col md:flex-row md:items-center justify-between">
 
-                        {{-- BỌC CHUNG AVATAR VÀ THÔNG TIN --}}
+                            {{-- AVATAR AND INFO WRAPPER --}}
                         <div class="flex items-center space-x-6">
 
-                            {{-- (Con 1) DIV BỌC AVATAR (Icon kế bên) --}}
+                            {{-- (1) AVATAR WRAPPER (with icon) --}}
                             <div class="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0">
                                 
                                 <a href="#" onclick="event.preventDefault(); document.getElementById('avatar-input').click()" class="cursor-pointer">
@@ -180,13 +180,13 @@
     </a>
     </div>
 
-                            {{-- (Con 2) DIV BỌC THÔNG TIN (Tên, Email, Nút bấm) --}}
+                            {{-- (2) INFO WRAPPER (Name, Email, Buttons) --}}
                             <div>
                                 <h1 id="profile-name-display" class="text-3xl font-bold text-primary-color">{{ $user->full_name ?? 'N/A' }}
                                 </h1>
                                 <p class="text-secondary-color mt-1">{{ $user->email }}</p>
 
-                                {{-- Các nút bấm --}}
+                                {{-- Action buttons --}}
                                 <div class="mt-4 flex flex-wrap gap-3">
                                     <button id="open-edit-modal-button"
                                         class="btn-accent px-5 py-2 rounded-lg font-semibold text-sm cursor-pointer">Update</button>
@@ -203,7 +203,7 @@
     </div>
     </div>
     
-                        </div> {{-- Hết bọc chung --}}
+                        </div> {{-- End wrapper --}}
 
 
                         {{-- STATS (Phone, Member Since) --}}
@@ -222,12 +222,12 @@
                 </div>
             </section>
 
-            {{-- Form logout ẩn --}}
+            {{-- Hidden logout form --}}
             <form id="account-logout-form" action="{{ url('/logout') }}" method="POST" class="hidden">
                 @csrf
             </form>
 
-            {{-- Nav Tab (Giữ nguyên) --}}
+            {{-- Navigation Tabs --}}
             <nav class="mt-8 border-b account-tab-nav flex-shrink-0">
                 <div class="flex space-x-8">
                     <a href="#" class="tab-link active-tab py-3 px-1" data-tab="work">All</a>
@@ -236,7 +236,7 @@
                 </div>
             </nav>
 
-            {{-- Nội dung Tab (Giữ nguyên HTML, `absolute` là OK) --}}
+            {{-- Tab Content (HTML remains the same, `absolute` is OK) --}}
             <section id="tab-content-container" class="flex-1 min-h-0 relative py-8">
                 
                 <div id="work" class="tab-panel h-full w-full absolute top-8 left-0 chart-container">
@@ -256,7 +256,7 @@
     </div>
     
     {{-- =============================================== --}}
-    {{--     HTML CỦA POPUP CHỈNH SỬA PROFILE       --}}
+    {{--     EDIT PROFILE POPUP HTML       --}}
     {{-- =============================================== --}}
     <div id="edit-profile-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div id="modal-overlay" class="absolute inset-0 modal-overlay"></div>
@@ -289,22 +289,22 @@
         </div>
     </div>
     {{-- =============================================== --}}
-    {{--           KẾT THÚC: POPUP CHỈNH SỬA        --}}
+    {{--           END: EDIT PROFILE POPUP        --}}
     {{-- =============================================== --}}
 
 
     {{-- =============================================== --}}
-    {{--     [MỚI] HTML CỦA POPUP ĐỔI MẬT KHẨU       --}}
+    {{--     [NEW] CHANGE PASSWORD POPUP HTML       --}}
     {{-- =============================================== --}}
     <div id="change-password-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         
-        {{-- Lớp phủ mờ (overlay) --}}
+        {{-- Overlay --}}
         <div id="change-password-modal-overlay" class="absolute inset-0 modal-overlay"></div>
 
-        {{-- Nội dung Modal (Form) --}}
+        {{-- Modal Content (Form) --}}
         <div class="relative w-full max-w-lg p-6 modal-surface rounded-lg shadow-xl">
             
-            {{-- Header của Modal --}}
+            {{-- Modal Header --}}
             <div class="flex items-center justify-between pb-4 border-b" style="border-color: var(--border-color);">
                 <h3 class="text-xl font-semibold text-primary-color">Change Password</h3>
                 <button id="close-change-password-modal-button" class="icon-button">
@@ -312,43 +312,43 @@
                 </button>
             </div>
 
-            {{-- Vùng hiển thị lỗi Validation --}}
+            {{-- Validation Error Area --}}
             <div id="change-password-errors-container" class="hidden mt-4 p-3 rounded-lg" style="background-color: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4);">
                 <ul id="change-password-errors-list" class="list-disc pl-5 text-sm" style="color: #fecaca;">
                 </ul>
             </div>
 
-            {{-- Vùng hiển thị thành công --}}
+            {{-- Success Message Area --}}
             <div id="change-password-success-container" class="hidden mt-4 p-3 rounded-lg" style="background-color: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.4);">
                  <p class="text-sm" style="color: #a7f3d0;">Password changed successfully!</p>
             </div>
 
-            {{-- Form đổi mật khẩu --}}
-            <form id="change-password-form" action="{{ url('/account-info/change-password') }}" method="POST" class="mt-6 space-y-4">
+            {{-- Change Password Form --}}
+            <form id="change-password-form" action="{{ url('/account-info/change-password') }}" method="POST" class="mt-6 space-y-4" novalidate>
     @csrf
                 
                 {{-- Old Password --}}
                 <div>
                     <label for="old_password" class="block text-sm font-medium text-secondary-color">Old Password</label>
-                    <input type="password" id="old_password" name="old_password" required
+                    <input type="password" id="old_password" name="old_password" 
                            class="mt-1 block w-full input-surface rounded-lg py-2 px-3">
                 </div>
                 
                 {{-- New Password --}}
                 <div>
                     <label for="new_password" class="block text-sm font-medium text-secondary-color">New Password</label>
-                    <input type="password" id="new_password" name="new_password" required
+                    <input type="password" id="new_password" name="new_password" 
                            class="mt-1 block w-full input-surface rounded-lg py-2 px-3">
 </div>
 
                 {{-- Confirm New Password --}}
                 <div>
                     <label for="new_password_confirmation" class="block text-sm font-medium text-secondary-color">Confirm New Password</label>
-                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required
+                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" 
                            class="mt-1 block w-full input-surface rounded-lg py-2 px-3">
                 </div>
 
-                {{-- Nút bấm --}}
+                {{-- Action Buttons --}}
                 <div class="pt-4 flex justify-end">
                     <button type="submit" 
                             class="btn-accent px-5 py-2 rounded-lg font-semibold text-sm">
@@ -359,24 +359,24 @@
         </div>
     </div>
     {{-- =============================================== --}}
-    {{--           KẾT THÚC: POPUP ĐỔI MẬT KHẨU      --}}
+    {{--           END: CHANGE PASSWORD POPUP      --}}
     {{-- =============================================== --}}
 
 
 @endsection
 
 {{-- =============================================== --}}
-{{--           [SỬA LỚN] KHỐI SCRIPT                --}}
+{{--           [MAJOR UPDATE] SCRIPT BLOCK          --}}
 {{-- =============================================== --}}
 @push('scripts')
 <script>
-// Biến toàn cục để lưu trữ các đối tượng chart
+// Global variable to store chart objects
 window.accountCharts = {
     work: null,
     moodboards: null,
     likes: null
 };
-// Biến toàn cục để lưu trữ options (chứa data từ fetch)
+// Global variable to store options (contains data from fetch)
 window.chartOptionsStore = {
     work: null,
     moodboards: null,
@@ -385,10 +385,10 @@ window.chartOptionsStore = {
 
 // Initialize charts when document is ready
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. [MỚI] Chỉ fetch data và chuẩn bị options
+    // 1. [NEW] Only fetch data and prepare options
     prepareChartData();
 
-    // 2. Initialize Tab Switching (sẽ được sửa để render chart)
+    // 2. Initialize Tab Switching (will be updated to render chart)
     initTabs();
 
     // 3. Initialize Avatar Upload
@@ -401,8 +401,8 @@ document.addEventListener('DOMContentLoaded', function () {
     initChangePasswordModal();
 });
 
-// 1. [SỬA LỚN] Đổi tên từ initCharts -> prepareChartData
-// Hàm này chỉ fetch data và tạo options, KHÔNG render
+// 1. [MAJOR UPDATE] Renamed from initCharts -> prepareChartData
+// This function only fetches data and creates options, does NOT render
 function prepareChartData() {
     fetch('/statistics/monthly-json', {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -424,7 +424,7 @@ function prepareChartData() {
                 labels: {
                     formatter: function (val) { return val.toFixed(0); }
                 },
-                tickAmount: 5 // Đảm bảo trục Y có chia vạch
+                tickAmount: 5 // Ensure Y-axis has tick marks
             },
             colors: ['#10B981', '#F59E0B']
         };
@@ -465,8 +465,8 @@ function prepareChartData() {
             colors: ['#8B5CF6', '#F59E0B']
         };
 
-        // [QUAN TRỌNG] Sau khi fetch xong, render chart cho tab đang active
-        // Kích hoạt lại tab active ban đầu để trigger render
+        // [IMPORTANT] After fetching, render chart for the active tab
+        // Reactivate the initially active tab to trigger render
         const activeTab = document.querySelector('.tab-link.active-tab');
         if (activeTab) {
             activateTab(activeTab, activeTab.dataset.tab, true); // true = force render
@@ -476,7 +476,7 @@ function prepareChartData() {
     .catch(() => {});
 }
 
-// 2. [SỬA LỚN] Hàm initTabs sẽ chứa logic render
+// 2. [MAJOR UPDATE] The initTabs function will contain the render logic
 function initTabs() {
     const tabs = document.querySelectorAll('.tab-link');
     
@@ -490,15 +490,15 @@ function initTabs() {
         });
     });
 
-    // Kích hoạt tab đầu tiên (nếu data chưa về, nó sẽ được gọi lại trong prepareChartData)
+    // Activate the first tab (if data hasn't loaded yet, it will be called again in prepareChartData)
     const activeTab = document.querySelector('.tab-link.active-tab');
     if (activeTab) {
          activateTab(activeTab, activeTab.dataset.tab, false);
     }
 }
 
-// [SỬA LỚN] Hàm activateTab, giờ là trung tâm xử lý
-// forceRender = true nghĩa là render lại ngay cả khi chart đã tồn tại
+// [MAJOR UPDATE] The activateTab function is now the central processing unit
+// forceRender = true means re-render even if chart already exists
 function activateTab(tab, targetPanelId, forceRender = false) {
     const activeClasses = ['active-tab'];
     const inactiveClasses = ['inactive-tab'];
@@ -522,9 +522,9 @@ function activateTab(tab, targetPanelId, forceRender = false) {
         }
     });
 
-    // 3. [SỬA] Logic render chart
-    // targetPanelId là 'work', 'moodboards', 'likes'
-    // chartId là 'accountWorkChart', 'accountMoodboardsChart', 'accountLikesChart'
+    // 3. [UPDATED] Chart rendering logic
+    // targetPanelId is 'work', 'moodboards', 'likes'
+    // chartId is 'accountWorkChart', 'accountMoodboardsChart', 'accountLikesChart'
     const chartMapping = {
         work: { id: 'accountWorkChart', options: window.chartOptionsStore.work, chart: window.accountCharts.work },
         moodboards: { id: 'accountMoodboardsChart', options: window.chartOptionsStore.moodboards, chart: window.accountCharts.moodboards },
@@ -534,24 +534,24 @@ function activateTab(tab, targetPanelId, forceRender = false) {
     const targetChart = chartMapping[targetPanelId];
 
     if (targetChart) {
-        // Chỉ render NẾU:
-        // 1. Data đã về (options tồn tại)
-        // 2. Chart chưa được khởi tạo (chart === null) HOẶC bị ép render (forceRender)
+        // Only render IF:
+        // 1. Data has been loaded (options exist)
+        // 2. Chart has not been initialized (chart === null) OR forced to render (forceRender)
         if (targetChart.options && (!targetChart.chart || forceRender)) {
             
-            // Nếu chart đã tồn tại (forceRender), hủy nó đi
+            // If chart already exists (forceRender), destroy it first
             if (targetChart.chart) {
                 targetChart.chart.destroy();
             }
 
-            // Lấy div
+            // Get the div
             const chartEl = document.querySelector("#" + targetChart.id);
             if (chartEl) {
-                // Tạo chart mới
+                // Create new chart
                 const newChart = new ApexCharts(chartEl, targetChart.options);
                 newChart.render();
                 
-                // Lưu lại
+                // Save it
                 window.accountCharts[targetPanelId] = newChart;
             }
         }
@@ -559,7 +559,7 @@ function activateTab(tab, targetPanelId, forceRender = false) {
 }
 
 
-// 3. Initialize Avatar Upload (Hàm này giữ nguyên)
+// 3. Initialize Avatar Upload (This function remains unchanged)
 function initAvatarUpload() {
     const avatarInput = document.getElementById('avatar-input');
     const avatarImage = document.getElementById('avatar-image');
@@ -615,7 +615,7 @@ function initAvatarUpload() {
     }
 }
 
-// 4. Initialize Edit Profile Modal (Hàm này giữ nguyên)
+// 4. Initialize Edit Profile Modal (This function remains unchanged)
 function initEditProfileModal() {
     const modal = document.getElementById('edit-profile-modal');
     const openModalButton = document.getElementById('open-edit-modal-button');
@@ -684,7 +684,7 @@ function initEditProfileModal() {
                         successMessage.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-[9999] transform translate-x-0 transition-all duration-300';
                         successMessage.style.position = 'fixed';
                         successMessage.style.zIndex = '9999';
-                        successMessage.textContent = data.message || 'Cập nhật thông tin thành công!';
+                        successMessage.textContent = data.message || 'Update successfully!';
                         document.body.appendChild(successMessage);
 
                         setTimeout(() => {
@@ -725,7 +725,7 @@ function initEditProfileModal() {
     }
 }
 
-// 5. Initialize Change Password Modal (Hàm này giữ nguyên)
+// 5. Initialize Change Password Modal (This function remains unchanged)
 function initChangePasswordModal() {
     const pwModal = document.getElementById('change-password-modal');
     const openPwModalButton = document.getElementById('open-change-password-modal-button');
@@ -764,10 +764,46 @@ function initChangePasswordModal() {
     if (pwForm) {
         pwForm.addEventListener('submit', async function (e) {
             e.preventDefault();
+            
+            // Clear previous messages
             pwErrorsContainer.classList.add('hidden');
             pwSuccessContainer.classList.add('hidden');
             pwErrorsList.innerHTML = '';
+            
+            // Get form data
             const formData = new FormData(pwForm);
+            const oldPassword = formData.get('old_password');
+            const newPassword = formData.get('new_password');
+            const confirmPassword = formData.get('new_password_confirmation');
+            
+            // Client-side validation
+            let hasErrors = false;
+            
+            if (!oldPassword || !newPassword || !confirmPassword) {
+                const li = document.createElement('li');
+                li.textContent = 'Please fill in all fields';
+                pwErrorsList.appendChild(li);
+                hasErrors = true;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                const li = document.createElement('li');
+                li.textContent = 'New password and confirmation do not match';
+                pwErrorsList.appendChild(li);
+                hasErrors = true;
+            }
+            
+            if (newPassword && newPassword.length < 6) {
+                const li = document.createElement('li');
+                li.textContent = 'Password must be at least 6 characters';
+                pwErrorsList.appendChild(li);
+                hasErrors = true;
+            }
+            
+            if (hasErrors) {
+                pwErrorsContainer.classList.remove('hidden');
+                return;
+            }
 
             try {
                 const response = await fetch(pwForm.action, {
@@ -787,7 +823,7 @@ function initChangePasswordModal() {
                     successMessage.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-[9999] transform translate-x-0 transition-all duration-300';
                     successMessage.style.position = 'fixed';
                     successMessage.style.zIndex = '9999';
-                    successMessage.textContent = data.message || 'Update password successfully!';
+                    successMessage.textContent = data.message || 'Password updated successfully!';
                     document.body.appendChild(successMessage);
 
                     setTimeout(() => {
@@ -800,18 +836,25 @@ function initChangePasswordModal() {
                         }, 300);
                     }, 2000);
 
-                } else if (data.errors) {
-                    pwErrorsContainer.classList.remove('hidden');
-                    Object.entries(data.errors).forEach(([field, messages]) => {
-                        const li = document.createElement('li');
-                        li.textContent = Array.isArray(messages) ? messages[0] : messages;
-                        pwErrorsList.appendChild(li);
-                    });
                 } else {
-                     pwErrorsContainer.classList.remove('hidden');
-                     const li = document.createElement('li');
-                     li.textContent = data.message || 'An unknown error occurred.';
-                     pwErrorsList.appendChild(li);
+                    pwErrorsContainer.classList.remove('hidden');
+                    pwErrorsList.innerHTML = ''; // Clear any existing errors
+                    
+                    // Show either the message or the first error, but not both
+                    let errorMessage = data.message || '';
+                    
+                    // If no message but we have errors, use the first error
+                    if (!errorMessage && data.errors) {
+                        const firstError = Object.values(data.errors)[0];
+                        errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+                    }
+                    
+                    // Only add the error if we have one
+                    if (errorMessage) {
+                        const li = document.createElement('li');
+                        li.textContent = errorMessage;
+                        pwErrorsList.appendChild(li);
+                    }
                 }
             } catch (error) {
                 console.error('Error:', error);

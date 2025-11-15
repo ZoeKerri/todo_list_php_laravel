@@ -699,7 +699,7 @@
         // Add "All" option
         categoryList.innerHTML = `
             <div class="category-chip active" data-category-id="all" onclick="toggleCategory('all')">
-                Tất cả
+                All
                     </div>
         `;
         
@@ -707,7 +707,7 @@
         const createChip = document.createElement('div');
         createChip.className = 'category-chip';
         createChip.style.cssText = 'background-color: transparent; border: 2px dashed var(--accent-color); color: var(--accent-color); cursor: pointer;';
-        createChip.innerHTML = '<i class="fas fa-plus"></i> <span>Tạo mới</span>';
+        createChip.innerHTML = '<i class="fas fa-plus"></i> <span>Create New</span>';
         createChip.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -732,12 +732,12 @@
                     }, 100);
                 } else {
                     // Fallback to prompt
-                    const categoryName = prompt('Nhập tên thể loại mới:');
+                    const categoryName = prompt('Enter new category name:');
                     if (categoryName && categoryName.trim()) {
                         if (typeof createCategoryQuick === 'function') {
                             createCategoryQuick(categoryName.trim());
                         } else {
-                            alert('Vui lòng mở modal tạo task để tạo category');
+                            alert('Please open the task creation modal to create a category');
                         }
                     }
                 }
@@ -1036,8 +1036,8 @@
         } else {
             const showCompleted = getShowCompletedTasks();
             const emptyMessage = showCompleted 
-                ? 'Không có task nào cho ngày đã chọn' 
-                : 'Không có task chưa hoàn thành cho ngày đã chọn';
+                ? 'No tasks for the selected date' 
+                : 'No incomplete tasks for the selected date';
             container.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-tasks"></i>
@@ -1080,7 +1080,7 @@
                         }
                         modal.classList.add('show');
                     } else {
-                        alert('Modal không tìm thấy. Vui lòng refresh trang.');
+                        alert('Modal not found. Please refresh the page.');
                     }
                 }
             });
@@ -1105,7 +1105,7 @@
             
             const result = await response.json();
             if (response.ok && (result.status === 200 || result.status === 201)) {
-                alert('Tạo thể loại thành công!');
+                alert('Category created successfully!');
                 // Reload categories
                 await loadCategories();
                 // Select the newly created category
@@ -1116,11 +1116,11 @@
                     }, 100);
                 }
             } else {
-                alert(result.message || 'Có lỗi xảy ra khi tạo thể loại');
+                alert(result.message || 'An error occurred while creating the category');
             }
         } catch (error) {
             console.error('Error creating category:', error);
-            alert('Có lỗi xảy ra khi tạo thể loại');
+            alert('An error occurred while creating the category');
         }
     }
     
