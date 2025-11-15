@@ -886,7 +886,7 @@
         @yield('content')
     </div>
 
-    @include('partials/settings_modal')
+    @include('modals/settings_modal')
 
     @include('helpers.theme')
 
