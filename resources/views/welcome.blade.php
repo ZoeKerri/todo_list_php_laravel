@@ -452,12 +452,22 @@
     let categories = [];
     let selectedCategories = [];
     let selectedDate = new Date();
+    let selectedDateStr = '';
     let dateItems = [];
     let isLoadingDates = false;
     let minDateIndex = 0;
     
     const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     const months = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'];
+
+    function formatDateForApi(date) {
+        if (!(date instanceof Date) || isNaN(date)) return '';
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+    selectedDateStr = formatDateForApi(selectedDate);
     
     function initializeDates() {
         const dates = [];
@@ -518,6 +528,7 @@
         } else {
             selectedDate = dateItems[0];
         }
+        selectedDateStr = formatDateForApi(selectedDate);
         
         dateList.addEventListener('scroll', handleDateScroll);
         
@@ -647,6 +658,7 @@
     
     function selectDate(dateString) {
         selectedDate = new Date(dateString);
+        selectedDateStr = dateString;
         
         document.querySelectorAll('.date-item').forEach(item => {
             item.classList.remove('selected');
@@ -656,7 +668,11 @@
             }
         });
         
-        applyFilters();
+        const loadingState = document.getElementById('loadingState');
+        if (loadingState) {
+            loadingState.style.display = 'block';
+        }
+        loadTasks();
     }
     
     function initializeCategoryFilter() {
@@ -817,8 +833,8 @@
         }
         
         try {
-            const selectedDateStr = selectedDate.toISOString().split('T')[0];
-            const response = await fetch(`/api/v1/task?date=${selectedDateStr}`, {
+        const dateQuery = selectedDateStr || formatDateForApi(selectedDate);
+        const response = await fetch(`/api/v1/task?date=${dateQuery}`, {
                 headers: {
                     'Authorization': `Bearer ${apiToken}`,
                     'Accept': 'application/json'
@@ -837,14 +853,12 @@
     }
     
     function applyFilters() {
-        const selectedDateStr = selectedDate.toISOString().split('T')[0];
+        const currentSelectedDateStr = selectedDateStr || formatDateForApi(selectedDate);
         
         filteredTasksData = tasksData.filter(task => {
-            // Date filter
-            const taskDate = new Date(task.due_date || task.dueDate).toISOString().split('T')[0];
-            const matchesDate = taskDate === selectedDateStr;
+            const taskDate = (task.due_date || task.dueDate || '').split('T')[0];
+            const matchesDate = taskDate === currentSelectedDateStr;
             
-            // Category filter
             let matchesCategory = true;
             if (selectedCategories.length > 0) {
                 matchesCategory = selectedCategories.includes(task.category_id || task.categoryId);
