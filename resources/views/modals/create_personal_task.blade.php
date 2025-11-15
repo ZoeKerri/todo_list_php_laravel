@@ -108,6 +108,56 @@
         animation: fadeIn 0.2s ease-out;
     }
 
+    async function submitUpdatePersonalTask(taskId) {
+        const form = document.getElementById('createPersonalTaskForm');
+        const formData = new FormData(form);
+
+        const selectedCategoryIds = personalTaskSelectedCategoryIds;
+        const prioritySelect = document.getElementById('personalTaskPriority');
+        const selectedPriority = prioritySelect ? prioritySelect.value : 'medium';
+
+        const data = {
+            title: formData.get('title'),
+            description: formData.get('description') || null,
+            due_date: formData.get('due_date') || null,
+            category_id: parseInt(selectedCategoryIds[0]) || null,
+            priority: selectedPriority,
+            notification_time: formData.get('notification_time') || null,
+        };
+
+        if (!data.title || !data.due_date || !data.category_id) {
+            alert('Please fill in all required fields');
+            return;
+        }
+
+        try {
+            const apiToken = getApiToken();
+            const response = await fetch(`/api/v1/task/${taskId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (response.ok && (result.status === 200 || result.status === 201)) {
+                alert('Task updated successfully!');
+                closeCreatePersonalTaskModal();
+                if (typeof loadTasks === 'function') {
+                    loadTasks();
+                }
+            } else {
+                alert(result.message || 'Error updating task');
+            }
+        } catch (error) {
+            console.error('Error updating task:', error);
+            alert('Error updating task');
+        }
+    }
+
     .task-modal.show {
         display: flex;
     }
@@ -372,23 +422,71 @@
 
 <script>
     (function () {
-        function openCreatePersonalTaskModal() {
+        function openCreatePersonalTaskModal(task = null) {
             const modal = document.getElementById('createPersonalTaskModal');
             if (modal) {
                 modal.classList.add('show');
                 modal.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
-                
-                const dueDateInput = document.getElementById('personalTaskDueDate');
-                if (dueDateInput) {
-                    dueDateInput.value = new Date().toISOString().split('T')[0];
-                }
-                
-                if (typeof loadCategoriesForPersonalTask === 'function') {
-                    loadCategoriesForPersonalTask();
-                }
-                
+                const headerTitle = modal.querySelector('.task-modal-header h3');
+                const actionBtn = modal.querySelector('.task-modal-footer .btn-primary');
+                const actionBtnLabel = actionBtn?.querySelector('span');
+
                 const titleInput = document.getElementById('personalTaskTitle');
+                const descInput = document.getElementById('personalTaskDescription');
+                const dueDateInput = document.getElementById('personalTaskDueDate');
+                const prioritySelect = document.getElementById('personalTaskPriority');
+                const notifTimeInput = document.getElementById('personalTaskNotificationTime');
+
+                if (task) {
+                    if (headerTitle) headerTitle.textContent = 'Edit Task';
+                    if (actionBtn && actionBtnLabel) {
+                        actionBtn.onclick = () => submitUpdatePersonalTask(task.id);
+                        actionBtnLabel.textContent = 'Update Task';
+                    }
+                    if (titleInput) titleInput.value = task.title || '';
+                    if (descInput) descInput.value = task.description || '';
+                    if (dueDateInput) dueDateInput.value = (task.due_date || task.dueDate || '').toString().slice(0,10);
+                    if (prioritySelect) prioritySelect.value = (task.priority || 'medium').toLowerCase();
+                    if (notifTimeInput) notifTimeInput.value = (task.notificationTime || task.notification_time || '').toString().slice(0,5);
+
+                    const catId = task.category_id || task.categoryId || null;
+                    if (catId) {
+                        personalTaskSelectedCategoryIds = [catId];
+                    }
+
+                    if (typeof loadCategoriesForPersonalTask === 'function') {
+                        loadCategoriesForPersonalTask().then?.(() => {
+                            if (catId) {
+                                const chip = document.querySelector(`#categoryListContainer .category-chip[data-category-id="${catId}"]`);
+                                if (chip && !chip.classList.contains('selected')) {
+                                    togglePersonalTaskCategory(catId, chip);
+                                }
+                            }
+                        });
+                        setTimeout(() => {
+                            if (catId) {
+                                const chip = document.querySelector(`#categoryListContainer .category-chip[data-category-id="${catId}"]`);
+                                if (chip && !chip.classList.contains('selected')) {
+                                    togglePersonalTaskCategory(catId, chip);
+                                }
+                            }
+                        }, 200);
+                    }
+                } else {
+                    if (headerTitle) headerTitle.textContent = 'Create New Task';
+                    if (actionBtn && actionBtnLabel) {
+                        actionBtn.onclick = submitCreatePersonalTask;
+                        actionBtnLabel.textContent = 'Create Task';
+                    }
+                    if (dueDateInput) {
+                        dueDateInput.value = new Date().toISOString().split('T')[0];
+                    }
+                    if (typeof loadCategoriesForPersonalTask === 'function') {
+                        loadCategoriesForPersonalTask();
+                    }
+                }
+
                 if (titleInput) {
                     setTimeout(() => titleInput.focus(), 100);
                 }

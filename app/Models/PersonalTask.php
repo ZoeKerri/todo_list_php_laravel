@@ -24,7 +24,7 @@ class PersonalTask extends Model
 
     protected $casts = [
         'due_date' => 'datetime',
-        'notification_time' => 'datetime',
+        'notification_time' => 'string',
         'completed' => 'boolean',
     ];
 

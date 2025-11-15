@@ -548,6 +548,7 @@
 @push('scripts')
 <script>
     const teamId = {{ $id ?? 'null' }};
+    window.teamId = teamId;
     const userId = {{ Auth::id() ?? 'null' }};
     
     function getApiToken() {

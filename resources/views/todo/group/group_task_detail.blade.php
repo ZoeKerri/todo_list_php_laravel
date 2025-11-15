@@ -222,6 +222,8 @@
         color: #3b82f6;
     }
 </style>
+
+@include('modals.create_team_task')
 @endpush
 
 @section('content')
@@ -324,6 +326,7 @@
         }
         return null;
     }
+    window.getApiToken = getApiToken;
     
     const apiToken = getApiToken();
     let taskData = null;

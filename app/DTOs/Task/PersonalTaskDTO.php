@@ -46,7 +46,7 @@ class PersonalTaskDTO
             dueDate: $task->due_date,
             priority: $task->priority,
             completed: $task->completed,
-            notificationTime: $task->notification_time?->format('H:i'),
+            notificationTime: $task->notification_time ? substr((string) $task->notification_time, 0, 5) : null,
             categoryId: $task->category_id,
             created: $task->created_at ? new AuditDTO($task->created_at, $task->created_by) : null,
             updated: $task->updated_at ? new AuditDTO($task->updated_at, $task->updated_by) : null,

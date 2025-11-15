@@ -434,6 +434,7 @@
     }
 
     function displayTaskDetail(task) {
+        window.currentTask = task;
         document.getElementById('taskDetailTitle').textContent = task.title || 'Untitled';
 
         const statusBadge = document.getElementById('taskDetailStatus');
@@ -519,7 +520,7 @@
             closePersonalTaskDetailModal();
             
             setTimeout(() => {
-                openCreatePersonalTaskModal();
+                openCreatePersonalTaskModal(window.currentTask || null);
             }, 300);
         }
     }

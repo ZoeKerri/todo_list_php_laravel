@@ -412,6 +412,7 @@
         }
 
         function displayTeamTaskDetail(task) {
+            window.currentTeamTask = task;
             document.getElementById('teamTaskDetailTitle').textContent = task.title || 'Untitled';
 
             const statusBadge = document.getElementById('teamTaskDetailStatus');
@@ -479,10 +480,17 @@
             if (currentTeamTaskId && currentTeamId) {
                 closeTeamTaskDetailModal();
                 setTimeout(() => {
-                    window.location.href = `/group/${currentTeamId}/task/${currentTeamTaskId}`;
+                    if (typeof openCreateTeamTaskModal === 'function') {
+                        const task = Object.assign({}, window.currentTeamTask || {}, { teamId: currentTeamId });
+                        openCreateTeamTaskModal(task);
+                    } else {
+                        window.location.href = `/group/${currentTeamId}/task/${currentTeamTaskId}`;
+                    }
                 }, 300);
             }
         }
+
+        window.editTeamTask = editTeamTask;
 
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('teamTaskDetailModal');

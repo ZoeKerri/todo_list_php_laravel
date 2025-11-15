@@ -88,7 +88,7 @@
     .task-modal {
         display: none;
         position: fixed;
-        z-index: 2000;
+        z-index: 3000;
         left: 0;
         top: 0;
         width: 100%;
@@ -307,24 +307,161 @@
 </style>
 
 <script>
+    async function submitUpdateTeamTask(taskId) {
+        if (!currentTeamId) {
+            alert('Team ID is missing');
+            return;
+        }
+
+        const form = document.getElementById('createTeamTaskForm');
+        if (!form) {
+            alert('Form not found');
+            return;
+        }
+
+        const formData = new FormData(form);
+
+        const title = (formData.get('title') || '').trim();
+        const description = (formData.get('description') || '').trim() || null;
+        const deadline = formData.get('deadline');
+        const priority = formData.get('priority') || 'MEDIUM';
+        const memberId = formData.get('member_id');
+
+        if (!title) {
+            alert('Please enter a task title');
+            document.getElementById('teamTaskTitle')?.focus();
+            return;
+        }
+
+        if (!deadline) {
+            alert('Please select a deadline');
+            document.getElementById('teamTaskDeadline')?.focus();
+            return;
+        }
+
+        if (!memberId) {
+            alert('Please select a team member to assign this task');
+            document.getElementById('teamTaskMember')?.focus();
+            return;
+        }
+
+        try {
+            const apiToken = getApiToken();
+            if (!apiToken) {
+                alert('Please login to update team task');
+                closeCreateTeamTaskModal();
+                return;
+            }
+
+            const data = {
+                id: parseInt(taskId),
+                team_id: parseInt(currentTeamId),
+                title: title,
+                description: description,
+                deadline: deadline,
+                priority: priority.toUpperCase(),
+                member_id: parseInt(memberId)
+            };
+
+            const response = await fetch('/api/v1/team-task', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (response.ok && (result.status === 200 || result.status === 201)) {
+                alert('Task updated successfully!');
+                closeCreateTeamTaskModal();
+                if (typeof loadTeamTasks === 'function') {
+                    loadTeamTasks();
+                } else if (typeof loadTasks === 'function') {
+                    loadTasks();
+                } else if (typeof window.location !== 'undefined') {
+                    window.location.reload();
+                }
+            } else {
+                const errorMsg = result.message || result.error || 'Error updating task';
+                console.error('API error:', result);
+                alert(errorMsg);
+            }
+        } catch (error) {
+            console.error('Error updating team task:', error);
+            const errorMsg = error.message || 'Error updating task. Please try again.';
+            alert(errorMsg);
+        }
+    }
+
+    window.submitUpdateTeamTask = submitUpdateTeamTask;
+
+
     let currentTeamId = null;
     let teamMembers = [];
 
     (function () {
-        function openCreateTeamTaskModal(teamId) {
+        function openCreateTeamTaskModal(payload) {
+            console.log('[TeamTaskModal] open called with payload:', payload);
+            // payload can be teamId (number/string) or a task object containing teamId and fields
+            const isTaskObject = payload && typeof payload === 'object';
+            const teamId = isTaskObject ? (payload.teamId || payload.team_id || window.teamId) : (payload || window.teamId);
             currentTeamId = teamId;
+
             const modal = document.getElementById('createTeamTaskModal');
             if (modal) {
-                document.getElementById('createTeamTaskForm').reset();
-                
+                const form = document.getElementById('createTeamTaskForm');
+                form.reset();
+
+                const headerTitle = modal.querySelector('.task-modal-header h3');
+                const actionBtn = modal.querySelector('.task-modal-footer .btn-primary');
+                const actionBtnLabel = actionBtn?.querySelector('span');
+
+                const titleInput = document.getElementById('teamTaskTitle');
+                const descInput = document.getElementById('teamTaskDescription');
                 const deadlineInput = document.getElementById('teamTaskDeadline');
-                if (deadlineInput) {
+                const prioritySelect = document.getElementById('teamTaskPriority');
+                const memberSelect = document.getElementById('teamTaskMember');
+
+                if (deadlineInput && !isTaskObject) {
                     deadlineInput.value = new Date().toISOString().split('T')[0];
                 }
 
-                loadTeamMembers(teamId);
+                // Always load members for the team
+                loadTeamMembers(teamId).then?.(() => {
+                    if (isTaskObject) {
+                        const task = payload;
+                        // Prefill after members are loaded so member selection is available
+                        const memberId = task.memberId || task.member_id || task.teamMember?.id || '';
+                        if (memberSelect && memberId) {
+                            memberSelect.value = String(memberId);
+                        }
+                    }
+                });
+
+                // Prefill for edit mode
+                if (isTaskObject) {
+                    if (headerTitle) headerTitle.textContent = 'Edit Team Task';
+                    if (actionBtn && actionBtnLabel) {
+                        actionBtn.onclick = () => (window.submitUpdateTeamTask ? window.submitUpdateTeamTask(payload.id) : (console.error('submitUpdateTeamTask is not available'), null));
+                        actionBtnLabel.textContent = 'Update Task';
+                    }
+                    if (titleInput) titleInput.value = payload.title || '';
+                    if (descInput) descInput.value = payload.description || '';
+                    if (deadlineInput) deadlineInput.value = (payload.deadline || '').toString().slice(0,10);
+                    if (prioritySelect) prioritySelect.value = (payload.priority || 'MEDIUM').toUpperCase();
+                } else {
+                    if (headerTitle) headerTitle.textContent = 'Create Team Task';
+                    if (actionBtn && actionBtnLabel) {
+                        actionBtn.onclick = submitCreateTeamTask;
+                        actionBtnLabel.textContent = 'Create Task';
+                    }
+                }
 
                 modal.classList.add('show');
+                console.log('[TeamTaskModal] show modal');
                 document.body.style.overflow = 'hidden';
             } else {
                 console.error('Modal createTeamTaskModal not found');
@@ -352,6 +489,28 @@
             return;
         }
 
+        // Prefer already-loaded members from group page if present
+        if (typeof window.allMembers !== 'undefined' && Array.isArray(window.allMembers) && window.allMembers.length > 0) {
+            memberSelect.innerHTML = '<option value="">Select a member</option>';
+            teamMembers = window.allMembers;
+            teamMembers.forEach(member => {
+                if (!member || !member.id) return;
+                const option = document.createElement('option');
+                option.value = member.id; // member.id is team_members.id
+                let userName = 'Unknown';
+                let userEmail = '';
+                if (member.user) {
+                    userName = member.user.name || member.user.fullName || member.user.email || 'Unknown';
+                    userEmail = member.user.email || '';
+                } else if (member.userId) {
+                    userName = `User ${member.userId}`;
+                }
+                option.textContent = userEmail ? `${userName} (${userEmail})` : userName;
+                memberSelect.appendChild(option);
+            });
+            return;
+        }
+
         try {
             const apiToken = getApiToken();
             if (!apiToken) {
@@ -360,7 +519,7 @@
                 return;
             }
 
-            const response = await fetch(`/api/v1/team/detail/${teamId}`, {
+            const response = await fetch(`/api/v1/member/by-team/${teamId}`, {
                 headers: {
                     'Authorization': `Bearer ${apiToken}`,
                     'Accept': 'application/json'
@@ -372,13 +531,12 @@
             }
 
             const result = await response.json();
-            console.log('Team detail response:', result);
+            console.log('Members response:', result);
             
-            if (result.status === 200 && result.data) {
+            if (result.status === 200 && Array.isArray(result.data)) {
                 memberSelect.innerHTML = '<option value="">Select a member</option>';
                 
-                const teamData = result.data;
-                teamMembers = Array.isArray(teamData.teamMembers) ? teamData.teamMembers : [];
+                teamMembers = result.data;
                 
                 if (teamMembers.length === 0) {
                     const option = document.createElement('option');
